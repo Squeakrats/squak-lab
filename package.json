@@ -1,11 +1,6 @@
 {
   "name": "squak-lab",
   "version": "1.0.0",
-  "scripts": {
-    "cmake": "emcmake cmake -B build/wasm",
-    "make": "emmake make -C build/wasm --no-print-directory",
-    "build": "npm run cmake && npm run make"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Squeakrats/squak-lab.git"

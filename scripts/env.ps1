@@ -1,0 +1,1 @@
+.\lib\emsdk\emsdk_env.ps1

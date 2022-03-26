@@ -1,0 +1,1 @@
+emmake make -C build/wasm --no-print-directory
