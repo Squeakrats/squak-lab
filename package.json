@@ -4,6 +4,5 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Squeakrats/squak-lab.git"
-  },
-  "devDependencies": {}
+  }
 }
