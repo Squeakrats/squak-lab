@@ -14,3 +14,5 @@ git pull
 
 # Navigate out of emsdk
 popd
+
+pnpm install
