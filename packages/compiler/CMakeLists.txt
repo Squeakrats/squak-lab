@@ -8,7 +8,7 @@ target_include_directories(compiler PUBLIC src/)
 
 enable_testing()
 
-add_executable(CompilerTests tests/CompilerTests.cpp ${SOURCE})
+add_executable(CompilerTests tests/CompilerTests.cpp)
 
 # Follow google test framework setup instructions
 include(FetchContent)
