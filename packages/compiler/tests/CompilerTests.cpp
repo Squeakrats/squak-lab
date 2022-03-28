@@ -10,6 +10,7 @@ TEST(CompilerTests, NFATests) {
 
 	nfa.Union(NFA::FromRegularExpression("ghjklm"));
 	dfa = DFA::FromNFA(nfa);
+
 	EXPECT_EQ(dfa.Match("abcdef"), true);
 	EXPECT_EQ(dfa.Match("ghjklm"), true);
 	EXPECT_EQ(dfa.Match("abcghj"), false);

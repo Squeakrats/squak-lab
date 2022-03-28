@@ -1,5 +1,23 @@
 #include "DFA.h"
 
+template<typename T>
+class IDGenerator {
+public:
+	std::map<T, uint32_t> table{};
+
+	uint32_t GetId(const T& value) {
+		auto existingId = this->table.find(value);
+		if (existingId != this->table.end()) {
+			return existingId->second;
+		}
+
+		uint32_t newId = static_cast<uint32_t>(this->table.size());
+		this->table.insert(std::make_pair(value, newId));
+
+		return newId;
+	}
+};
+
 DFA DFA::FromRegularExpression(std::string expression) {
 	return DFA::FromNFA(NFA::FromRegularExpression(expression));
 }
@@ -27,6 +45,7 @@ DFA DFA::FromNFA(NFA& nfa) {
 		}
 
 		states.insert(std::make_pair(current, edges));
+
 		for (auto edge : edges) {
 			if (states.find(edge.second) == states.end()) {
 				work.insert(edge.second);
@@ -34,29 +53,16 @@ DFA DFA::FromNFA(NFA& nfa) {
 		}
 	}
 
-	auto ensureId = [](const std::set<uint32_t>& id) {
-		static std::map<std::set<uint32_t>, uint32_t> idTable{};
-
-		auto existingId = idTable.find(id);
-		if (existingId != idTable.end()) {
-			return existingId->second;
-		}
-
-		uint32_t newId = static_cast<uint32_t>(idTable.size());
-		idTable.insert(std::make_pair(id, newId));
-
-		return newId;
-	};
-
 	DFA dfa{};
-	dfa.initialState = ensureId(initialState);
+	IDGenerator<std::set<uint32_t>> idGenerator{};
+	dfa.initialState = idGenerator.GetId(initialState);
 
 	for (auto state : states) {
-		uint32_t id = ensureId(state.first);
+		uint32_t id = idGenerator.GetId(state.first);
 		std::map<char, uint32_t> edges;
 
 		for (auto edge : state.second) {
-			edges.insert(std::make_pair(edge.first, ensureId(edge.second)));
+			edges.insert(std::make_pair(edge.first, idGenerator.GetId(edge.second)));
 		}
 
 		dfa.states.insert(std::make_pair(id, edges));
