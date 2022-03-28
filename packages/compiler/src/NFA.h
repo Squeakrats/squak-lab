@@ -12,8 +12,11 @@ public:
 	uint32_t acceptingState{};
 
 	uint32_t AddState();
-	void AddTransition(uint32_t current, uint32_t next, char transition);
-	void AddTransition(uint32_t current, uint32_t next);
+	NFAState& GetState(uint32_t);
+
+	void AddTransition(uint32_t current, uint32_t next, char transition = '\0');
+	void Append(NFA&& b);
+	void Union(NFA&& b);
 
 	static NFA FromRegularExpression(std::string expression);
 };

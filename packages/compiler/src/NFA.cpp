@@ -1,17 +1,44 @@
 #include <assert.h>
 #include "NFA.h"
 
-uint32_t NFA::AddState() {
-	uint32_t nextId = static_cast<uint32_t>(this->states.size());
-	this->states.insert(std::make_pair(nextId, NFAState()));
+static uint32_t nextStateId = 0;
 
-	return nextId;
+uint32_t NFA::AddState() {
+	this->states.insert(std::make_pair(nextStateId, NFAState()));
+
+	return nextStateId++;
+}
+
+NFA::NFAState& NFA::GetState(uint32_t id) {
+	auto state = this->states.find(id);
+	assert(state != this->states.end());
+
+	return state->second;
 }
 
 void NFA::AddTransition(uint32_t current, uint32_t next, char transition) {
-	auto state = this->states.find(current);
-	assert(state != this->states.end());
-	state->second.insert(std::make_pair(transition, next));
+	GetState(current).insert(std::make_pair(transition, next));
+}
+
+void NFA::Append(NFA&& b) {
+	this->states.insert(b.states.begin(), b.states.end());
+	this->AddTransition(this->acceptingState, b.initialState);
+	this->acceptingState = b.acceptingState;
+}
+
+void NFA::Union(NFA&& b) {
+	this->states.insert(b.states.begin(), b.states.end());
+
+	uint32_t initialState = this->AddState();
+	uint32_t acceptingState = this->AddState();
+
+	this->AddTransition(initialState, this->initialState);
+	this->AddTransition(initialState, b.initialState);
+	this->AddTransition(this->acceptingState, acceptingState);
+	this->AddTransition(b.acceptingState, acceptingState);
+
+	this->initialState = initialState;
+	this->acceptingState = acceptingState;
 }
 
 NFA NFA::FromRegularExpression(std::string expression) {
