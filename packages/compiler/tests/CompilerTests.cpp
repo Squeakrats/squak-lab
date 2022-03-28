@@ -1,9 +1,11 @@
 #include <gtest/gtest.h>
-#include <NFA.h>
+#include <DFA.h>
 
 TEST(CompilerTests, NFATests) {
-	NFA automata = NFA::FromRegularExpression("abc");
+	NFA nfa = NFA::FromRegularExpression("abc");
+	nfa.Append(NFA::FromRegularExpression("def"));
 
-	EXPECT_EQ(automata.initialState, 0);
-	EXPECT_EQ(automata.acceptingState, 3);
+	DFA dfa = DFA::FromNFA(nfa);
+
+	EXPECT_EQ(dfa.Match("abcdef"), true);
 }

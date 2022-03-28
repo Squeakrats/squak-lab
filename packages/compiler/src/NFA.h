@@ -4,7 +4,10 @@
 #include <string>
 
 class NFA {
-	using NFAState = std::multimap<char, uint32_t>;
+	struct NFAState {
+		std::map<char, uint32_t> edges;
+		std::set<uint32_t> epsilons;
+	};
 
 public:
 	std::map<uint32_t, NFAState> states{};
@@ -14,9 +17,12 @@ public:
 	uint32_t AddState();
 	NFAState& GetState(uint32_t);
 
-	void AddTransition(uint32_t current, uint32_t next, char transition = '\0');
+	void AddTransition(uint32_t current, uint32_t next, char transition);
+	void AddTransition(uint32_t current, uint32_t next);
 	void Append(NFA&& b);
 	void Union(NFA&& b);
+
+	std::set<uint32_t> calculateEpsilonClosure(uint32_t state);
 
 	static NFA FromRegularExpression(std::string expression);
 };

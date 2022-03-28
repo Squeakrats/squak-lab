@@ -1,9 +1,10 @@
 #include <assert.h>
 #include "NFA.h"
 
-static uint32_t nextStateId = 0;
 
 uint32_t NFA::AddState() {
+	// TODO - not thread safe
+	static uint32_t nextStateId = 1;
 	this->states.insert(std::make_pair(nextStateId, NFAState()));
 
 	return nextStateId++;
@@ -17,7 +18,11 @@ NFA::NFAState& NFA::GetState(uint32_t id) {
 }
 
 void NFA::AddTransition(uint32_t current, uint32_t next, char transition) {
-	GetState(current).insert(std::make_pair(transition, next));
+	GetState(current).edges.insert(std::make_pair(transition, next));
+}
+
+void NFA::AddTransition(uint32_t current, uint32_t next) {
+	GetState(current).epsilons.insert(next);
 }
 
 void NFA::Append(NFA&& b) {
@@ -56,4 +61,23 @@ NFA NFA::FromRegularExpression(std::string expression) {
 	automata.acceptingState = currentState;
 
 	return automata;
+}
+
+std::set<uint32_t> NFA::calculateEpsilonClosure(uint32_t state) {
+	std::set<uint32_t> closure{ state };
+	std::set<uint32_t> work{ state };
+
+	while (!work.empty()) {
+		uint32_t current = *work.begin();
+		work.erase(current);
+
+		for (uint32_t epsilon : this->GetState(current).epsilons) {
+			if (closure.find(epsilon) == closure.end()) {
+				closure.insert(epsilon);
+				work.insert(epsilon);
+			}
+		}
+	}
+
+	return closure;
 }
