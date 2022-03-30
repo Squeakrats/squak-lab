@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include <DFA.h>
-#include <BNFParser.h>
+#include "DFA.h"
+#include "BackusNaur/Parser.h"
 
 TEST(Compiler, NFABasic) {
 	NFA nfa = NFA::FromRegularExpression("abc");
@@ -18,23 +18,23 @@ TEST(Compiler, NFABasic) {
 }
 
 TEST(Compiler, BNFTokenizerBasic) {
-	BNFTokenizer tokenizer(R"(<expr> ::= <expr> ".")");
+	BackusNaur::Tokenizer tokenizer(R"(<expr> ::= <expr> ".")");
 
-	EXPECT_EQ(tokenizer.Next().type, BNFTokenizer::TokenType::Symbol);
-	EXPECT_EQ(tokenizer.Next().type, BNFTokenizer::TokenType::Replaces);
-	EXPECT_EQ(tokenizer.Next().type, BNFTokenizer::TokenType::Symbol);
-	EXPECT_EQ(tokenizer.Next().type, BNFTokenizer::TokenType::Literal);
+	EXPECT_EQ(tokenizer.Next().type, BackusNaur::TokenType::Symbol);
+	EXPECT_EQ(tokenizer.Next().type, BackusNaur::TokenType::Replaces);
+	EXPECT_EQ(tokenizer.Next().type, BackusNaur::TokenType::Symbol);
+	EXPECT_EQ(tokenizer.Next().type, BackusNaur::TokenType::Literal);
 }
 
 TEST(Compiler, BNFParserBasic) {
-	BNFParser parser(
+	BackusNaur::Parser parser(
 	R"(<expr> ::= <expr> ".";)");
 
-	Grammar grammar = parser.Parse();
+	BackusNaur::Grammar grammar = parser.Parse();
 
 	EXPECT_EQ(grammar.size(), 1);
 	EXPECT_EQ(grammar[0].symbol.name, "expr");
 	EXPECT_EQ(grammar[0].expression.size(), 1);
 	EXPECT_EQ(grammar[0].expression[0].size(), 2);
-	EXPECT_EQ(std::get<Symbol>(grammar[0].expression[0][0]).name, "expr");
+	EXPECT_EQ(std::get<BackusNaur::Symbol>(grammar[0].expression[0][0]).name, "expr");
 }

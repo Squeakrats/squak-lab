@@ -1,7 +1,7 @@
 #pragma once
+#include <vector>
 #include <variant>
-#include <memory>
-#include "BNFTokenizer.h"
+#include "Tokenizer.h"
 
 /*
 <grammer> ::= <productions>
@@ -19,6 +19,8 @@
 
 <value> ::= <symbol> | <literal>
 */
+
+namespace BackusNaur {
 
 struct Symbol {
 	std::string name{};
@@ -39,13 +41,13 @@ struct Production {
 
 using Grammar = std::vector<Production>;
 
-class BNFParser {
+class Parser {
 private:
-	BNFTokenizer tokenizer;
-	BNFTokenizer::Token token{};
+	Tokenizer tokenizer;
+	Token token{};
 
 public:
-	BNFParser(std::string source) : tokenizer(source) {}
+	Parser(std::string source) : tokenizer(source) {}
 
 	Grammar Parse();
 
@@ -56,3 +58,5 @@ private:
 	Sequence ParseSequence();
 	Value ParseValue();
 };
+
+}

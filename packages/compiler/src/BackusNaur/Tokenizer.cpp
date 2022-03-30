@@ -1,6 +1,8 @@
-#include "BNFTokenizer.h"
+#include "Tokenizer.h"
 
-BNFTokenizer::Token BNFTokenizer::Next() {
+namespace BackusNaur {
+
+Token Tokenizer::Next() {
 	if (this->source.eof()) {
 		return Token{ TokenType::EndOfFile, "" };
 	}
@@ -38,4 +40,6 @@ BNFTokenizer::Token BNFTokenizer::Next() {
 				assert(false);
 		}
 	}
+}
+
 }

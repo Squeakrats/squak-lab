@@ -1,23 +1,26 @@
+#include <assert.h>
 #include <vector>
 #include <map>
-#include "BNFParser.h"
-#include "BNFTokenizer.h"
+#include "Parser.h"
+#include "Tokenizer.h"
 
-Grammar BNFParser::Parse()
+namespace BackusNaur {
+
+Grammar Parser::Parse()
 {
 	this->token = this->tokenizer.Next();
 
 	Grammar grammar = this->ParseProductions();
-	assert(this->token.type == BNFTokenizer::TokenType::EndOfFile);
+	assert(this->token.type == TokenType::EndOfFile);
 
 	return grammar;
 }
 
-std::vector<Production> BNFParser::ParseProductions()
+std::vector<Production> Parser::ParseProductions()
 {
 	std::vector<Production> productions{ this->ParseProduction() };
 
-	if (this->token.type != BNFTokenizer::TokenType::EndOfFile) {
+	if (this->token.type != TokenType::EndOfFile) {
 		std::vector<Production> tail = this->ParseProductions();
 		productions.insert(productions.end(), tail.begin(), tail.end());
 	}
@@ -25,29 +28,29 @@ std::vector<Production> BNFParser::ParseProductions()
 	return productions;
 }
 
-Production BNFParser::ParseProduction()
+Production Parser::ParseProduction()
 {
 	Production production{};
 
-	assert(this->token.type == BNFTokenizer::TokenType::Symbol);
+	assert(this->token.type == TokenType::Symbol);
 	production.symbol = Symbol{ this->token.text };
 	this->token = this->tokenizer.Next();
 
-	assert(this->token.type == BNFTokenizer::TokenType::Replaces);
+	assert(this->token.type == TokenType::Replaces);
 	this->token = this->tokenizer.Next();
 
 	production.expression = this->ParseExpression();
 
-	assert(this->token.type == BNFTokenizer::TokenType::SemiColon);
+	assert(this->token.type == TokenType::SemiColon);
 	this->token = this->tokenizer.Next();
 
 	return production;
 }
 
-Expression BNFParser::ParseExpression()
+Expression Parser::ParseExpression()
 {
 	Expression expression{ this->ParseSequence() };
-	if (this->token.type == BNFTokenizer::TokenType::Alternate) {
+	if (this->token.type == TokenType::Alternate) {
 		this->token = this->tokenizer.Next();
 
 		Expression tail = this->ParseExpression();
@@ -57,10 +60,10 @@ Expression BNFParser::ParseExpression()
 	return expression;
 }
 
-Sequence BNFParser::ParseSequence()
+Sequence Parser::ParseSequence()
 {
 	Sequence sequence{ this->ParseValue() };
-	if (this->token.type == BNFTokenizer::TokenType::Symbol || this->token.type == BNFTokenizer::TokenType::Literal) {
+	if (this->token.type == TokenType::Symbol || this->token.type == TokenType::Literal) {
 		Sequence tail = this->ParseSequence();
 		sequence.insert(sequence.end(), tail.begin(), tail.end());
 	}
@@ -68,16 +71,16 @@ Sequence BNFParser::ParseSequence()
 	return sequence;
 }
 
-Value BNFParser::ParseValue()
+Value Parser::ParseValue()
 {
 	switch (this->token.type) {
-		case BNFTokenizer::TokenType::Symbol: {
+		case TokenType::Symbol: {
 			Symbol symbol{ this->token.text };
 			this->token = this->tokenizer.Next();
 
 			return symbol;
 		}
-		case BNFTokenizer::TokenType::Literal: {
+		case TokenType::Literal: {
 			Literal literal{ this->token.text };
 			this->token = this->tokenizer.Next();
 
@@ -86,4 +89,6 @@ Value BNFParser::ParseValue()
 		default:
 			throw std::exception("unexpected value");
 	}
+}
+
 }
