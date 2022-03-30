@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <DFA.h>
-#include <BNF.h>
+#include <BNFTokenizer.h>
 
 TEST(CompilerTests, NFATests) {
 	NFA nfa = NFA::FromRegularExpression("abc");

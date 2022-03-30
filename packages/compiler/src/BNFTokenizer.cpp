@@ -1,4 +1,4 @@
-#include "BNF.h"
+#include "BNFTokenizer.h"
 
 BNFTokenizer::Token BNFTokenizer::Next() {
 	if (this->source.eof()) {
