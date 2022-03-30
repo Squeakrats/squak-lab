@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 #include <DFA.h>
-#include <BNFTokenizer.h>
+#include <BNFParser.h>
 
-TEST(CompilerTests, NFATests) {
+TEST(Compiler, NFABasic) {
 	NFA nfa = NFA::FromRegularExpression("abc");
 	nfa.Append(NFA::FromRegularExpression("def"));
 
@@ -17,12 +17,17 @@ TEST(CompilerTests, NFATests) {
 	EXPECT_EQ(dfa.Match("abcghj"), false);
 }
 
-TEST(CompilerTests, BNFTests) {
-	std::stringstream source(R"(<expr> ::= <expr> ".")");
-	BNFTokenizer tokenizer(source);
+TEST(Compiler, BNFTokenizerBasic) {
+	BNFTokenizer tokenizer(R"(<expr> ::= <expr> ".")");
 
 	EXPECT_EQ(tokenizer.Next().type, BNFTokenizer::TokenType::Symbol);
 	EXPECT_EQ(tokenizer.Next().type, BNFTokenizer::TokenType::Replaces);
 	EXPECT_EQ(tokenizer.Next().type, BNFTokenizer::TokenType::Symbol);
-	EXPECT_EQ(tokenizer.Next().type, BNFTokenizer::TokenType::Terminal);
+	EXPECT_EQ(tokenizer.Next().type, BNFTokenizer::TokenType::Literal);
+}
+
+TEST(Compiler, BNFParserBasic) {
+	BNFParser parser(
+	R"(<expr> ::= <expr> ".";)");
+	parser.Parse();
 }

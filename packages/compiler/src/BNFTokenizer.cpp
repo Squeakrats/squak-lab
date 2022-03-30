@@ -15,19 +15,20 @@ BNFTokenizer::Token BNFTokenizer::Next() {
 				return Token{ TokenType::Symbol, symbol.str() };
 			}
 			case '"': {
-				std::stringbuf terminal{};
-				this->source.get(terminal, '"');
+				std::stringbuf literal{};
+				this->source.get(literal, '"');
 				assert(this->source.get() == '"');
 
-				return Token{ TokenType::Terminal, terminal.str() };
+				return Token{ TokenType::Literal, literal.str() };
 			}
 			case ':': {
 				assert(source.get() == ':' && source.get() == '=');
 
 				return Token{ TokenType::Replaces, "::=" };
 			}
+			case ';':
+				return Token{ TokenType::SemiColon, ";" };
 			case '\n':
-				return Token{ TokenType::NewLine, "\n" };
 			case ' ':
 			case '\t':
 				break;

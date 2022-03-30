@@ -7,8 +7,8 @@ public:
 	const enum class TokenType {
 		Symbol,
 		Replaces,
-		Terminal,
-		NewLine,
+		Literal,
+		SemiColon,
 		Alternate,
 		EndOfFile
 	};
@@ -19,10 +19,10 @@ public:
 	};
 
 private:
-	std::stringstream& source;
+	std::stringstream source;
 
 public:
-	BNFTokenizer(std::stringstream& source) : source(source) {};
+	BNFTokenizer(std::string source) : source(source) {};
 
 	Token Next();
 };
