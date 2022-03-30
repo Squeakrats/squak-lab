@@ -29,5 +29,12 @@ TEST(Compiler, BNFTokenizerBasic) {
 TEST(Compiler, BNFParserBasic) {
 	BNFParser parser(
 	R"(<expr> ::= <expr> ".";)");
-	parser.Parse();
+
+	Grammar grammar = parser.Parse();
+
+	EXPECT_EQ(grammar.size(), 1);
+	EXPECT_EQ(grammar[0].symbol.name, "expr");
+	EXPECT_EQ(grammar[0].expression.size(), 1);
+	EXPECT_EQ(grammar[0].expression[0].size(), 2);
+	EXPECT_EQ(std::get<Symbol>(grammar[0].expression[0][0]).name, "expr");
 }
