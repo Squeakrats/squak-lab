@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "DFA.h"
 #include "BackusNaur/Parser.h"
+#include "RegularExpression/Tokenizer.h"
 
 TEST(Compiler, NFABasic) {
 	NFA nfa = NFA::FromRegularExpression("abc");
@@ -37,4 +38,14 @@ TEST(Compiler, BNFParserBasic) {
 	EXPECT_EQ(grammar[0].expression.size(), 1);
 	EXPECT_EQ(grammar[0].expression[0].size(), 2);
 	EXPECT_EQ(std::get<BackusNaur::Symbol>(grammar[0].expression[0][0]).name, "expr");
+}
+
+TEST(Compiler, RegularExpressionTokenizer) {
+	RegularExpression::Tokenizer tokenizer("aa+bb");
+
+	EXPECT_EQ(tokenizer.Next().text, "a");
+	EXPECT_EQ(tokenizer.Next().text, "a");
+	EXPECT_EQ(tokenizer.Next().type, RegularExpression::TokenType::Plus);
+	EXPECT_EQ(tokenizer.Next().text, "b");
+	EXPECT_EQ(tokenizer.Next().text, "b");
 }
