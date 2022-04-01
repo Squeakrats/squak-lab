@@ -3,7 +3,7 @@
 
 using namespace BackusNaur;
 
-TEST(Compiler, BackusNaurGrammer) {
+TEST(Compiler, BackusNaurGrammar) {
 	Grammar grammar = Grammar::Create("<expr> ::= <literal>;");
 
 	auto productions = grammar.productions.find("expr")->second;
