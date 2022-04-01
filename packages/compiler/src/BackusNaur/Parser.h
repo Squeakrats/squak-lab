@@ -14,31 +14,16 @@
 <expression> ::= <sequence>
                | <sequence> <alternate> <expression>
 
-<sequence>	::= <value>
-			 | <value> | <sequence>
-
-<value> ::= <symbol> | <literal>
+<sequence>	::= <symbol>
+			 | <symbol> | <sequence>
 */
 
 namespace BackusNaur {
 
-struct Symbol {
-	std::string name{};
-};
-
-struct Literal {
-	std::string value{};
-};
-
-using Value = std::variant<Symbol, Literal>;
-using Sequence = std::vector<Value>;
+using Symbol = std::string;
+using Sequence = std::vector<Symbol>;
 using Expression = std::vector<Sequence>;
-
-struct Production {
-	Symbol symbol{};
-	Expression expression{};
-};
-
+using Production = std::pair<Symbol, Expression>;
 using Grammar = std::vector<Production>;
 
 class Parser {
@@ -56,7 +41,6 @@ private:
 	Production ParseProduction();
 	Expression ParseExpression();
 	Sequence ParseSequence();
-	Value ParseValue();
 };
 
 }

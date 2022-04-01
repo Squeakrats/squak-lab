@@ -16,13 +16,6 @@ Token Tokenizer::Next() {
 
 				return Token{ TokenType::Symbol, symbol.str() };
 			}
-			case '"': {
-				std::stringbuf literal{};
-				this->source.get(literal, '"');
-				assert(this->source.get() == '"');
-
-				return Token{ TokenType::Literal, literal.str() };
-			}
 			case ':': {
 				assert(source.get() == ':' && source.get() == '=');
 

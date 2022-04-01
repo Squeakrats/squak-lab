@@ -33,13 +33,13 @@ Production Parser::ParseProduction()
 	Production production{};
 
 	assert(this->token.first == TokenType::Symbol);
-	production.symbol = Symbol{ this->token.second };
+	production.first = this->token.second;
 	this->token = this->tokenizer.Next();
 
 	assert(this->token.first == TokenType::Replaces);
 	this->token = this->tokenizer.Next();
 
-	production.expression = this->ParseExpression();
+	production.second = this->ParseExpression();
 
 	assert(this->token.first == TokenType::SemiColon);
 	this->token = this->tokenizer.Next();
@@ -62,33 +62,16 @@ Expression Parser::ParseExpression()
 
 Sequence Parser::ParseSequence()
 {
-	Sequence sequence{ this->ParseValue() };
-	if (this->token.first == TokenType::Symbol || this->token.first == TokenType::Literal) {
+	Sequence sequence{};
+	if (this->token.first == TokenType::Symbol) {
+		sequence.push_back(this->token.second);
+		this->token = this->tokenizer.Next();
+
 		Sequence tail = this->ParseSequence();
 		sequence.insert(sequence.end(), tail.begin(), tail.end());
 	}
 
 	return sequence;
-}
-
-Value Parser::ParseValue()
-{
-	switch (this->token.first) {
-		case TokenType::Symbol: {
-			Symbol symbol{ this->token.second };
-			this->token = this->tokenizer.Next();
-
-			return symbol;
-		}
-		case TokenType::Literal: {
-			Literal literal{ this->token.second };
-			this->token = this->tokenizer.Next();
-
-			return literal;
-		}
-		default:
-			throw std::exception("unexpected value");
-	}
 }
 
 }

@@ -4,23 +4,22 @@
 using namespace BackusNaur;
 
 TEST(Compiler, BNFTokenizerBasic) {
-	Tokenizer tokenizer(R"(<expr> ::= <expr> ".")");
+	Tokenizer tokenizer(R"(<expr> ::= <literal>;)");
 
 	EXPECT_EQ(tokenizer.Next(), Token(TokenType::Symbol, "expr"));
 	EXPECT_EQ(tokenizer.Next(), Token(TokenType::Replaces, "::="));
-	EXPECT_EQ(tokenizer.Next(), Token(TokenType::Symbol, "expr"));
-	EXPECT_EQ(tokenizer.Next(), Token(TokenType::Literal, "."));
+	EXPECT_EQ(tokenizer.Next(), Token(TokenType::Symbol, "literal"));
 }
 
 TEST(Compiler, BNFParserBasic) {
 	Parser parser(
-	R"(<expr> ::= <expr> ".";)");
+	R"(<expr> ::= <literal>;)");
 
 	Grammar grammar = parser.Parse();
 
 	EXPECT_EQ(grammar.size(), 1);
-	EXPECT_EQ(grammar[0].symbol.name, "expr");
-	EXPECT_EQ(grammar[0].expression.size(), 1);
-	EXPECT_EQ(grammar[0].expression[0].size(), 2);
-	EXPECT_EQ(std::get<Symbol>(grammar[0].expression[0][0]).name, "expr");
+	EXPECT_EQ(grammar[0].first, "expr");
+	EXPECT_EQ(grammar[0].second.size(), 1);
+	EXPECT_EQ(grammar[0].second[0].size(), 2);
+	EXPECT_EQ(grammar[0].second[0][0], "literal");
 }

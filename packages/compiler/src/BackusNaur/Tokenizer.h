@@ -7,7 +7,6 @@ namespace BackusNaur {
 enum class TokenType {
 	Symbol,
 	Replaces,
-	Literal,
 	SemiColon,
 	Alternate,
 	EndOfFile
