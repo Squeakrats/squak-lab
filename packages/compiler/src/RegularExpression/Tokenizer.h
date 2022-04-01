@@ -6,10 +6,7 @@ namespace RegularExpression {
 enum class TokenType {
 	Character,
 	Alternate,
-	Period,
-	Plus,
-	Minus,
-	Asterisk,
+	Quantifier,
 	LeftBracket,
 	RightBracket,
 	LeftParenthesis,

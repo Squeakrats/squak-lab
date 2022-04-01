@@ -12,9 +12,9 @@ Token Tokenizer::Next() {
 		char current;
 		switch (current = this->source.get()) {
 			case '+':
-				return Token{ TokenType::Plus, "+" };
+				return Token{ TokenType::Quantifier, "+" };
 			case '-':
-				return Token{ TokenType::Minus, "-" };
+				return Token{ TokenType::Quantifier, "-" };
 			case '[':
 				return Token{ TokenType::LeftBracket, "[" };
 			case ']':

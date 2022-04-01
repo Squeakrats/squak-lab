@@ -45,7 +45,7 @@ TEST(Compiler, RegularExpressionTokenizer) {
 
 	EXPECT_EQ(tokenizer.Next().text, "a");
 	EXPECT_EQ(tokenizer.Next().text, "a");
-	EXPECT_EQ(tokenizer.Next().type, RegularExpression::TokenType::Plus);
+	EXPECT_EQ(tokenizer.Next().type, RegularExpression::TokenType::Quantifier);
 	EXPECT_EQ(tokenizer.Next().text, "b");
 	EXPECT_EQ(tokenizer.Next().text, "b");
 }
