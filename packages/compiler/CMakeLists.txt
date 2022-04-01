@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.8)
 project(compiler)
 
-set(SOURCE 
+set(SOURCE
+	src/BackusNaur/Grammar.h
+	src/BackusNaur/Grammar.cpp
 	src/BackusNaur/Parser.cpp
 	src/BackusNaur/Parser.h
 	src/BackusNaur/Tokenizer.cpp

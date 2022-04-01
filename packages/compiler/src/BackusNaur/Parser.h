@@ -30,7 +30,6 @@ using Grammar = std::vector<Production>;
 
 };
 
-
 class Parser {
 private:
 	Tokenizer tokenizer;
@@ -40,6 +39,12 @@ public:
 	Parser(std::string source) : tokenizer(source) {}
 
 	AST::Grammar Parse();
+
+	static AST::Grammar Parse(std::string source) {
+		Parser parser(source);
+
+		return parser.Parse();
+	}
 
 private:
 	std::vector<AST::Production> ParseProductions();
