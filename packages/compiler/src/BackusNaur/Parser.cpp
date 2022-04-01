@@ -6,31 +6,31 @@
 
 namespace BackusNaur {
 
-Grammar Parser::Parse()
+AST::Grammar Parser::Parse()
 {
 	this->token = this->tokenizer.Next();
 
-	Grammar grammar = this->ParseProductions();
+	AST::Grammar grammar = this->ParseProductions();
 	assert(this->token.first == TokenType::EndOfFile);
 
 	return grammar;
 }
 
-std::vector<Production> Parser::ParseProductions()
+std::vector<AST::Production> Parser::ParseProductions()
 {
-	std::vector<Production> productions{ this->ParseProduction() };
+	std::vector<AST::Production> productions{ this->ParseProduction() };
 
 	if (this->token.first != TokenType::EndOfFile) {
-		std::vector<Production> tail = this->ParseProductions();
+		std::vector<AST::Production> tail = this->ParseProductions();
 		productions.insert(productions.end(), tail.begin(), tail.end());
 	}
 
 	return productions;
 }
 
-Production Parser::ParseProduction()
+AST::Production Parser::ParseProduction()
 {
-	Production production{};
+	AST::Production production{};
 
 	assert(this->token.first == TokenType::Symbol);
 	production.first = this->token.second;
@@ -47,27 +47,27 @@ Production Parser::ParseProduction()
 	return production;
 }
 
-Expression Parser::ParseExpression()
+AST::Expression Parser::ParseExpression()
 {
-	Expression expression{ this->ParseSequence() };
+	AST::Expression expression{ this->ParseSequence() };
 	if (this->token.first == TokenType::Alternate) {
 		this->token = this->tokenizer.Next();
 
-		Expression tail = this->ParseExpression();
+		AST::Expression tail = this->ParseExpression();
 		expression.insert(expression.end(), tail.begin(), tail.end());
 	}
 
 	return expression;
 }
 
-Sequence Parser::ParseSequence()
+AST::Sequence Parser::ParseSequence()
 {
-	Sequence sequence{};
+	AST::Sequence sequence{};
 	if (this->token.first == TokenType::Symbol) {
 		sequence.push_back(this->token.second);
 		this->token = this->tokenizer.Next();
 
-		Sequence tail = this->ParseSequence();
+		AST::Sequence tail = this->ParseSequence();
 		sequence.insert(sequence.end(), tail.begin(), tail.end());
 	}
 

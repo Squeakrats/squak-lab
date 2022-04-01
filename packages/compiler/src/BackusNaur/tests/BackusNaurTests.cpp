@@ -15,7 +15,7 @@ TEST(Compiler, BNFParserBasic) {
 	Parser parser(
 	R"(<expr> ::= <literal>;)");
 
-	Grammar grammar = parser.Parse();
+	AST::Grammar grammar = parser.Parse();
 
 	EXPECT_EQ(grammar.size(), 1);
 	EXPECT_EQ(grammar[0].first, "expr");

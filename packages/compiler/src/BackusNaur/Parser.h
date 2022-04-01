@@ -20,11 +20,16 @@
 
 namespace BackusNaur {
 
+namespace AST {
+
 using Symbol = std::string;
 using Sequence = std::vector<Symbol>;
 using Expression = std::vector<Sequence>;
 using Production = std::pair<Symbol, Expression>;
 using Grammar = std::vector<Production>;
+
+};
+
 
 class Parser {
 private:
@@ -34,13 +39,13 @@ private:
 public:
 	Parser(std::string source) : tokenizer(source) {}
 
-	Grammar Parse();
+	AST::Grammar Parse();
 
 private:
-	std::vector<Production> ParseProductions();
-	Production ParseProduction();
-	Expression ParseExpression();
-	Sequence ParseSequence();
+	std::vector<AST::Production> ParseProductions();
+	AST::Production ParseProduction();
+	AST::Expression ParseExpression();
+	AST::Sequence ParseSequence();
 };
 
 }
