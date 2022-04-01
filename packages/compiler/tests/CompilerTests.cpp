@@ -21,10 +21,10 @@ TEST(Compiler, NFABasic) {
 TEST(Compiler, BNFTokenizerBasic) {
 	BackusNaur::Tokenizer tokenizer(R"(<expr> ::= <expr> ".")");
 
-	EXPECT_EQ(tokenizer.Next().type, BackusNaur::TokenType::Symbol);
-	EXPECT_EQ(tokenizer.Next().type, BackusNaur::TokenType::Replaces);
-	EXPECT_EQ(tokenizer.Next().type, BackusNaur::TokenType::Symbol);
-	EXPECT_EQ(tokenizer.Next().type, BackusNaur::TokenType::Literal);
+	EXPECT_EQ(tokenizer.Next(), BackusNaur::Token(BackusNaur::TokenType::Symbol, "expr"));
+	EXPECT_EQ(tokenizer.Next(), BackusNaur::Token(BackusNaur::TokenType::Replaces, "::="));
+	EXPECT_EQ(tokenizer.Next(), BackusNaur::Token(BackusNaur::TokenType::Symbol, "expr"));
+	EXPECT_EQ(tokenizer.Next(), BackusNaur::Token(BackusNaur::TokenType::Literal, "."));
 }
 
 TEST(Compiler, BNFParserBasic) {
@@ -43,9 +43,9 @@ TEST(Compiler, BNFParserBasic) {
 TEST(Compiler, RegularExpressionTokenizer) {
 	RegularExpression::Tokenizer tokenizer("aa+bb");
 
-	EXPECT_EQ(tokenizer.Next().text, "a");
-	EXPECT_EQ(tokenizer.Next().text, "a");
-	EXPECT_EQ(tokenizer.Next().type, RegularExpression::TokenType::Quantifier);
-	EXPECT_EQ(tokenizer.Next().text, "b");
-	EXPECT_EQ(tokenizer.Next().text, "b");
+	EXPECT_EQ(tokenizer.Next(), RegularExpression::Token(RegularExpression::TokenType::Character, "a"));
+	EXPECT_EQ(tokenizer.Next(), RegularExpression::Token(RegularExpression::TokenType::Character, "a"));
+	EXPECT_EQ(tokenizer.Next(), RegularExpression::Token(RegularExpression::TokenType::Quantifier, "+"));
+	EXPECT_EQ(tokenizer.Next(), RegularExpression::Token(RegularExpression::TokenType::Character, "b"));
+	EXPECT_EQ(tokenizer.Next(), RegularExpression::Token(RegularExpression::TokenType::Character, "b"));
 }

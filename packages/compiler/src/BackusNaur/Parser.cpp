@@ -11,7 +11,7 @@ Grammar Parser::Parse()
 	this->token = this->tokenizer.Next();
 
 	Grammar grammar = this->ParseProductions();
-	assert(this->token.type == TokenType::EndOfFile);
+	assert(this->token.first == TokenType::EndOfFile);
 
 	return grammar;
 }
@@ -20,7 +20,7 @@ std::vector<Production> Parser::ParseProductions()
 {
 	std::vector<Production> productions{ this->ParseProduction() };
 
-	if (this->token.type != TokenType::EndOfFile) {
+	if (this->token.first != TokenType::EndOfFile) {
 		std::vector<Production> tail = this->ParseProductions();
 		productions.insert(productions.end(), tail.begin(), tail.end());
 	}
@@ -32,16 +32,16 @@ Production Parser::ParseProduction()
 {
 	Production production{};
 
-	assert(this->token.type == TokenType::Symbol);
-	production.symbol = Symbol{ this->token.text };
+	assert(this->token.first == TokenType::Symbol);
+	production.symbol = Symbol{ this->token.second };
 	this->token = this->tokenizer.Next();
 
-	assert(this->token.type == TokenType::Replaces);
+	assert(this->token.first == TokenType::Replaces);
 	this->token = this->tokenizer.Next();
 
 	production.expression = this->ParseExpression();
 
-	assert(this->token.type == TokenType::SemiColon);
+	assert(this->token.first == TokenType::SemiColon);
 	this->token = this->tokenizer.Next();
 
 	return production;
@@ -50,7 +50,7 @@ Production Parser::ParseProduction()
 Expression Parser::ParseExpression()
 {
 	Expression expression{ this->ParseSequence() };
-	if (this->token.type == TokenType::Alternate) {
+	if (this->token.first == TokenType::Alternate) {
 		this->token = this->tokenizer.Next();
 
 		Expression tail = this->ParseExpression();
@@ -63,7 +63,7 @@ Expression Parser::ParseExpression()
 Sequence Parser::ParseSequence()
 {
 	Sequence sequence{ this->ParseValue() };
-	if (this->token.type == TokenType::Symbol || this->token.type == TokenType::Literal) {
+	if (this->token.first == TokenType::Symbol || this->token.first == TokenType::Literal) {
 		Sequence tail = this->ParseSequence();
 		sequence.insert(sequence.end(), tail.begin(), tail.end());
 	}
@@ -73,15 +73,15 @@ Sequence Parser::ParseSequence()
 
 Value Parser::ParseValue()
 {
-	switch (this->token.type) {
+	switch (this->token.first) {
 		case TokenType::Symbol: {
-			Symbol symbol{ this->token.text };
+			Symbol symbol{ this->token.second };
 			this->token = this->tokenizer.Next();
 
 			return symbol;
 		}
 		case TokenType::Literal: {
-			Literal literal{ this->token.text };
+			Literal literal{ this->token.second };
 			this->token = this->tokenizer.Next();
 
 			return literal;

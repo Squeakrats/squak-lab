@@ -1,4 +1,5 @@
 #pragma once
+#include <utility>
 #include<sstream>
 
 namespace RegularExpression {
@@ -14,10 +15,7 @@ enum class TokenType {
 	EndOfFile
 };
 
-struct Token {
-	TokenType type{};
-	std::string text{};
-};
+using Token = std::pair<TokenType, std::string>;
 
 class Tokenizer {
 private:
