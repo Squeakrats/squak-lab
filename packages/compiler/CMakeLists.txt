@@ -19,7 +19,11 @@ target_include_directories(compiler PUBLIC src/)
 
 enable_testing()
 
-add_executable(CompilerTests tests/CompilerTests.cpp)
+add_executable(CompilerTests
+	src/BackusNaur/tests/BackusNaurTests.cpp
+	src/RegularExpression/tests/RegularExpressionTests.cpp
+	src/tests/CompilerTests.cpp
+)
 
 # Follow google test framework setup instructions
 include(FetchContent)
