@@ -11,7 +11,8 @@ class Grammar {
 public:
 	std::map<std::string, std::vector<std::vector<std::string>>> productions{};
 
-	std::set<std::string> GetTerminals();
+	std::set<std::string> Terminals();
+	std::set<std::string> First(std::string symbol);
 
 	static Grammar Create(std::string source);
 };

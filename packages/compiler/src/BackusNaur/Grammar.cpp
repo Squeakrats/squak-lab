@@ -11,7 +11,7 @@ Grammar Grammar::Create(std::string source) {
 	return grammar;
 }
 
-std::set<std::string> Grammar::GetTerminals() {
+std::set<std::string> Grammar::Terminals() {
 	std::set<std::string> terminals{};
 
 	for (auto production : this->productions) {
@@ -25,6 +25,26 @@ std::set<std::string> Grammar::GetTerminals() {
 	}
 
 	return terminals;
+}
+
+std::set<std::string> Grammar::First(std::string symbol) {
+	auto productions = this->productions.find(symbol);
+	if (productions == this->productions.end()) {
+		return { symbol };
+	}
+
+	std::set<std::string> first{};
+	for (auto production : productions->second) {
+		for (auto symbol : production) {
+			std::set<std::string> tail = this->First(symbol);
+			if (tail.size() != 0) {
+				first.insert(tail.begin(), tail.end());
+				break;
+			}
+		}
+	}
+
+	return first;
 }
 
 }

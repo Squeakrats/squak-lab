@@ -4,9 +4,12 @@
 using namespace BackusNaur;
 
 TEST(Compiler, BackusNaurGrammar) {
-	Grammar grammar = Grammar::Create("<expr> ::= <literal>;");
+	Grammar grammar = Grammar::Create(
+	"<Expression> ::= <Literal> <SemiColon> | <SemiColon>;"
+	);
 
-	auto productions = grammar.productions.find("expr")->second;
-	EXPECT_EQ(productions[0][0], "literal");
-	EXPECT_EQ(grammar.GetTerminals(), std::set<std::string>({ "literal" }));
+	auto productions = grammar.productions.find("Expression")->second;
+	EXPECT_EQ(productions[0][0], "Literal");
+	EXPECT_EQ(grammar.Terminals(), std::set<std::string>({ "Literal", "SemiColon"}));
+	EXPECT_EQ(grammar.First("Expression"), std::set<std::string>({ "Literal", "SemiColon"}));
 }

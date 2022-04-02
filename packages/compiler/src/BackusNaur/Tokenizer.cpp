@@ -21,6 +21,8 @@ Token Tokenizer::Next() {
 
 				return Token{ TokenType::Replaces, "::=" };
 			}
+			case '|':
+				return Token{ TokenType::Alternate, "|" };
 			case ';':
 				return Token{ TokenType::SemiColon, ";" };
 			case '\n':
