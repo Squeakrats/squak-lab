@@ -17,14 +17,6 @@ enum class TokenType {
 
 using Token = std::pair<TokenType, std::string>;
 
-class Tokenizer {
-private:
-	std::stringstream source;
-
-public:
-	Tokenizer(std::string source) : source(source) {};
-
-	Token Next();
-};
+Token Tokenize(std::stringstream& source);
 
 }

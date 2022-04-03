@@ -3,14 +3,14 @@
 
 namespace RegularExpression {
 
-Token Tokenizer::Next() {
-	if (this->source.eof()) {
+Token Tokenize(std::stringstream& source) {
+	if (source.eof()) {
 		return Token{ TokenType::EndOfFile, "" };
 	}
 
 	while (true) {
 		char current;
-		switch (current = this->source.get()) {
+		switch (current = source.get()) {
 			case '+':
 				return Token{ TokenType::Quantifier, "+" };
 			case '-':

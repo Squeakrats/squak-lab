@@ -4,11 +4,11 @@
 using namespace RegularExpression;
 
 TEST(Compiler, RegularExpressionTokenizer) {
-	Tokenizer tokenizer("aa+bb");
+	std::stringstream source("aa+bb");
 
-	EXPECT_EQ(tokenizer.Next(), Token(TokenType::Character, "a"));
-	EXPECT_EQ(tokenizer.Next(), Token(TokenType::Character, "a"));
-	EXPECT_EQ(tokenizer.Next(), Token(TokenType::Quantifier, "+"));
-	EXPECT_EQ(tokenizer.Next(), Token(TokenType::Character, "b"));
-	EXPECT_EQ(tokenizer.Next(), Token(TokenType::Character, "b"));
+	EXPECT_EQ(Tokenize(source), Token(TokenType::Character, "a"));
+	EXPECT_EQ(Tokenize(source), Token(TokenType::Character, "a"));
+	EXPECT_EQ(Tokenize(source), Token(TokenType::Quantifier, "+"));
+	EXPECT_EQ(Tokenize(source), Token(TokenType::Character, "b"));
+	EXPECT_EQ(Tokenize(source), Token(TokenType::Character, "b"));
 }
