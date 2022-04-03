@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <variant>
+#include "TokenStream.h"
 #include "Tokenizer.h"
 
 /*
@@ -32,13 +33,11 @@ using Grammar = std::vector<Production>;
 
 class Parser {
 private:
-	Tokenizer tokenizer;
+	TokenStream<Token> source;
 	Token token{};
 
 public:
-	Parser(std::string source) : tokenizer(source) {}
-
-	AST::Grammar Parse();
+	Parser(std::string source) : source(source, Tokenize) {}
 
 	static AST::Grammar Parse(std::string source) {
 		Parser parser(source);
@@ -47,6 +46,14 @@ public:
 	}
 
 private:
+	Token Use() {
+		Token token = this->token;
+		this->token = this->source.Next();
+
+		return token;
+	}
+
+	AST::Grammar Parse();
 	std::vector<AST::Production> ParseProductions();
 	AST::Production ParseProduction();
 	AST::Expression ParseExpression();

@@ -12,6 +12,7 @@ set(SOURCE
 	src/DFA.h
 	src/NFA.cpp
 	src/NFA.h
+	src/TokenStream.h
 	src/RegularExpression/Tokenizer.cpp
 	src/RegularExpression/Tokenizer.h
 )

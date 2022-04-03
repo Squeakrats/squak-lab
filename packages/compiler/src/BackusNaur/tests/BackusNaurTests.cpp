@@ -3,6 +3,10 @@
 
 using namespace BackusNaur;
 
+void buildProductionTable(Grammar& grammar) {
+
+}
+
 TEST(Compiler, BackusNaurGrammar) {
 	Grammar grammar = Grammar::Create(
 	"<Expression> ::= <Literal> <SemiColon> | <SemiColon>;"
