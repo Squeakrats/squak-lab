@@ -10,6 +10,7 @@ class Grammar {
 public:
 	std::map<std::string, std::vector<std::vector<std::string>>> productions{};
 
+	std::string Root();
 	std::set<std::string> Terminals();
 	RuleTable Rules();
 	std::set<std::string> First(std::string symbol);

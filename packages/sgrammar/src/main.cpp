@@ -5,11 +5,25 @@
 std::string GenerateParser(Grammar& grammar) {
 	std::stringstream parser{};
 
-	parser << "enum class TokenType {" << std::endl;
+	parser << "#pragma once\n";
+	parser << "#include <utility>\n";
+	parser << "#include <sstream>\n";
+	parser << "\n";
+	parser << "namespace " << grammar.Root() << " {\n";
+	parser << "\n";
+
+	parser << "enum class TokenType {\n";
 	for (auto terminal : grammar.Terminals()) {
 		parser << '\t' << terminal << ",\n";
 	}
-	parser << "};" << std::endl;
+	parser << "};\n";
+	parser << "\n";
+	parser << "using Token = std::pair<TokenType, std::string>;\n";
+	parser << "\n";
+	parser << "Token Tokenize(std::stringstream& source);\n";
+	parser << "\n";
+
+	parser << "};\n";
 
 
 	return parser.str();
@@ -20,8 +34,10 @@ int main(int argc, char* argv[]) {
 	std::stringstream contents{};
 	
 	contents << file.rdbuf();
+
+	Grammar grammar = Grammar::Create(contents.str());
 	
-    std::cout << contents.str() << std::endl;
+    std::cout << GenerateParser(grammar) << std::endl;
 
     return 0;
 }

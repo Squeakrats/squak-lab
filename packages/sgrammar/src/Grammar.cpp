@@ -25,6 +25,26 @@ std::set<std::string> Grammar::Terminals() {
 	return terminals;
 }
 
+std::string Grammar::Root() {
+	std::set<std::string> candidates{};
+
+	for (auto production : this->productions) {
+		candidates.insert(production.first);
+	}
+
+	for (auto production : this->productions) {
+		for (auto sequence : production.second) {
+			for (auto symbol : sequence) {
+				candidates.erase(symbol);
+			}
+		}
+	}
+
+	assert(candidates.size() == 1);
+
+	return *candidates.begin();
+}
+
 Grammar::RuleTable Grammar::Rules() {
 	RuleTable table{};
 	for (auto production : this->productions) {
