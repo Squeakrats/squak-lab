@@ -40,7 +40,7 @@ DFA DFA::FromNFA(NFA& nfa) {
 				}
 
 				std::set<uint32_t> epsilonClosure = nfa.calculateEpsilonClosure(edge.second);
-				edges.find(edge.first)->second.insert(epsilonClosure.begin(), epsilonClosure.end());
+				edges.at(edge.first).insert(epsilonClosure.begin(), epsilonClosure.end());
 			}
 		}
 
