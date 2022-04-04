@@ -13,12 +13,6 @@ Token Tokenize(std::stringstream& source) {
 		switch (current = source.get()) {
 			case '+':
 				return Token{ TokenType::Quantifier, "+" };
-			case '-':
-				return Token{ TokenType::Quantifier, "-" };
-			case '[':
-				return Token{ TokenType::LeftBracket, "[" };
-			case ']':
-				return Token{ TokenType::RightBracket, "]" };
 			case '(':
 				return Token{ TokenType::LeftParenthesis, "(" };
 			case ')':
