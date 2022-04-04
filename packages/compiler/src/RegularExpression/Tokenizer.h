@@ -1,6 +1,6 @@
 #pragma once
 #include <utility>
-#include<sstream>
+#include <sstream>
 
 namespace RegularExpression {
 

@@ -12,6 +12,8 @@ set(SOURCE
 	src/DFA.h
 	src/NFA.cpp
 	src/NFA.h
+	src/BackusNaur/ParserGenerator.h
+	src/BackusNaur/ParserGenerator.cpp
 	src/TokenStream.h
 	src/RegularExpression/Tokenizer.cpp
 	src/RegularExpression/Tokenizer.h

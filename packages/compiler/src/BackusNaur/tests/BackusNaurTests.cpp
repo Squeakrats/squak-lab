@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <format>
 #include "../Grammar.h"
+#include "../ParserGenerator.h"
 
 using namespace BackusNaur;
 
@@ -14,5 +15,7 @@ TEST(Compiler, BackusNaurGrammar) {
 	EXPECT_EQ(productions[0][0], "Statement");
 	EXPECT_EQ(grammar.Terminals(), std::set<std::string>({ "Literal", "SemiColon", "Symbol"}));
 	EXPECT_EQ(grammar.First("Expression"), std::set<std::string>({ "Literal", "SemiColon", "Symbol"}));
-	EXPECT_EQ(grammar.Rules().size(), 2);
+	
+	std::string parser = GenerateParser(grammar);
+	EXPECT_TRUE(parser.length() > 0);
 }
