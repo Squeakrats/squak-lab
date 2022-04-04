@@ -2,12 +2,6 @@ cmake_minimum_required(VERSION 3.8)
 project(compiler)
 
 set(SOURCE
-	src/BackusNaur/Grammar.h
-	src/BackusNaur/Grammar.cpp
-	src/BackusNaur/Parser.cpp
-	src/BackusNaur/Parser.h
-	src/BackusNaur/Tokenizer.cpp
-	src/BackusNaur/Tokenizer.h
 	src/DFA.cpp
 	src/DFA.h
 	src/NFA.cpp
@@ -23,7 +17,6 @@ target_include_directories(compiler PUBLIC src/)
 enable_testing()
 
 add_executable(CompilerTests
-	src/BackusNaur/tests/BackusNaurTests.cpp
 	src/RegularExpression/tests/RegularExpressionTests.cpp
 	src/tests/CompilerTests.cpp
 )

@@ -1,8 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include "BackusNaur/Grammar.h"
-
-using namespace BackusNaur;
+#include "Grammar.h"
 
 std::string GenerateParser(Grammar& grammar) {
 	std::stringstream parser{};

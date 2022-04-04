@@ -5,8 +5,6 @@
 #include <vector>
 #include "Parser.h"
 
-namespace BackusNaur {
-
 class Grammar {
 	using RuleTable = std::vector<std::map<std::string, size_t>>;
 public:
@@ -18,6 +16,4 @@ public:
 	std::set<std::string> First(std::string symbol, size_t index);
 
 	static Grammar Create(std::string source);
-};
-
 };

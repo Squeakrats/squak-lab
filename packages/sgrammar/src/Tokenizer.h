@@ -2,8 +2,6 @@
 #include <sstream>
 #include <assert.h>
 
-namespace BackusNaur {
-
 enum class TokenType {
 	Symbol,
 	Replaces,
@@ -15,5 +13,3 @@ enum class TokenType {
 using Token = std::pair<TokenType, std::string>;
 
 Token Tokenize(std::stringstream& source);
-
-}

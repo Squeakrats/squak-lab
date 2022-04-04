@@ -4,8 +4,6 @@
 #include "Parser.h"
 #include "Tokenizer.h"
 
-namespace BackusNaur {
-
 AST::Grammar Parser::Parse()
 {
 	this->token = this->source.Next();
@@ -68,6 +66,4 @@ AST::Sequence Parser::ParseSequence()
 	}
 
 	return sequence;
-}
-
 }

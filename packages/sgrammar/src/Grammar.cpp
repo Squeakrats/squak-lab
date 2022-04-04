@@ -1,7 +1,5 @@
 #include "Grammar.h"
 
-namespace BackusNaur {
-
 Grammar Grammar::Create(std::string source) {
 	Grammar grammar{};
 	for (auto production : Parser::Parse(source)) {
@@ -82,6 +80,4 @@ std::set<std::string> Grammar::First(std::string symbol, size_t index) {
 	}
 
 	return first;
-}
-
 }

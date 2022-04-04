@@ -1,7 +1,5 @@
 #include "Tokenizer.h"
 
-namespace BackusNaur {
-
 Token Tokenize(std::stringstream& source) {
 	if (source.eof()) {
 		return Token{ TokenType::EndOfFile, "" };
@@ -35,6 +33,4 @@ Token Tokenize(std::stringstream& source) {
 			assert(false);
 		}
 	}
-}
-
 }

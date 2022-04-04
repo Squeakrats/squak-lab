@@ -19,8 +19,6 @@
 			 | <symbol> | <sequence>
 */
 
-namespace BackusNaur {
-
 namespace AST {
 
 using Symbol = std::string;
@@ -59,5 +57,3 @@ private:
 	AST::Expression ParseExpression();
 	AST::Sequence ParseSequence();
 };
-
-}
