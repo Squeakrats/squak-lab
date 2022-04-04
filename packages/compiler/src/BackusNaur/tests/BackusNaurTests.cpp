@@ -1,19 +1,18 @@
 #include <gtest/gtest.h>
+#include <format>
 #include "../Grammar.h"
 
 using namespace BackusNaur;
 
-void buildProductionTable(Grammar& grammar) {
-
-}
-
 TEST(Compiler, BackusNaurGrammar) {
 	Grammar grammar = Grammar::Create(
-	"<Expression> ::= <Literal> <SemiColon> | <SemiColon>;"
+	"<Expression> ::= <Statement> <SemiColon> | <SemiColon>;"
+	"<Statement> ::= <Literal> | <Symbol>;"
 	);
 
 	auto productions = grammar.productions.find("Expression")->second;
-	EXPECT_EQ(productions[0][0], "Literal");
-	EXPECT_EQ(grammar.Terminals(), std::set<std::string>({ "Literal", "SemiColon"}));
-	EXPECT_EQ(grammar.First("Expression"), std::set<std::string>({ "Literal", "SemiColon"}));
+	EXPECT_EQ(productions[0][0], "Statement");
+	EXPECT_EQ(grammar.Terminals(), std::set<std::string>({ "Literal", "SemiColon", "Symbol"}));
+	EXPECT_EQ(grammar.First("Expression"), std::set<std::string>({ "Literal", "SemiColon", "Symbol"}));
+	EXPECT_EQ(grammar.Rules().size(), 2);
 }

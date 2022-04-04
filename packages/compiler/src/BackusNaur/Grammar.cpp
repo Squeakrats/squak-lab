@@ -27,6 +27,27 @@ std::set<std::string> Grammar::Terminals() {
 	return terminals;
 }
 
+Grammar::RuleTable Grammar::Rules() {
+	RuleTable table{};
+	for (auto production : this->productions) {
+		std::map<std::string, size_t> subTable{};
+		for (size_t i = 0; i < production.second.size(); i++) {
+			std::set<std::string> first = this->First(production.first, i);
+			for (auto terminal : first) {
+				if (subTable.find(terminal) != subTable.end()) {
+					throw std::exception("duplicate terminal");
+				}
+
+				subTable.insert(std::make_pair(terminal, i));
+			}
+		}
+
+		table.push_back(subTable);
+	}
+
+	return table;
+}
+
 std::set<std::string> Grammar::First(std::string symbol) {
 	auto productions = this->productions.find(symbol);
 	if (productions == this->productions.end()) {
@@ -41,6 +62,22 @@ std::set<std::string> Grammar::First(std::string symbol) {
 				first.insert(tail.begin(), tail.end());
 				break;
 			}
+		}
+	}
+
+	return first;
+}
+
+std::set<std::string> Grammar::First(std::string symbol, size_t index) {
+	auto productions = this->productions.find(symbol)->second;
+	auto production = productions[index];
+
+	std::set<std::string> first{};
+	for (auto symbol : production) {
+		std::set<std::string> tail = this->First(symbol);
+		if (tail.size() != 0) {
+			first.insert(tail.begin(), tail.end());
+			break;
 		}
 	}
 
