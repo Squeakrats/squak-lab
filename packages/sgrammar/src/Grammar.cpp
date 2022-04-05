@@ -2,7 +2,8 @@
 
 Grammar Grammar::Create(std::string source) {
 	Grammar grammar{};
-	for (auto production : Parser::Parse(source)) {
+	grammar.ast = Parser::Parse(source);
+	for (auto production : grammar.ast) {
 		grammar.productions.insert(production);
 	}
 
@@ -12,7 +13,7 @@ Grammar Grammar::Create(std::string source) {
 std::set<std::string> Grammar::Terminals() {
 	std::set<std::string> terminals{};
 
-	for (auto production : this->productions) {
+	for (auto production : this->ast) {
 		for (auto sequence : production.second) {
 			for (auto symbol : sequence) {
 				if (this->productions.find(symbol) == this->productions.end()) {
@@ -25,45 +26,21 @@ std::set<std::string> Grammar::Terminals() {
 	return terminals;
 }
 
-std::string Grammar::Root() {
-	std::set<std::string> candidates{};
+std::map<std::string, size_t> Grammar::Rules(std::string symbol) {
+	std::map<std::string, size_t> rules{};
 
-	for (auto production : this->productions) {
-		candidates.insert(production.first);
-	}
-
-	for (auto production : this->productions) {
-		for (auto sequence : production.second) {
-			for (auto symbol : sequence) {
-				candidates.erase(symbol);
+	auto production = this->productions.at(symbol);
+	for (size_t i = 0; i < production.size(); i++) {
+		for (auto terminal : this->First(symbol, i)) {
+			if (rules.find(terminal) != rules.end()) {
+				throw std::exception("duplicate terminal");
 			}
+
+			rules.insert(std::make_pair(terminal, i));
 		}
 	}
 
-	assert(candidates.size() == 1);
-
-	return *candidates.begin();
-}
-
-Grammar::RuleTable Grammar::Rules() {
-	RuleTable table{};
-	for (auto production : this->productions) {
-		std::map<std::string, size_t> subTable{};
-		for (size_t i = 0; i < production.second.size(); i++) {
-			std::set<std::string> first = this->First(production.first, i);
-			for (auto terminal : first) {
-				if (subTable.find(terminal) != subTable.end()) {
-					throw std::exception("duplicate terminal");
-				}
-
-				subTable.insert(std::make_pair(terminal, i));
-			}
-		}
-
-		table.push_back(subTable);
-	}
-
-	return table;
+	return rules;
 }
 
 std::set<std::string> Grammar::First(std::string symbol) {
@@ -87,7 +64,7 @@ std::set<std::string> Grammar::First(std::string symbol) {
 }
 
 std::set<std::string> Grammar::First(std::string symbol, size_t index) {
-	auto productions = this->productions.find(symbol)->second;
+	auto productions = this->productions.at(symbol);
 	auto production = productions[index];
 
 	std::set<std::string> first{};

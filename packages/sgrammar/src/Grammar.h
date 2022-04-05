@@ -6,13 +6,14 @@
 #include "Parser.h"
 
 class Grammar {
-	using RuleTable = std::vector<std::map<std::string, size_t>>;
-public:
+private:
 	std::map<std::string, std::vector<std::vector<std::string>>> productions{};
 
-	std::string Root();
+public:
+	AST::Grammar ast{};
+
 	std::set<std::string> Terminals();
-	RuleTable Rules();
+	std::map<std::string, size_t> Rules(std::string symbol);
 	std::set<std::string> First(std::string symbol);
 	std::set<std::string> First(std::string symbol, size_t index);
 
