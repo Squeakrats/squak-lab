@@ -12,7 +12,8 @@ Token Tokenize(std::stringstream& source) {
 		char current;
 		switch (current = source.get()) {
 			case '+':
-				return Token{ TokenType::Quantifier, "+" };
+			case '?':
+				return Token{ TokenType::Quantifier, std::string(1, current) };
 			case EOF:
 				return Token{ TokenType::EndOfFile, "" };
 			default:

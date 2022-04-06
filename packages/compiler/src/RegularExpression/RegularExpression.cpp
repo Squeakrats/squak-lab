@@ -27,6 +27,13 @@ NFA Create(AST::Expression& ast) {
 		return start;
 	}
 
+	if (ast.quantifier->quantifier == "?") {
+		NFA start = Create(ast.character[0]);
+		start.AddTransition(start.initialState, start.acceptingState);
+
+		return start;
+	}
+
 
 	throw std::exception("unhandle quantifier");
 }
