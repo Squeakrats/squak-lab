@@ -10,7 +10,7 @@
 <productions> ::= <production>
 				| <production> <productions>
 
-<production> ::= <symbol> <derives> <expression> <semicolon>
+<production> ::= <symbol> <derives> <expression> <semicolon> <code>
 
 <expression> ::= <sequence>
                | <sequence> <alternate> <expression>
@@ -24,7 +24,7 @@ namespace AST {
 using Symbol = std::string;
 using Sequence = std::vector<Symbol>;
 using Expression = std::vector<Sequence>;
-using Production = std::pair<Symbol, Expression>;
+using Production = std::pair<Symbol, std::pair<Expression, std::string>>;
 using Grammar = std::vector<Production>;
 
 };

@@ -35,7 +35,13 @@ AST::Production Parser::ParseProduction()
 
 	assert(this->Use().first == TokenType::Replaces);
 
-	production.second = this->ParseExpression();
+	AST::Expression expression = this->ParseExpression();
+	assert(this->Use().first == TokenType::SemiColon);
+
+	assert(this->token.first == TokenType::Code);
+	std::string code = this->Use().second;
+
+	production.second = std::make_pair(expression, code);
 
 	assert(this->Use().first == TokenType::SemiColon);
 

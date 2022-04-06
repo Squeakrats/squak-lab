@@ -6,6 +6,7 @@ enum class TokenType {
 	Symbol,
 	Replaces,
 	SemiColon,
+	Code,
 	Alternate,
 	EndOfFile
 };

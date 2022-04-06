@@ -14,6 +14,13 @@ Token Tokenize(std::stringstream& source) {
 
 			return Token{ TokenType::Symbol, symbol.str() };
 		}
+		case '{': {
+			std::stringbuf code{};
+			source.get(code, '}');
+			assert(source.get() == '}');
+
+			return Token{ TokenType::Code, code.str() };
+		}
 		case ':': {
 			assert(source.get() == ':' && source.get() == '=');
 

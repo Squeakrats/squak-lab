@@ -27,20 +27,6 @@ std::string GenerateParser(Grammar& grammar) {
 
 	parser << "std::vector<std::map<std::string, size_t>> rules = {\n";
 
-	for (auto production : grammar.ast) {
-		parser << "\t{\n\t\t";
-		parser << production.first << ",\n\t\t{ ";
-		for (auto rule : grammar.Rules(production.first)) {
-				parser << "{ TokenType::" << rule.first << ", " << rule.second << " }, ";
-		}
-		parser << " },\n";
-		parser << "\t},\n";
-	}
-	
-	parser << "\n";
-	parser << "};\n";
-
-
 	return parser.str();
 }
 
