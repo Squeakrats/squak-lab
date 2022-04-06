@@ -1,0 +1,11 @@
+{
+#include "AST.h"
+}
+
+<RegularExpression> ::= <OptionalSequence> <EndOfFile>; {AST::RegularExpression*} { return new AST::RegularExpression(P0); };
+
+<OptionalSequence>  ::= <Expression> <OptionalSequence>; {AST::Sequence*} { return new AST::Sequence(P0, P1); };
+
+<Expression> ::= <Character> <OptionalQuantifier>; {AST::Expression*} { return new AST::Expression(P0.second, P1); };
+
+<OptionalQuantifier> ::= <Quantifier>; {AST::Quantifier*} { return new AST::Quantifier(P0.second); };
