@@ -3,8 +3,8 @@
 Grammar Grammar::Create(std::string source) {
 	Grammar grammar{};
 	grammar.ast = Parser::Parse(source);
-	for (auto production : grammar.ast.second) {
-		grammar.productions.insert(production);
+	for (auto production : grammar.ast.productions) {
+		grammar.productions.insert(std::make_pair(production.symbol, production));
 	}
 
 	return grammar;
@@ -13,9 +13,9 @@ Grammar Grammar::Create(std::string source) {
 std::set<std::string> Grammar::Terminals() {
 	std::set<std::string> terminals{};
 
-	for (auto production : this->ast.second) {
-		for (auto sequence : production.second.first) {
-			for (auto symbol : sequence) {
+	for (auto production : this->ast.productions) {
+		for (auto sequence : production.expression) {
+			for (auto symbol : sequence.symbols) {
 				if (this->productions.find(symbol) == this->productions.end()) {
 					terminals.insert(symbol);
 				}
@@ -30,7 +30,7 @@ std::map<size_t, std::set<std::string>> Grammar::Rules(std::string symbol) {
 	std::map<std::string, size_t> table{};
 
 	auto production = this->productions.at(symbol);
-	for (size_t i = 0; i < production.first.size(); i++) {
+	for (size_t i = 0; i < production.expression.size(); i++) {
 		for (auto terminal : this->First(symbol, i)) {
 			if (table.find(terminal) != table.end()) {
 				throw std::exception("duplicate terminal");
@@ -59,8 +59,8 @@ std::set<std::string> Grammar::First(std::string symbol) {
 	}
 
 	std::set<std::string> first{};
-	for (auto production : productions->second.first) {
-		for (auto symbol : production) {
+	for (auto production : productions->second.expression) {
+		for (auto symbol : production.symbols) {
 			std::set<std::string> tail = this->First(symbol);
 			if (tail.size() != 0) {
 				first.insert(tail.begin(), tail.end());
@@ -73,11 +73,11 @@ std::set<std::string> Grammar::First(std::string symbol) {
 }
 
 std::set<std::string> Grammar::First(std::string symbol, size_t index) {
-	auto productions = this->productions.at(symbol).first;
+	auto productions = this->productions.at(symbol).expression;
 	auto production = productions[index];
 
 	std::set<std::string> first{};
-	for (auto symbol : production) {
+	for (auto symbol : production.symbols) {
 		std::set<std::string> tail = this->First(symbol);
 		if (tail.size() != 0) {
 			first.insert(tail.begin(), tail.end());

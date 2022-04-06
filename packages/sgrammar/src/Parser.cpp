@@ -10,9 +10,9 @@ AST::Grammar Parser::Parse()
 
 	AST::Grammar grammar{};
 	assert(this->token.first == TokenType::Code);
-	grammar.first = this->Use().second;
+	grammar.code = this->Use().second;
 
-	grammar.second = this->ParseProductions();
+	grammar.productions = this->ParseProductions();
 	assert(this->token.first == TokenType::EndOfFile);
 
 	return grammar;
@@ -35,20 +35,18 @@ AST::Production Parser::ParseProduction()
 	AST::Production production{};
 
 	assert(this->token.first == TokenType::Symbol);
-	production.first = this->Use().second;
+	production.symbol = this->Use().second;
 
 	assert(this->Use().first == TokenType::Replaces);
 
-	AST::Expression expression = this->ParseExpression();
+	production.expression = this->ParseExpression();
 	assert(this->Use().first == TokenType::SemiColon);
 
 	assert(this->token.first == TokenType::Code);
-	std::string type = this->Use().second;
+	production.type = this->Use().second;
 
 	assert(this->token.first == TokenType::Code);
-	std::string code = this->Use().second;
-
-	production.second = std::make_pair(expression, std::make_pair(type, code));
+	production.code = this->Use().second;
 
 	assert(this->Use().first == TokenType::SemiColon);
 
@@ -72,10 +70,10 @@ AST::Sequence Parser::ParseSequence()
 {
 	AST::Sequence sequence{};
 	if (this->token.first == TokenType::Symbol) {
-		sequence.push_back(this->Use().second);
+		sequence.symbols.push_back(this->Use().second);
 
 		AST::Sequence tail = this->ParseSequence();
-		sequence.insert(sequence.end(), tail.begin(), tail.end());
+		sequence.symbols.insert(sequence.symbols.end(), tail.symbols.begin(), tail.symbols.end());
 	}
 
 	return sequence;

@@ -7,7 +7,7 @@
 
 class Grammar {
 private:
-	std::map<std::string, std::pair<AST::Expression, std::pair<std::string, std::string>>> productions{};
+	std::map<std::string, AST::Production> productions{};
 
 public:
 	AST::Grammar ast{};

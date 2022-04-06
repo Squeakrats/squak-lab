@@ -22,10 +22,24 @@
 namespace AST {
 
 using Symbol = std::string;
-using Sequence = std::vector<Symbol>;
+
+struct Sequence {
+	std::vector<Symbol> symbols{};
+};
+
 using Expression = std::vector<Sequence>;
-using Production = std::pair<Symbol, std::pair<Expression, std::pair<std::string, std::string>>>;
-using Grammar = std::pair<std::string, std::vector<Production>>;
+
+struct Production {
+	Symbol symbol{};
+	Expression expression{};
+	std::string type{};
+	std::string code{};
+};
+
+struct Grammar {
+	std::string code{};
+	std::vector<Production> productions{};
+};
 
 };
 

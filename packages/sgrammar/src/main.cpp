@@ -7,9 +7,9 @@ std::string EmitHeader(Grammar& grammar) {
 
 	header << "#pragma once\n";
 	header << "#include \"TokenStream.h\"\n";
-	header << grammar.ast.first;
+	header << grammar.ast.code;
 	header << "\n";
-	header << "namespace " << grammar.ast.second[0].first << " {\n";
+	header << "namespace " << grammar.ast.productions[0].symbol << " {\n";
 	header << "\n";
 	
 	header << "enum class TokenType {\n";
@@ -30,8 +30,8 @@ std::string EmitHeader(Grammar& grammar) {
 	header << "\tToken Use() { auto old = this->token; this->token = this->stream.Next(); return old; }\n";
 	header << "};\n\n";
 
-	for (auto production : grammar.ast.second) {
-		header << production.second.second.first << " Parse" << production.first << "(ParserContext& context);\n";
+	for (auto production : grammar.ast.productions) {
+		header << production.type << " Parse" << production.symbol << "(ParserContext& context);\n";
 	}
 
 	header << "\n}\n";
@@ -48,13 +48,13 @@ std::string EmitParser(Grammar& grammar) {
 	parser << "#include <utility>\n";
 	parser << "#include \"Parser.h\"\n";
 	parser << "\n";
-	parser << "namespace " << grammar.ast.second[0].first << " {\n";
+	parser << "namespace " << grammar.ast.productions[0].symbol << " {\n";
 	parser << "\n";
 
-	for (auto production : grammar.ast.second) {
-		auto rules = grammar.Rules(production.first);
+	for (auto production : grammar.ast.productions) {
+		auto rules = grammar.Rules(production.symbol);
 
-		parser << production.second.second.first << " Parse" << production.first << "(ParserContext& context) { \n";
+		parser << production.type << " Parse" << production.symbol << "(ParserContext& context) { \n";
 		parser << "\tswitch(context.token.first) {\n";
 		for (auto rule : rules) {
 			for (auto symbol : rule.second) {
@@ -64,7 +64,7 @@ std::string EmitParser(Grammar& grammar) {
 			parser << "\t\t{\n";
 			
 			size_t paramaters = 0;
-			for (auto symbol : production.second.first.at(rule.first)) {
+			for (auto symbol : production.expression.at(rule.first).symbols) {
 				if (terminals.find(symbol) != terminals.end()) {
 					parser << "\t\t\tassert(context.token.first == TokenType::" << symbol << ");\n";
 					parser << "\t\t\tauto P" << paramaters++ << " = context.Use();\n";
@@ -73,7 +73,7 @@ std::string EmitParser(Grammar& grammar) {
 					parser << "\t\t\tauto P" << paramaters++ << " = Parse" << symbol << "(context); \n";
 				}
 			}
-			parser << "\n\t\t\t{" << production.second.second.second << "}\n";
+			parser << "\n\t\t\t{" << production.code << "}\n";
 			parser << "\t\t}\n";
 		}
  		parser << "\t\tdefault:\n";
