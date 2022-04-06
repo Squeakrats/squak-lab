@@ -8,6 +8,8 @@ struct RegularExpression;
 struct Sequence;
 struct Expression;
 struct Quantifier;
+struct Value;
+struct CharacterClassList;
 
 struct RegularExpression {
 	std::shared_ptr<Sequence> sequence;
@@ -23,10 +25,38 @@ struct Sequence {
 };
 
 struct Expression {
-	std::string character;
+	std::shared_ptr<Value> value;
 	std::shared_ptr<Quantifier> quantifier;
 
-	Expression(std::string character, Quantifier* quantifier) : character(character), quantifier(quantifier) {};
+	Expression(Value* value, Quantifier* quantifier) : value(value), quantifier(quantifier) {};
+};
+
+struct Character {
+	std::string value;
+
+	Character(std::string value) : value(value) {};
+};
+
+
+struct CharacterClass {
+	std::shared_ptr<CharacterClassList> list;
+
+	CharacterClass(CharacterClassList* list) : list(list) {};
+};
+
+struct CharacterClassList {
+	std::string character;
+	std::shared_ptr<CharacterClassList> rhs;
+
+	CharacterClassList(std::string character, CharacterClassList* rhs) : character(character), rhs(rhs) {};
+};
+
+struct Value {
+	std::shared_ptr<Character> character;
+	std::shared_ptr<CharacterClass> characterClass;
+
+	Value(Character* character) : character(character) {};
+	Value(CharacterClass* characterClass) : characterClass(characterClass) {};
 };
 
 struct Quantifier {

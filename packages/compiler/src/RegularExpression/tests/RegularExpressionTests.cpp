@@ -21,3 +21,12 @@ TEST(RegularExpression, OptionalOperator) {
 	EXPECT_EQ(dfa.Match("bc"), false);
 	EXPECT_EQ(dfa.Match("ad"), false);
 }
+
+TEST(RegularExpression, CharacterClass) {
+	DFA dfa = RegularExpression::Create("[abc]");
+
+	EXPECT_EQ(dfa.Match("a"), true);
+	EXPECT_EQ(dfa.Match("b"), true);
+	EXPECT_EQ(dfa.Match("c"), true);
+	EXPECT_EQ(dfa.Match("d"), false);
+}

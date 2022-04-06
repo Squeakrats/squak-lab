@@ -8,7 +8,9 @@ namespace RegularExpression {
 enum class TokenType {
 	Character,
 	EndOfFile,
+	LeftBracket,
 	Quantifier,
+	RightBracket,
 };
 
 using Token = std::pair<TokenType, std::string>;
@@ -25,6 +27,9 @@ public:
 AST::RegularExpression* ParseRegularExpression(ParserContext& context);
 AST::Sequence* ParseOptionalSequence(ParserContext& context);
 AST::Expression* ParseExpression(ParserContext& context);
+AST::Value* ParseValue(ParserContext& context);
+AST::CharacterClass* ParseCharacterClass(ParserContext& context);
+AST::CharacterClassList* ParseCharacterClassList(ParserContext& context);
 AST::Quantifier* ParseOptionalQuantifier(ParserContext& context);
 
 }

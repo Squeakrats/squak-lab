@@ -14,6 +14,10 @@ Token Tokenize(std::stringstream& source) {
 			case '+':
 			case '?':
 				return Token{ TokenType::Quantifier, std::string(1, current) };
+			case '[':
+				return Token{ TokenType::LeftBracket, std::string(1, current) };
+			case ']':
+				return Token{ TokenType::RightBracket, std::string(1, current) };
 			case EOF:
 				return Token{ TokenType::EndOfFile, "" };
 			default:

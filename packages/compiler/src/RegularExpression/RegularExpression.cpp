@@ -12,28 +12,47 @@ NFA Create(char character) {
 	return nfa;
 }
 
+NFA Create(AST::Value& value) {
+	if (value.character != nullptr) {
+		return Create(value.character->value[0]);
+	}
+
+	if (value.characterClass != nullptr && value.characterClass->list != nullptr) {
+		NFA nfa = Create(value.characterClass->list->character[0]);
+
+		std::shared_ptr<AST::CharacterClassList> current = value.characterClass->list->rhs;
+		while (current != nullptr) {
+			nfa.Union(Create(current->character[0]));
+			current = current->rhs;
+		}
+
+		return nfa;
+	}
+
+	throw std::exception("unhandle value");
+}
+
 NFA Create(AST::Expression& ast) {
+	NFA nfa = Create(*ast.value.get());
+
 	if (ast.quantifier == nullptr) {
-		return Create(ast.character[0]);
+		return nfa;
 	}
 
 	if (ast.quantifier->quantifier == "+") {
-		NFA start = Create(ast.character[0]);
-		NFA repeat = Create(ast.character[0]);
+		NFA repeat = Create(*ast.value.get());
 
-		start.Union(std::move(repeat));
-		start.AddTransition(start.acceptingState, repeat.initialState);
+		nfa.Union(std::move(repeat));
+		nfa.AddTransition(nfa.acceptingState, repeat.initialState);
 
-		return start;
+		return nfa;
 	}
 
 	if (ast.quantifier->quantifier == "?") {
-		NFA start = Create(ast.character[0]);
-		start.AddTransition(start.initialState, start.acceptingState);
+		nfa.AddTransition(nfa.initialState, nfa.acceptingState);
 
-		return start;
+		return nfa;
 	}
-
 
 	throw std::exception("unhandle quantifier");
 }
