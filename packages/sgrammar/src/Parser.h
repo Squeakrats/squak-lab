@@ -25,15 +25,15 @@ using Symbol = std::string;
 
 struct Sequence {
 	std::vector<Symbol> symbols{};
+	std::string code{};
 };
 
 using Expression = std::vector<Sequence>;
 
 struct Production {
 	Symbol symbol{};
-	Expression expression{};
 	std::string type{};
-	std::string code{};
+	Expression expression{};
 };
 
 struct Grammar {

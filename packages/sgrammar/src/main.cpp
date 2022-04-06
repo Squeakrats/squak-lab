@@ -73,7 +73,7 @@ std::string EmitParser(Grammar& grammar) {
 					parser << "\t\t\tauto P" << paramaters++ << " = Parse" << symbol << "(context); \n";
 				}
 			}
-			parser << "\n\t\t\t{" << production.code << "}\n";
+			parser << "\n\t\t\t{" << production.expression.at(rule.first).code << "}\n";
 			parser << "\t\t}\n";
 		}
  		parser << "\t\tdefault:\n";

@@ -37,17 +37,12 @@ AST::Production Parser::ParseProduction()
 	assert(this->token.first == TokenType::Symbol);
 	production.symbol = this->Use().second;
 
-	assert(this->Use().first == TokenType::Replaces);
-
-	production.expression = this->ParseExpression();
-	assert(this->Use().first == TokenType::SemiColon);
-
 	assert(this->token.first == TokenType::Code);
 	production.type = this->Use().second;
 
-	assert(this->token.first == TokenType::Code);
-	production.code = this->Use().second;
+	assert(this->Use().first == TokenType::Replaces);
 
+	production.expression = this->ParseExpression();
 	assert(this->Use().first == TokenType::SemiColon);
 
 	return production;
@@ -69,12 +64,12 @@ AST::Expression Parser::ParseExpression()
 AST::Sequence Parser::ParseSequence()
 {
 	AST::Sequence sequence{};
-	if (this->token.first == TokenType::Symbol) {
+	while (this->token.first == TokenType::Symbol) {
 		sequence.symbols.push_back(this->Use().second);
-
-		AST::Sequence tail = this->ParseSequence();
-		sequence.symbols.insert(sequence.symbols.end(), tail.symbols.begin(), tail.symbols.end());
 	}
+
+	assert(this->token.first == TokenType::Code);
+	sequence.code = this->Use().second;
 
 	return sequence;
 }
