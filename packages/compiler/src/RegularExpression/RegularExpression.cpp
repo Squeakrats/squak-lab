@@ -21,7 +21,7 @@ NFA Create(AST::RegularExpression& ast) {
 	nfa.initialState = nfa.AddState();
 	nfa.acceptingState = nfa.initialState;
 
-	AST::Sequence* current = ast.sequence;
+	std::shared_ptr<AST::Sequence> current = ast.sequence;
 	while (current != nullptr) {
 		if (current->lhs != nullptr) {
 			nfa.Append(Create(*current->lhs));
