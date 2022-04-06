@@ -4,9 +4,11 @@
 using namespace RegularExpression;
 
 TEST(Compiler, RegularExpressionTokenizer) {
-	DFA dfa = RegularExpression::Create("abc");
+	DFA dfa = RegularExpression::Create("a+");
 
-	EXPECT_EQ(dfa.Match("abc"), true);
-	EXPECT_EQ(dfa.Match("def"), false);
-	EXPECT_EQ(dfa.Match("ghj"), false);
+	EXPECT_EQ(dfa.Match("a"), true);
+	EXPECT_EQ(dfa.Match("aa"), true);
+	EXPECT_EQ(dfa.Match("aaa"), true);
+	EXPECT_EQ(dfa.Match("aaab"), false);
+	EXPECT_EQ(dfa.Match(""), false);
 }

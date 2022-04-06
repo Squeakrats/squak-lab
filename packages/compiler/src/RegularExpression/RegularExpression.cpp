@@ -13,7 +13,22 @@ NFA Create(char character) {
 }
 
 NFA Create(AST::Expression& ast) {
-	return Create(ast.character[0]);
+	if (ast.quantifier == nullptr) {
+		return Create(ast.character[0]);
+	}
+
+	if (ast.quantifier->quantifier == "+") {
+		NFA start = Create(ast.character[0]);
+		NFA repeat = Create(ast.character[0]);
+
+		start.Union(std::move(repeat));
+		start.AddTransition(start.acceptingState, repeat.initialState);
+
+		return start;
+	}
+
+
+	throw std::exception("unhandle quantifier");
 }
 
 NFA Create(AST::RegularExpression& ast) {

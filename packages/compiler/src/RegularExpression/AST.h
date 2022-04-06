@@ -32,7 +32,7 @@ struct Expression {
 struct Quantifier {
 	std::string quantifier;
 
-	Quantifier(std::string) : quantifier(quantifier) {};
+	Quantifier(std::string quantifier) : quantifier(quantifier) {};
 };
 
 }
