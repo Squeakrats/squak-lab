@@ -26,18 +26,27 @@ std::set<std::string> Grammar::Terminals() {
 	return terminals;
 }
 
-std::map<std::string, size_t> Grammar::Rules(std::string symbol) {
-	std::map<std::string, size_t> rules{};
+std::map<size_t, std::set<std::string>> Grammar::Rules(std::string symbol) {
+	std::map<std::string, size_t> table{};
 
 	auto production = this->productions.at(symbol);
 	for (size_t i = 0; i < production.first.size(); i++) {
 		for (auto terminal : this->First(symbol, i)) {
-			if (rules.find(terminal) != rules.end()) {
+			if (table.find(terminal) != table.end()) {
 				throw std::exception("duplicate terminal");
 			}
 
-			rules.insert(std::make_pair(terminal, i));
+			table.insert(std::make_pair(terminal, i));
 		}
+	}
+
+	std::map<size_t, std::set<std::string>> rules{};
+	for (auto rule : table) {
+		if (rules.find(rule.second) == rules.end()) {
+			rules.insert(std::make_pair(rule.second, std::set<std::string>()));
+		}
+
+		rules.at(rule.second).insert(rule.first);
 	}
 
 	return rules;

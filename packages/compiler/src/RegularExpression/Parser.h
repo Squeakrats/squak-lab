@@ -4,9 +4,9 @@
 namespace RegularExpression {
 
 enum class TokenType {
-        Character,
-        EndOfFile,
-        Quantifier,
+	Character,
+	EndOfFile,
+	Quantifier,
 };
 
 using Token = std::pair<TokenType, std::string>;
@@ -15,9 +15,9 @@ Token Tokenize(std::stringstream& source);
 
 class ParserContext {
 public:
-        Token token;
-        TokenStream<Token>& stream;
-        Token Use() { auto old = this->token; this->token = this->stream.Next(); return old; }
+	Token token;
+	TokenStream<Token>& stream;
+	Token Use() { auto old = this->token; this->token = this->stream.Next(); return old; }
 };
 
 void* ParseOptionalQuantifier(ParserContext& context);

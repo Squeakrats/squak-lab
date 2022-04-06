@@ -39,9 +39,12 @@ AST::Production Parser::ParseProduction()
 	assert(this->Use().first == TokenType::SemiColon);
 
 	assert(this->token.first == TokenType::Code);
+	std::string type = this->Use().second;
+
+	assert(this->token.first == TokenType::Code);
 	std::string code = this->Use().second;
 
-	production.second = std::make_pair(expression, code);
+	production.second = std::make_pair(expression, std::make_pair(type, code));
 
 	assert(this->Use().first == TokenType::SemiColon);
 

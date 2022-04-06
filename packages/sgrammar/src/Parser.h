@@ -24,7 +24,7 @@ namespace AST {
 using Symbol = std::string;
 using Sequence = std::vector<Symbol>;
 using Expression = std::vector<Sequence>;
-using Production = std::pair<Symbol, std::pair<Expression, std::string>>;
+using Production = std::pair<Symbol, std::pair<Expression, std::pair<std::string, std::string>>>;
 using Grammar = std::vector<Production>;
 
 };

@@ -7,13 +7,13 @@
 
 class Grammar {
 private:
-	std::map<std::string, std::pair<AST::Expression, std::string>> productions{};
+	std::map<std::string, std::pair<AST::Expression, std::pair<std::string, std::string>>> productions{};
 
 public:
 	AST::Grammar ast{};
 
 	std::set<std::string> Terminals();
-	std::map<std::string, size_t> Rules(std::string symbol);
+	std::map<size_t, std::set<std::string>> Rules(std::string symbol);
 	std::set<std::string> First(std::string symbol);
 	std::set<std::string> First(std::string symbol, size_t index);
 
