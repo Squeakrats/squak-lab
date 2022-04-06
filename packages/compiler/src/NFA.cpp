@@ -46,23 +46,6 @@ void NFA::Union(NFA&& b) {
 	this->acceptingState = acceptingState;
 }
 
-NFA NFA::FromRegularExpression(std::string expression) {
-	NFA automata;
-
-	automata.initialState = automata.AddState();
-
-	uint32_t currentState = automata.initialState;
-	for (char character : expression) {
-		uint32_t nextState = automata.AddState();
-		automata.AddTransition(currentState, nextState, character);
-		currentState = nextState;
-	}
-
-	automata.acceptingState = currentState;
-
-	return automata;
-}
-
 std::set<uint32_t> NFA::calculateEpsilonClosure(uint32_t state) {
 	std::set<uint32_t> closure{ state };
 	std::set<uint32_t> work{ state };

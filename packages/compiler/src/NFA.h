@@ -23,6 +23,4 @@ public:
 	void Union(NFA&& b);
 
 	std::set<uint32_t> calculateEpsilonClosure(uint32_t state);
-
-	static NFA FromRegularExpression(std::string expression);
 };

@@ -18,10 +18,6 @@ public:
 	}
 };
 
-DFA DFA::FromRegularExpression(std::string expression) {
-	return DFA::FromNFA(NFA::FromRegularExpression(expression));
-}
-
 DFA DFA::FromNFA(NFA& nfa) {
 	std::map<std::set<uint32_t>, std::map<char, std::set<uint32_t>>> states{};
 

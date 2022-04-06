@@ -8,6 +8,8 @@ set(SOURCE
 	src/NFA.h
 	src/TokenStream.h
 	src/RegularExpression/AST.h
+	src/RegularExpression/RegularExpression.h
+	src/RegularExpression/RegularExpression.cpp
 	src/RegularExpression/Parser.h
 	src/RegularExpression/Parser.cpp
 	src/RegularExpression/Tokenizer.cpp
@@ -20,7 +22,6 @@ enable_testing()
 
 add_executable(CompilerTests
 	src/RegularExpression/tests/RegularExpressionTests.cpp
-	src/tests/CompilerTests.cpp
 )
 
 # Follow google test framework setup instructions
