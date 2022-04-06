@@ -8,7 +8,7 @@ std::string EmitHeader(Grammar& grammar) {
 	header << "#pragma once\n";
 	header << "#include \"TokenStream.h\"\n";
 	header << "\n";
-	header << "namespace " << grammar.ast[grammar.ast.size() - 1].first << " {\n";
+	header << "namespace " << grammar.ast.second[0].first << " {\n";
 	header << "\n";
 	
 	header << "enum class TokenType {\n";
@@ -29,7 +29,7 @@ std::string EmitHeader(Grammar& grammar) {
 	header << "\tToken Use() { auto old = this->token; this->token = this->stream.Next(); return old; }\n";
 	header << "};\n\n";
 
-	for (auto production : grammar.ast) {
+	for (auto production : grammar.ast.second) {
 		header << production.second.second.first << " Parse" << production.first << "(ParserContext& context);\n";
 	}
 
@@ -46,11 +46,12 @@ std::string EmitParser(Grammar& grammar) {
 	parser << "#include <assert.h>\n";
 	parser << "#include <utility>\n";
 	parser << "#include \"Parser.h\"\n";
+	parser << grammar.ast.first;
 	parser << "\n";
-	parser << "namespace " << grammar.ast[grammar.ast.size() - 1].first << " {\n";
+	parser << "namespace " << grammar.ast.second[0].first << " {\n";
 	parser << "\n";
 
-	for (auto production : grammar.ast) {
+	for (auto production : grammar.ast.second) {
 		auto rules = grammar.Rules(production.first);
 
 		parser << production.second.second.first << " Parse" << production.first << "(ParserContext& context) { \n";

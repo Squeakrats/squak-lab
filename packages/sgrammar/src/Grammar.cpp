@@ -3,7 +3,7 @@
 Grammar Grammar::Create(std::string source) {
 	Grammar grammar{};
 	grammar.ast = Parser::Parse(source);
-	for (auto production : grammar.ast) {
+	for (auto production : grammar.ast.second) {
 		grammar.productions.insert(production);
 	}
 
@@ -13,7 +13,7 @@ Grammar Grammar::Create(std::string source) {
 std::set<std::string> Grammar::Terminals() {
 	std::set<std::string> terminals{};
 
-	for (auto production : this->ast) {
+	for (auto production : this->ast.second) {
 		for (auto sequence : production.second.first) {
 			for (auto symbol : sequence) {
 				if (this->productions.find(symbol) == this->productions.end()) {

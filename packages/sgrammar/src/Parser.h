@@ -5,7 +5,7 @@
 #include "Tokenizer.h"
 
 /*
-<grammer> ::= <productions>
+<grammer> ::= <code> <productions>
 
 <productions> ::= <production>
 				| <production> <productions>
@@ -25,7 +25,7 @@ using Symbol = std::string;
 using Sequence = std::vector<Symbol>;
 using Expression = std::vector<Sequence>;
 using Production = std::pair<Symbol, std::pair<Expression, std::pair<std::string, std::string>>>;
-using Grammar = std::vector<Production>;
+using Grammar = std::pair<std::string, std::vector<Production>>;
 
 };
 

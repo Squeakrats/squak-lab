@@ -2,6 +2,8 @@
 #include <utility>
 #include "Parser.h"
 
+#include "AST.h"
+
 namespace RegularExpression {
 
 void* ParseRegularExpression(ParserContext& context) { 

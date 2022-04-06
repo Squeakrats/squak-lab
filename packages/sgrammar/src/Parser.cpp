@@ -8,7 +8,11 @@ AST::Grammar Parser::Parse()
 {
 	this->token = this->source.Next();
 
-	AST::Grammar grammar = this->ParseProductions();
+	AST::Grammar grammar{};
+	assert(this->token.first == TokenType::Code);
+	grammar.first = this->Use().second;
+
+	grammar.second = this->ParseProductions();
 	assert(this->token.first == TokenType::EndOfFile);
 
 	return grammar;
