@@ -20,9 +20,9 @@ public:
 	Token Use() { auto old = this->token; this->token = this->stream.Next(); return old; }
 };
 
-void* ParseOptionalQuantifier(ParserContext& context);
-void* ParseExpression(ParserContext& context);
-void* ParseOptionalSequence(ParserContext& context);
 void* ParseRegularExpression(ParserContext& context);
+void* ParseOptionalSequence(ParserContext& context);
+void* ParseExpression(ParserContext& context);
+void* ParseOptionalQuantifier(ParserContext& context);
 
 }
