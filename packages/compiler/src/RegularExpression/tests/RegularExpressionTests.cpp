@@ -30,3 +30,13 @@ TEST(RegularExpression, CharacterClass) {
 	EXPECT_EQ(dfa.Match("c"), true);
 	EXPECT_EQ(dfa.Match("d"), false);
 }
+
+TEST(RegularExpression, Number) {
+	DFA dfa = RegularExpression::Create("[0123456789]+.?[0123456789]+");
+
+	EXPECT_EQ(dfa.Match("0123"), true);
+	EXPECT_EQ(dfa.Match("434"), true);
+	EXPECT_EQ(dfa.Match("433.232"), true);
+	EXPECT_EQ(dfa.Match("32"), false);
+	EXPECT_EQ(dfa.Match("32.a"), false);
+}
