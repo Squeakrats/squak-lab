@@ -1,14 +1,12 @@
 #include <gtest/gtest.h>
-#include "RegularExpression/Tokenizer.h"
+#include "RegularExpression/Parser.h"
 
 using namespace RegularExpression;
 
 TEST(Compiler, RegularExpressionTokenizer) {
-	std::stringstream source("aa+bb");
+	std::string source("aa+bb");
+	TokenStream<Token> stream(source, Tokenize);
+	ParserContext context{ stream.Next(), stream };
 
-	EXPECT_EQ(Tokenize(source), Token(TokenType::Character, "a"));
-	EXPECT_EQ(Tokenize(source), Token(TokenType::Character, "a"));
-	EXPECT_EQ(Tokenize(source), Token(TokenType::Quantifier, "+"));
-	EXPECT_EQ(Tokenize(source), Token(TokenType::Character, "b"));
-	EXPECT_EQ(Tokenize(source), Token(TokenType::Character, "b"));
+	ParseRegularExpression(context);
 }

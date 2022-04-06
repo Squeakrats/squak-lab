@@ -1,5 +1,5 @@
 #include <assert.h>
-#include "Tokenizer.h"
+#include "Parser.h"
 
 namespace RegularExpression {
 
@@ -13,10 +13,6 @@ Token Tokenize(std::stringstream& source) {
 		switch (current = source.get()) {
 			case '+':
 				return Token{ TokenType::Quantifier, "+" };
-			case '(':
-				return Token{ TokenType::LeftParenthesis, "(" };
-			case ')':
-				return Token{ TokenType::RightParenthesis, ")" };
 			case EOF:
 				return Token{ TokenType::EndOfFile, "" };
 			default:

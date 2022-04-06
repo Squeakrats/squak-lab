@@ -7,8 +7,9 @@ set(SOURCE
 	src/NFA.cpp
 	src/NFA.h
 	src/TokenStream.h
+	src/RegularExpression/Parser.h
+	src/RegularExpression/Parser.cpp
 	src/RegularExpression/Tokenizer.cpp
-	src/RegularExpression/Tokenizer.h
 )
 
 add_library(compiler ${SOURCE})
