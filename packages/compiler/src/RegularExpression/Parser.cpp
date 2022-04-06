@@ -2,11 +2,9 @@
 #include <utility>
 #include "Parser.h"
 
-#include "AST.h"
-
 namespace RegularExpression {
 
-void* ParseRegularExpression(ParserContext& context) { 
+AST::RegularExpression* ParseRegularExpression(ParserContext& context) { 
 	switch(context.token.first) {
 		case TokenType::Character:
 		{
@@ -14,28 +12,28 @@ void* ParseRegularExpression(ParserContext& context) {
 			assert(context.token.first == TokenType::EndOfFile);
 			auto P1 = context.Use();
 
-			{ return nullptr; }
+			{ return new AST::RegularExpression(P0); }
 		}
 		default:
 			return nullptr;
 	}
 }
 
-void* ParseOptionalSequence(ParserContext& context) { 
+AST::Sequence* ParseOptionalSequence(ParserContext& context) { 
 	switch(context.token.first) {
 		case TokenType::Character:
 		{
 			auto P0 = ParseExpression(context); 
 			auto P1 = ParseOptionalSequence(context); 
 
-			{ return nullptr; }
+			{ return new AST::Sequence(P0, P1); }
 		}
 		default:
 			return nullptr;
 	}
 }
 
-void* ParseExpression(ParserContext& context) { 
+AST::Expression* ParseExpression(ParserContext& context) { 
 	switch(context.token.first) {
 		case TokenType::Character:
 		{
@@ -43,21 +41,21 @@ void* ParseExpression(ParserContext& context) {
 			auto P0 = context.Use();
 			auto P1 = ParseOptionalQuantifier(context); 
 
-			{ return nullptr; }
+			{ return new AST::Expression(P0.second, P1); }
 		}
 		default:
 			return nullptr;
 	}
 }
 
-void* ParseOptionalQuantifier(ParserContext& context) { 
+AST::Quantifier* ParseOptionalQuantifier(ParserContext& context) { 
 	switch(context.token.first) {
 		case TokenType::Quantifier:
 		{
 			assert(context.token.first == TokenType::Quantifier);
 			auto P0 = context.Use();
 
-			{ return nullptr; }
+			{ return new AST::Quantifier(P0.second); }
 		}
 		default:
 			return nullptr;

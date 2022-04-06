@@ -7,6 +7,7 @@ std::string EmitHeader(Grammar& grammar) {
 
 	header << "#pragma once\n";
 	header << "#include \"TokenStream.h\"\n";
+	header << grammar.ast.first;
 	header << "\n";
 	header << "namespace " << grammar.ast.second[0].first << " {\n";
 	header << "\n";
@@ -46,7 +47,6 @@ std::string EmitParser(Grammar& grammar) {
 	parser << "#include <assert.h>\n";
 	parser << "#include <utility>\n";
 	parser << "#include \"Parser.h\"\n";
-	parser << grammar.ast.first;
 	parser << "\n";
 	parser << "namespace " << grammar.ast.second[0].first << " {\n";
 	parser << "\n";

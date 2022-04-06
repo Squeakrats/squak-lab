@@ -1,6 +1,8 @@
 #pragma once
 #include "TokenStream.h"
 
+#include "AST.h"
+
 namespace RegularExpression {
 
 enum class TokenType {
@@ -20,9 +22,9 @@ public:
 	Token Use() { auto old = this->token; this->token = this->stream.Next(); return old; }
 };
 
-void* ParseRegularExpression(ParserContext& context);
-void* ParseOptionalSequence(ParserContext& context);
-void* ParseExpression(ParserContext& context);
-void* ParseOptionalQuantifier(ParserContext& context);
+AST::RegularExpression* ParseRegularExpression(ParserContext& context);
+AST::Sequence* ParseOptionalSequence(ParserContext& context);
+AST::Expression* ParseExpression(ParserContext& context);
+AST::Quantifier* ParseOptionalQuantifier(ParserContext& context);
 
 }

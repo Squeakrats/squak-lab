@@ -8,5 +8,6 @@ TEST(Compiler, RegularExpressionTokenizer) {
 	TokenStream<Token> stream(source, Tokenize);
 	ParserContext context{ stream.Next(), stream };
 
-	ParseRegularExpression(context);
+	AST::RegularExpression* ast = ParseRegularExpression(context);
+	ASSERT_EQ(ast->sequence->lhs->character, "a");
 }
