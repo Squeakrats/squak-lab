@@ -15,6 +15,8 @@ Token Tokenize(std::stringstream& source) {
 			case '*':
 			case '?':
 				return Token{ TokenType::Quantifier, std::string(1, current) };
+			case '^':
+				return Token{ TokenType::Not, std::string(1, current) };
 			case '[':
 				return Token{ TokenType::LeftBracket, std::string(1, current) };
 			case ']':

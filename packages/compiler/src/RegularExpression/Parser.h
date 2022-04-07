@@ -9,6 +9,7 @@ enum class TokenType {
 	Character,
 	EndOfFile,
 	LeftBracket,
+	Not,
 	Quantifier,
 	RightBracket,
 };
@@ -29,6 +30,7 @@ AST::Sequence* ParseOptionalSequence(ParserContext& context);
 AST::Expression* ParseExpression(ParserContext& context);
 AST::Value* ParseValue(ParserContext& context);
 AST::CharacterClass* ParseCharacterClass(ParserContext& context);
+AST::Not* ParseOptionalNot(ParserContext& context);
 AST::CharacterClassList* ParseCharacterClassList(ParserContext& context);
 AST::Quantifier* ParseOptionalQuantifier(ParserContext& context);
 

@@ -10,6 +10,7 @@ struct Expression;
 struct Quantifier;
 struct Value;
 struct CharacterClassList;
+struct Not;
 
 struct RegularExpression {
 	std::shared_ptr<Sequence> sequence;
@@ -39,9 +40,10 @@ struct Character {
 
 
 struct CharacterClass {
+	std::shared_ptr<Not> not;
 	std::shared_ptr<CharacterClassList> list;
 
-	CharacterClass(CharacterClassList* list) : list(list) {};
+	CharacterClass(Not* not, CharacterClassList* list) : not(not), list(list) {};
 };
 
 struct CharacterClassList {
@@ -58,6 +60,8 @@ struct Value {
 	Value(Character* character) : character(character) {};
 	Value(CharacterClass* characterClass) : characterClass(characterClass) {};
 };
+
+struct Not {};
 
 struct Quantifier {
 	std::string quantifier;

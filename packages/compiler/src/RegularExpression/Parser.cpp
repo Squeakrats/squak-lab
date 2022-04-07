@@ -76,11 +76,26 @@ AST::CharacterClass* ParseCharacterClass(ParserContext& context) {
 		{
 			assert(context.token.first == TokenType::LeftBracket);
 			auto P0 = context.Use();
-			auto P1 = ParseCharacterClassList(context); 
+			auto P1 = ParseOptionalNot(context); 
+			auto P2 = ParseCharacterClassList(context); 
 			assert(context.token.first == TokenType::RightBracket);
-			auto P2 = context.Use();
+			auto P3 = context.Use();
 
-			{ return new AST::CharacterClass(P1); }
+			{ return new AST::CharacterClass(P1, P2); }
+		}
+		default:
+			return nullptr;
+	}
+}
+
+AST::Not* ParseOptionalNot(ParserContext& context) { 
+	switch(context.token.first) {
+		case TokenType::Not:
+		{
+			assert(context.token.first == TokenType::Not);
+			auto P0 = context.Use();
+
+			{ return new AST::Not(); }
 		}
 		default:
 			return nullptr;

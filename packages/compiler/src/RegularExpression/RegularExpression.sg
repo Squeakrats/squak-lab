@@ -11,7 +11,9 @@
 <Value> {AST::Value*} ::= <Character> { return new AST::Value(new AST::Character(P0.second)); }
                         | <CharacterClass> { return new AST::Value(P0); };
 
-<CharacterClass> {AST::CharacterClass*} ::= <LeftBracket> <CharacterClassList> <RightBracket> { return new AST::CharacterClass(P1); };
+<CharacterClass> {AST::CharacterClass*} ::= <LeftBracket> <OptionalNot> <CharacterClassList> <RightBracket> { return new AST::CharacterClass(P1, P2); };
+
+<OptionalNot> {AST::Not*} ::= <Not> { return new AST::Not(); };
 
 <CharacterClassList> {AST::CharacterClassList*} ::= <Character> <CharacterClassList> { return new AST::CharacterClassList(P0.second, P1); };
 

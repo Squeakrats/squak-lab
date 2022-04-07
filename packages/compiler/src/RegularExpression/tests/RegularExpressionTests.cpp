@@ -50,3 +50,14 @@ TEST(RegularExpression, Number) {
 	EXPECT_EQ(dfa.Match("32"), true);
 	EXPECT_EQ(dfa.Match("32.a"), false);
 }
+
+TEST(RegularExpression, Negate) {
+	DFA dfa = RegularExpression::Create("[^abc]");
+
+	EXPECT_EQ(dfa.Match("d"), true);
+	EXPECT_EQ(dfa.Match("e"), true);
+	EXPECT_EQ(dfa.Match("f"), true);
+	EXPECT_EQ(dfa.Match("a"), false);
+	EXPECT_EQ(dfa.Match("b"), false);
+	EXPECT_EQ(dfa.Match("c"), false);
+}

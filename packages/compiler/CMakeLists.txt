@@ -8,6 +8,7 @@ set(SOURCE
 	src/NFA.h
 	src/TokenStream.h
 	src/RegularExpression/AST.h
+	src/RegularExpression/RegularExpression.sg
 	src/RegularExpression/RegularExpression.h
 	src/RegularExpression/RegularExpression.cpp
 	src/RegularExpression/Parser.h

@@ -18,12 +18,28 @@ NFA Create(AST::Value& value) {
 	}
 
 	if (value.characterClass != nullptr && value.characterClass->list != nullptr) {
-		NFA nfa = Create(value.characterClass->list->character[0]);
+		bool characters[256] = { 0 };
 
-		std::shared_ptr<AST::CharacterClassList> current = value.characterClass->list->rhs;
+		std::shared_ptr<AST::CharacterClassList> current = value.characterClass->list;
 		while (current != nullptr) {
-			nfa.Union(Create(current->character[0]));
+			characters[current->character[0]] = true;
 			current = current->rhs;
+		}
+
+		if (value.characterClass->not != nullptr) {
+			for (int i = 0; i < 256; i++) {
+				characters[i] = !characters[i];
+			}
+		}
+
+		NFA nfa{};
+		nfa.initialState = nfa.AddState();
+		nfa.acceptingState = nfa.AddState();
+		for (int i = 0; i < 256; i++) {
+			if (characters[i]) {
+				nfa.AddTransition(nfa.initialState, nfa.acceptingState, i);
+			}
+			characters[i] = !characters[i];
 		}
 
 		return nfa;
