@@ -13,5 +13,4 @@ public:
 	size_t Longest(std::string);
 
 	static DFA FromNFA(NFA& nfa);
-	static DFA FromRegularExpression(std::string expression);
 };
