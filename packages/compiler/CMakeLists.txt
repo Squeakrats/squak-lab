@@ -11,3 +11,6 @@ set(SOURCE
 
 add_library(compiler ${SOURCE})
 target_include_directories(compiler PUBLIC src/)
+
+add_executable(CompilerTests src/tests/CompilerTests.cpp)
+target_link_libraries(CompilerTests gtest_main compiler)
