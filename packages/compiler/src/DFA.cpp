@@ -84,3 +84,30 @@ bool DFA::Match(std::string text) {
 
 	return this->acceptingStates.find(state) != this->acceptingStates.end();
 }
+
+size_t DFA::Longest(std::string text) {
+	uint32_t state = this->initialState;
+
+	size_t longest = 0;
+
+	for (size_t i = 0; i < text.size(); i++) {
+		char character = text[i];
+
+		auto edges = this->states.find(state)->second;
+		auto nextState = edges.find(character);
+		if (nextState == edges.end()) {
+			return longest;
+		}
+
+		state = nextState->second;
+
+		if (this->acceptingStates.find(state) != this->acceptingStates.end()) {
+			longest = i + 1;
+		}
+		else if (longest > 0) {
+			return longest;
+		}
+	}
+
+	return longest;
+}

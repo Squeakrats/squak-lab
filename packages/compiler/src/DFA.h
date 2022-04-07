@@ -10,6 +10,7 @@ public:
 	std::set<uint32_t> acceptingStates{};
 
 	bool Match(std::string);
+	size_t Longest(std::string);
 
 	static DFA FromNFA(NFA& nfa);
 	static DFA FromRegularExpression(std::string expression);
