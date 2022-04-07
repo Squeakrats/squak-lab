@@ -48,6 +48,13 @@ NFA Create(AST::Expression& ast) {
 		return nfa;
 	}
 
+	if (ast.quantifier->quantifier == "*") {
+		nfa.AddTransition(nfa.initialState, nfa.acceptingState);
+		nfa.AddTransition(nfa.acceptingState, nfa.initialState);
+
+		return nfa;
+	}
+
 	if (ast.quantifier->quantifier == "?") {
 		nfa.AddTransition(nfa.initialState, nfa.acceptingState);
 

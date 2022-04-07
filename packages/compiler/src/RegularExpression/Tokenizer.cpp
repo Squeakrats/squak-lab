@@ -12,6 +12,7 @@ Token Tokenize(std::stringstream& source) {
 		char current;
 		switch (current = source.get()) {
 			case '+':
+			case '*':
 			case '?':
 				return Token{ TokenType::Quantifier, std::string(1, current) };
 			case '[':

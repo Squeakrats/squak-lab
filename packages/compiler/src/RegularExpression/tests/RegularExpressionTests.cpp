@@ -13,6 +13,16 @@ TEST(RegularExpression, PlusOperator) {
 	EXPECT_EQ(dfa.Match(""), false);
 }
 
+TEST(RegularExpression, StarOperator) {
+	DFA dfa = RegularExpression::Create("ba*");
+
+	EXPECT_EQ(dfa.Match("b"), true);
+	EXPECT_EQ(dfa.Match("ba"), true);
+	EXPECT_EQ(dfa.Match("baa"), true);
+	EXPECT_EQ(dfa.Match("bb"), false);
+	EXPECT_EQ(dfa.Match(""), false);
+}
+
 TEST(RegularExpression, OptionalOperator) {
 	DFA dfa = RegularExpression::Create("a?c");
 
