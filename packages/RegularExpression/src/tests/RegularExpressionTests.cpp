@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include  "RegularExpression/RegularExpression.h"
+#include  "../RegularExpression.h"
 
 using namespace RegularExpression;
 
