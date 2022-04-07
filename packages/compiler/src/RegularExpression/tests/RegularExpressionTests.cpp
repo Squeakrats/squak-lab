@@ -37,6 +37,6 @@ TEST(RegularExpression, Number) {
 	EXPECT_EQ(dfa.Match("0123"), true);
 	EXPECT_EQ(dfa.Match("434"), true);
 	EXPECT_EQ(dfa.Match("433.232"), true);
-	EXPECT_EQ(dfa.Match("32"), false);
+	EXPECT_EQ(dfa.Match("32"), true);
 	EXPECT_EQ(dfa.Match("32.a"), false);
 }
