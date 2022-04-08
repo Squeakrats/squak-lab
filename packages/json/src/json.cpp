@@ -12,6 +12,9 @@ Value Create(ast::Value& ast) {
 	else if (std::holds_alternative<bool>(ast.value)) {
 		return Value{ std::get<bool>(ast.value) };
 	}
+	else if (std::holds_alternative<double>(ast.value)) {
+		return Value{ std::get<double>(ast.value) };
+	}
 
 	throw std::exception("unhandled json value");
 }

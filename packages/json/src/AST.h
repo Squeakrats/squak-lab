@@ -31,9 +31,9 @@ struct ObjectEntry {
 };
 
 struct Value {
-	std::variant<bool, std::string> value{};
+	std::variant<double, bool, std::string> value{};
 
-	Value(std::variant<bool, std::string> value) : value(value) {};
+	Value(std::variant<double, bool, std::string> value) : value(value) {};
 };
 
 };

@@ -16,6 +16,7 @@ Token Tokenize(std::stringstream& stream) {
 		 TokenType::True,
 		 TokenType::False,
 		 TokenType::StringLiteral,
+		 TokenType::NumberLiteral,
 		 std::nullopt,
 	};
 
@@ -27,6 +28,7 @@ Token Tokenize(std::stringstream& stream) {
 		"true",
 		"false",
 		"\"[^\"]*\"",
+		"[0123456789]+",
 		"[\t\n ]",
 	})));
 
@@ -148,7 +150,7 @@ std::shared_ptr<ast::Value> ParseValue(ParserContext& context) {
 			assert(context.token.first == TokenType::NumberLiteral);
 			auto P0 = context.Use();
 
-			{ return nullptr; }
+			{ return std::make_shared<ast::Value>(std::stod(P0.second)); }
 		}
 		default:
 			return nullptr;

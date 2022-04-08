@@ -19,10 +19,11 @@ public:
 
 class Value {
 public:
-	std::variant<Object, std::string, bool> value;
+	std::variant<Object, std::string, bool, double> value;
 
 	std::string AsString() { return std::get<std::string>(this->value); }
 	bool AsBool() { return std::get<bool>(this->value); }
+	double AsNumber() { return std::get<double>(this->value); }
 };
 
 Object Create(std::string source);
