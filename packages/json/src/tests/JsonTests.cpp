@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include  "../parser.h"
+#include  "../json.h"
 
-using namespace JSON;
+using namespace json;
 
 TEST(JSON, Parse) {
 	std::string rawJSON(R"(
@@ -11,14 +11,11 @@ TEST(JSON, Parse) {
 		}
 	)");
 
-	TokenStream<Token> stream(rawJSON, Tokenize);
-	ParserContext context{ stream.Next(), stream };
+	JSON json = JSON::Create(rawJSON);
 
-	std::shared_ptr<AST::Object> object = ParseJSON(context);
+	EXPECT_EQ(json.object.entries->entry->key, "\"Key1\"");
+	EXPECT_EQ(std::get<std::string>(json.object.entries->entry->value->value), "\"Value1\"");
 
-	EXPECT_EQ(object->entries->entry->key, "\"Key1\"");
-	EXPECT_EQ(std::get<std::string>(object->entries->entry->value->value), "\"Value1\"");
-
-	EXPECT_EQ(object->entries->rhs->entry->key, "\"Key2\"");
-	EXPECT_EQ(std::get<bool>(object->entries->rhs->entry->value->value), true);
+	EXPECT_EQ(json.object.entries->rhs->entry->key, "\"Key2\"");
+	EXPECT_EQ(std::get<bool>(json.object.entries->rhs->entry->value->value), true);
 }

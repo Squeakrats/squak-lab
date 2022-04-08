@@ -5,7 +5,7 @@
 #include "RegularExpression.h"
 #include <optional>
 
-namespace JSON {
+namespace json {
 
 Token Tokenize(std::stringstream& stream) {
 	static std::vector<std::optional<TokenType>> tokens = {
@@ -42,7 +42,7 @@ Token Tokenize(std::stringstream& stream) {
 		}
 	}
 }
-std::shared_ptr<AST::Object> ParseJSON(ParserContext& context) { 
+std::shared_ptr<ast::Object> Parsejson(ParserContext& context) { 
 	switch(context.token.first) {
 		case TokenType::LeftBrace:
 		{
@@ -57,7 +57,7 @@ std::shared_ptr<AST::Object> ParseJSON(ParserContext& context) {
 	}
 }
 
-std::shared_ptr<AST::Object> ParseObject(ParserContext& context) { 
+std::shared_ptr<ast::Object> ParseObject(ParserContext& context) { 
 	switch(context.token.first) {
 		case TokenType::LeftBrace:
 		{
@@ -67,14 +67,14 @@ std::shared_ptr<AST::Object> ParseObject(ParserContext& context) {
 			assert(context.token.first == TokenType::RightBrace);
 			auto P2 = context.Use();
 
-			{ return std::make_shared<AST::Object>(P1); }
+			{ return std::make_shared<ast::Object>(P1); }
 		}
 		default:
 			return nullptr;
 	}
 }
 
-std::shared_ptr<AST::ObjectEntries> ParseObjectEntries(ParserContext& context) { 
+std::shared_ptr<ast::ObjectEntries> ParseObjectEntries(ParserContext& context) { 
 	switch(context.token.first) {
 		case TokenType::StringLiteral:
 		{
@@ -82,14 +82,14 @@ std::shared_ptr<AST::ObjectEntries> ParseObjectEntries(ParserContext& context) {
 			auto P1 = ParseOptionalComma(context); 
 			auto P2 = ParseObjectEntries(context); 
 
-			{ return std::make_shared<AST::ObjectEntries>(P0, P2); }
+			{ return std::make_shared<ast::ObjectEntries>(P0, P2); }
 		}
 		default:
 			return nullptr;
 	}
 }
 
-std::shared_ptr<AST::ObjectEntry> ParseObjectEntry(ParserContext& context) { 
+std::shared_ptr<ast::ObjectEntry> ParseObjectEntry(ParserContext& context) { 
 	switch(context.token.first) {
 		case TokenType::StringLiteral:
 		{
@@ -99,7 +99,7 @@ std::shared_ptr<AST::ObjectEntry> ParseObjectEntry(ParserContext& context) {
 			auto P1 = context.Use();
 			auto P2 = ParseValue(context); 
 
-			{ return std::make_shared<AST::ObjectEntry>(P0.second, P2); }
+			{ return std::make_shared<ast::ObjectEntry>(P0.second, P2); }
 		}
 		default:
 			return nullptr;
@@ -120,28 +120,28 @@ void* ParseOptionalComma(ParserContext& context) {
 	}
 }
 
-std::shared_ptr<AST::Value> ParseValue(ParserContext& context) { 
+std::shared_ptr<ast::Value> ParseValue(ParserContext& context) { 
 	switch(context.token.first) {
 		case TokenType::True:
 		{
 			assert(context.token.first == TokenType::True);
 			auto P0 = context.Use();
 
-			{ return std::make_shared<AST::Value>(true); }
+			{ return std::make_shared<ast::Value>(true); }
 		}
 		case TokenType::False:
 		{
 			assert(context.token.first == TokenType::False);
 			auto P0 = context.Use();
 
-			{ return std::make_shared<AST::Value>(false); }
+			{ return std::make_shared<ast::Value>(false); }
 		}
 		case TokenType::StringLiteral:
 		{
 			assert(context.token.first == TokenType::StringLiteral);
 			auto P0 = context.Use();
 
-			{ return std::make_shared<AST::Value>(P0.second); }
+			{ return std::make_shared<ast::Value>(P0.second); }
 		}
 		case TokenType::NumberLiteral:
 		{

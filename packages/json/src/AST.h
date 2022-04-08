@@ -3,7 +3,7 @@
 #include <variant>
 #include <string>
 
-namespace JSON::AST {
+namespace json::ast {
 
 struct Object;
 struct ObjectEntries;

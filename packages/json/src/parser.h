@@ -2,9 +2,9 @@
 #pragma once
 #include "TokenStream.h"
 
-#include "AST.h"
+#include "ast.h"
 
-namespace JSON {
+namespace json {
 
 enum class TokenType {
 	Colon,
@@ -29,11 +29,11 @@ public:
 	Token Use() { auto old = this->token; this->token = this->stream.Next(); return old; }
 };
 
-std::shared_ptr<AST::Object> ParseJSON(ParserContext& context);
-std::shared_ptr<AST::Object> ParseObject(ParserContext& context);
-std::shared_ptr<AST::ObjectEntries> ParseObjectEntries(ParserContext& context);
-std::shared_ptr<AST::ObjectEntry> ParseObjectEntry(ParserContext& context);
+std::shared_ptr<ast::Object> Parsejson(ParserContext& context);
+std::shared_ptr<ast::Object> ParseObject(ParserContext& context);
+std::shared_ptr<ast::ObjectEntries> ParseObjectEntries(ParserContext& context);
+std::shared_ptr<ast::ObjectEntry> ParseObjectEntry(ParserContext& context);
 void* ParseOptionalComma(ParserContext& context);
-std::shared_ptr<AST::Value> ParseValue(ParserContext& context);
+std::shared_ptr<ast::Value> ParseValue(ParserContext& context);
 
 }

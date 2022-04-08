@@ -1,5 +1,5 @@
 {
-#include "AST.h"
+#include "ast.h"
 }
 
 [
@@ -13,17 +13,17 @@
     <> ::= <[\t\n ]>;
 ]
 
-<JSON> {std::shared_ptr<AST::Object>} ::= <Object> <EndOfFile> { return P0; };
+<json> {std::shared_ptr<ast::Object>} ::= <Object> <EndOfFile> { return P0; };
 
-<Object> {std::shared_ptr<AST::Object>} ::= <LeftBrace> <ObjectEntries> <RightBrace> { return std::make_shared<AST::Object>(P1); };
+<Object> {std::shared_ptr<ast::Object>} ::= <LeftBrace> <ObjectEntries> <RightBrace> { return std::make_shared<ast::Object>(P1); };
 
-<ObjectEntries> {std::shared_ptr<AST::ObjectEntries>} ::= <ObjectEntry> <OptionalComma> <ObjectEntries> { return std::make_shared<AST::ObjectEntries>(P0, P2); };
+<ObjectEntries> {std::shared_ptr<ast::ObjectEntries>} ::= <ObjectEntry> <OptionalComma> <ObjectEntries> { return std::make_shared<ast::ObjectEntries>(P0, P2); };
 
-<ObjectEntry> {std::shared_ptr<AST::ObjectEntry>} ::= <StringLiteral> <Colon> <Value> { return std::make_shared<AST::ObjectEntry>(P0.second, P2); };
+<ObjectEntry> {std::shared_ptr<ast::ObjectEntry>} ::= <StringLiteral> <Colon> <Value> { return std::make_shared<ast::ObjectEntry>(P0.second, P2); };
 
 <OptionalComma> {void*} ::= <Comma> { return nullptr; };
 
-<Value> {std::shared_ptr<AST::Value>} ::= <True> { return std::make_shared<AST::Value>(true); }
-                  | <False> { return std::make_shared<AST::Value>(false); }
-                  | <StringLiteral> { return std::make_shared<AST::Value>(P0.second); }
+<Value> {std::shared_ptr<ast::Value>} ::= <True> { return std::make_shared<ast::Value>(true); }
+                  | <False> { return std::make_shared<ast::Value>(false); }
+                  | <StringLiteral> { return std::make_shared<ast::Value>(P0.second); }
                   | <NumberLiteral> { return nullptr; };
