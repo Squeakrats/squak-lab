@@ -2,19 +2,19 @@
 #include "AST.h"
 }
 
-<RegularExpression> {AST::RegularExpression*} ::= <OptionalSequence> <EndOfFile> { return new AST::RegularExpression(P0); }; 
+<RegularExpression> {std::shared_ptr<AST::RegularExpression>} ::= <OptionalSequence> <EndOfFile> { return std::make_shared<AST::RegularExpression>(P0); }; 
 
-<OptionalSequence> {AST::Sequence*} ::= <Expression> <OptionalSequence> { return new AST::Sequence(P0, P1); }; 
+<OptionalSequence> {std::shared_ptr<AST::Sequence>} ::= <Expression> <OptionalSequence> { return std::make_shared<AST::Sequence>(P0, P1); }; 
 
-<Expression> {AST::Expression*} ::= <Value> <OptionalQuantifier> { return new AST::Expression(P0, P1); }; 
+<Expression> {std::shared_ptr<AST::Expression>} ::= <Value> <OptionalQuantifier> { return std::make_shared<AST::Expression>(P0, P1); }; 
 
-<Value> {AST::Value*} ::= <Character> { return new AST::Value(new AST::Character(P0.second)); }
-                        | <CharacterClass> { return new AST::Value(P0); };
+<Value> {std::shared_ptr<AST::Value>} ::= <Character> { return std::make_shared<AST::Value>(std::make_shared<AST::Character>(P0.second)); }
+                        | <CharacterClass> { return std::make_shared<AST::Value>(P0); };
 
-<CharacterClass> {AST::CharacterClass*} ::= <LeftBracket> <OptionalNot> <CharacterClassList> <RightBracket> { return new AST::CharacterClass(P1, P2); };
+<CharacterClass> {std::shared_ptr<AST::CharacterClass>} ::= <LeftBracket> <OptionalNot> <CharacterClassList> <RightBracket> { return std::make_shared<AST::CharacterClass>(P1, P2); };
 
-<OptionalNot> {AST::Not*} ::= <Not> { return new AST::Not(); };
+<OptionalNot> {std::shared_ptr<AST::Not>} ::= <Not> { return std::make_shared<AST::Not>(); };
 
-<CharacterClassList> {AST::CharacterClassList*} ::= <Character> <CharacterClassList> { return new AST::CharacterClassList(P0.second, P1); };
+<CharacterClassList> {std::shared_ptr<AST::CharacterClassList>} ::= <Character> <CharacterClassList> { return std::make_shared<AST::CharacterClassList>(P0.second, P1); };
 
-<OptionalQuantifier> {AST::Quantifier*} ::= <Quantifier> { return new AST::Quantifier(P0.second); }; 
+<OptionalQuantifier> {std::shared_ptr<AST::Quantifier>} ::= <Quantifier> { return std::make_shared<AST::Quantifier>(P0.second); }; 

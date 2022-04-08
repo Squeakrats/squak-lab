@@ -100,8 +100,7 @@ NFA Create(AST::RegularExpression& ast) {
 NFA Create(std::string expression) {
 	TokenStream<Token> stream(expression, Tokenize);
 	ParserContext context{ stream.Next(), stream };
-	AST::RegularExpression* ast = ParseRegularExpression(context);
-	NFA nfa = Create(*ast);
+	NFA nfa = Create(*ParseRegularExpression(context));
 
 	return nfa;
 }

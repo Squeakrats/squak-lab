@@ -15,21 +15,21 @@ struct Not;
 struct RegularExpression {
 	std::shared_ptr<Sequence> sequence;
 
-	RegularExpression(Sequence* sequence) : sequence(sequence) {};
+	RegularExpression(std::shared_ptr<Sequence> sequence) : sequence(sequence) {};
 };
 
 struct Sequence {
 	std::shared_ptr<Expression> lhs;
 	std::shared_ptr<Sequence> rhs;
 
-	Sequence(Expression* lhs, Sequence* rhs) : lhs(lhs), rhs(rhs) {};
+	Sequence(std::shared_ptr<Expression> lhs, std::shared_ptr<Sequence> rhs) : lhs(lhs), rhs(rhs) {};
 };
 
 struct Expression {
 	std::shared_ptr<Value> value;
 	std::shared_ptr<Quantifier> quantifier;
 
-	Expression(Value* value, Quantifier* quantifier) : value(value), quantifier(quantifier) {};
+	Expression(std::shared_ptr<Value> value, std::shared_ptr<Quantifier> quantifier) : value(value), quantifier(quantifier) {};
 };
 
 struct Character {
@@ -43,22 +43,22 @@ struct CharacterClass {
 	std::shared_ptr<Not> not;
 	std::shared_ptr<CharacterClassList> list;
 
-	CharacterClass(Not* not, CharacterClassList* list) : not(not), list(list) {};
+	CharacterClass(std::shared_ptr<Not> not, std::shared_ptr<CharacterClassList> list) : not(not), list(list) {};
 };
 
 struct CharacterClassList {
 	std::string character;
 	std::shared_ptr<CharacterClassList> rhs;
 
-	CharacterClassList(std::string character, CharacterClassList* rhs) : character(character), rhs(rhs) {};
+	CharacterClassList(std::string character, std::shared_ptr<CharacterClassList> rhs) : character(character), rhs(rhs) {};
 };
 
 struct Value {
 	std::shared_ptr<Character> character;
 	std::shared_ptr<CharacterClass> characterClass;
 
-	Value(Character* character) : character(character) {};
-	Value(CharacterClass* characterClass) : characterClass(characterClass) {};
+	Value(std::shared_ptr<Character> character) : character(character) {};
+	Value(std::shared_ptr<CharacterClass> characterClass) : characterClass(characterClass) {};
 };
 
 struct Not {};

@@ -1,3 +1,4 @@
+// This file was auto-generated 
 #pragma once
 #include "TokenStream.h"
 
@@ -25,13 +26,13 @@ public:
 	Token Use() { auto old = this->token; this->token = this->stream.Next(); return old; }
 };
 
-AST::RegularExpression* ParseRegularExpression(ParserContext& context);
-AST::Sequence* ParseOptionalSequence(ParserContext& context);
-AST::Expression* ParseExpression(ParserContext& context);
-AST::Value* ParseValue(ParserContext& context);
-AST::CharacterClass* ParseCharacterClass(ParserContext& context);
-AST::Not* ParseOptionalNot(ParserContext& context);
-AST::CharacterClassList* ParseCharacterClassList(ParserContext& context);
-AST::Quantifier* ParseOptionalQuantifier(ParserContext& context);
+std::shared_ptr<AST::RegularExpression> ParseRegularExpression(ParserContext& context);
+std::shared_ptr<AST::Sequence> ParseOptionalSequence(ParserContext& context);
+std::shared_ptr<AST::Expression> ParseExpression(ParserContext& context);
+std::shared_ptr<AST::Value> ParseValue(ParserContext& context);
+std::shared_ptr<AST::CharacterClass> ParseCharacterClass(ParserContext& context);
+std::shared_ptr<AST::Not> ParseOptionalNot(ParserContext& context);
+std::shared_ptr<AST::CharacterClassList> ParseCharacterClassList(ParserContext& context);
+std::shared_ptr<AST::Quantifier> ParseOptionalQuantifier(ParserContext& context);
 
 }
