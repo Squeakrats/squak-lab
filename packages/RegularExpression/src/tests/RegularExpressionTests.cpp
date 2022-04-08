@@ -61,12 +61,3 @@ TEST(RegularExpression, Negate) {
 	EXPECT_EQ(dfa.Match("b"), false);
 	EXPECT_EQ(dfa.Match("c"), false);
 }
-
-TEST(RegularExpression, Longest) {
-	DFA dfa = RegularExpression::Create("a+");
-
-	EXPECT_EQ(dfa.Longest(""), 0);
-	EXPECT_EQ(dfa.Longest("a"), 1);
-	EXPECT_EQ(dfa.Longest("aa"), 2);
-	EXPECT_EQ(dfa.Longest("aab"), 2);
-}

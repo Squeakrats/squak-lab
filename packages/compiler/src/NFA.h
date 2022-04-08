@@ -5,8 +5,9 @@
 
 class NFA {
 	struct NFAState {
-		std::map<char, uint32_t> edges;
-		std::set<uint32_t> epsilons;
+		std::map<char, uint32_t> edges{};
+		std::set<uint32_t> epsilons{};
+		uint32_t tag{};
 	};
 
 public:

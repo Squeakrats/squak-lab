@@ -61,7 +61,16 @@ DFA DFA::FromNFA(NFA& nfa) {
 			edges.insert(std::make_pair(edge.first, idGenerator.GetId(edge.second)));
 		}
 
-		dfa.states.insert(std::make_pair(id, edges));
+		uint32_t tag = 0;
+		for (uint32_t stateId : state.first) {
+			uint32_t stateTag = nfa.GetState(stateId).tag;
+			if (stateTag != 0) {
+				tag = stateTag;
+				break;
+			}
+		}
+
+		dfa.states.insert(std::make_pair(id, DFAState{ edges, tag }));
 		if (state.first.find(nfa.acceptingState) != state.first.end()) {
 			dfa.acceptingStates.insert(id);
 		}
@@ -71,40 +80,39 @@ DFA DFA::FromNFA(NFA& nfa) {
 }
 
 bool DFA::Match(std::string text) {
-	uint32_t state = this->initialState;
+	uint32_t stateId = this->initialState;
 	for (char character : text) {
-		auto edges = this->states.find(state)->second;
-		auto nextState = edges.find(character);
-		if (nextState == edges.end()) {
+		auto state = this->states.at(stateId);
+		auto nextStateId = state.edges.find(character);
+		if (nextStateId == state.edges.end()) {
 			return false;
 		}
 
-		state = nextState->second;
+		stateId = nextStateId->second;
 	}
 
-	return this->acceptingStates.find(state) != this->acceptingStates.end();
+	return this->acceptingStates.find(stateId) != this->acceptingStates.end();
 }
 
-size_t DFA::Longest(std::string text) {
-	uint32_t state = this->initialState;
+std::pair<size_t, size_t> DFA::Longest(std::string text) {
+	uint32_t stateId = this->initialState;
 
-	size_t longest = 0;
+	std::pair<size_t, size_t> longest = std::make_pair(0, 0);
 
 	for (size_t i = 0; i < text.size(); i++) {
 		char character = text[i];
-
-		auto edges = this->states.find(state)->second;
-		auto nextState = edges.find(character);
-		if (nextState == edges.end()) {
+		auto state = this->states.at(stateId);
+		auto nextStateId = state.edges.find(character);
+		if (nextStateId == state.edges.end()) {
 			return longest;
 		}
 
-		state = nextState->second;
+		stateId = nextStateId->second;
 
-		if (this->acceptingStates.find(state) != this->acceptingStates.end()) {
-			longest = i + 1;
+		if (this->acceptingStates.find(stateId) != this->acceptingStates.end()) {
+			longest = std::make_pair(i+1, stateId);
 		}
-		else if (longest > 0) {
+		else if (longest.first > 0) {
 			return longest;
 		}
 	}
