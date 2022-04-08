@@ -2,7 +2,7 @@
 #pragma once
 #include "TokenStream.h"
 
-#include "ast.h"
+#include "AST.h"
 
 namespace json {
 

@@ -11,7 +11,7 @@
 <Value> {std::shared_ptr<AST::Value>} ::= <Character> { return std::make_shared<AST::Value>(std::make_shared<AST::Character>(P0.second)); }
                         | <CharacterClass> { return std::make_shared<AST::Value>(P0); };
 
-<CharacterClass> {std::shared_ptr<AST::CharacterClass>} ::= <LeftBracket> <OptionalNot> <CharacterClassList> <RightBracket> { return std::make_shared<AST::CharacterClass>(P1, P2); };
+<CharacterClass> {std::shared_ptr<AST::CharacterClass>} ::= <LeftBracket> <OptionalNot> <CharacterClassList> <RightBracket> { return std::make_shared<AST::CharacterClass>(P1 != nullptr, P2); };
 
 <OptionalNot> {std::shared_ptr<AST::Not>} ::= <Not> { return std::make_shared<AST::Not>(); };
 

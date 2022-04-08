@@ -82,7 +82,7 @@ std::shared_ptr<AST::CharacterClass> ParseCharacterClass(ParserContext& context)
 			assert(context.token.first == TokenType::RightBracket);
 			auto P3 = context.Use();
 
-			{ return std::make_shared<AST::CharacterClass>(P1, P2); }
+			{ return std::make_shared<AST::CharacterClass>(P1 != nullptr, P2); }
 		}
 		default:
 			return nullptr;

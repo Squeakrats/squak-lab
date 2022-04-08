@@ -1,5 +1,6 @@
 #include "json.h"
 #include "parser.h"
+#include <assert.h>
 
 namespace json {
 
@@ -16,7 +17,8 @@ Value Create(ast::Value& ast) {
 		return Value{ std::get<double>(ast.value) };
 	}
 
-	throw std::exception("unhandled json value");
+	// unhandled json value
+	throw std::exception();
 }
 
 Object Create(ast::Object& ast) {

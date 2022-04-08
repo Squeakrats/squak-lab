@@ -40,10 +40,10 @@ struct Character {
 
 
 struct CharacterClass {
-	std::shared_ptr<Not> not;
+	bool negated;
 	std::shared_ptr<CharacterClassList> list;
 
-	CharacterClass(std::shared_ptr<Not> not, std::shared_ptr<CharacterClassList> list) : not(not), list(list) {};
+	CharacterClass(bool negated, std::shared_ptr<CharacterClassList> list) : negated(negated), list(list) {};
 };
 
 struct CharacterClassList {

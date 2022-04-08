@@ -33,7 +33,8 @@ std::map<size_t, std::set<std::string>> Grammar::Rules(std::string symbol) {
 	for (size_t i = 0; i < production.expression.size(); i++) {
 		for (auto terminal : this->First(symbol, i)) {
 			if (table.find(terminal) != table.end()) {
-				throw std::exception("duplicate terminal");
+				// duplicate terminal
+				assert(false);
 			}
 
 			table.insert(std::make_pair(terminal, i));

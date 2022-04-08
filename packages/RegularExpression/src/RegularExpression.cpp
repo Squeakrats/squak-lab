@@ -1,5 +1,6 @@
 #include "RegularExpression.h"
 #include "Parser.h"
+#include <assert.h>
 
 namespace RegularExpression {
 
@@ -26,7 +27,7 @@ NFA Create(AST::Value& value) {
 			current = current->rhs;
 		}
 
-		if (value.characterClass->not != nullptr) {
+		if (value.characterClass->negated) {
 			for (int i = 0; i < 256; i++) {
 				characters[i] = !characters[i];
 			}
@@ -45,7 +46,8 @@ NFA Create(AST::Value& value) {
 		return nfa;
 	}
 
-	throw std::exception("unhandle value");
+	// unhandled value
+	throw std::exception();
 }
 
 NFA Create(AST::Expression& ast) {
@@ -77,7 +79,8 @@ NFA Create(AST::Expression& ast) {
 		return nfa;
 	}
 
-	throw std::exception("unhandle quantifier");
+	// unhandled quantifier
+	throw std::exception();
 }
 
 NFA Create(AST::RegularExpression& ast) {
