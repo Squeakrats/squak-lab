@@ -134,15 +134,17 @@ void EmitFile(std::string name, std::string contents) {
 }
 
 int main(int argc, char* argv[]) {
-	std::ifstream file(argv[1]);
+	std::string source(argv[1]);
+
+	std::ifstream file(source);
 	std::stringstream contents{};
-	
 	contents << file.rdbuf();
 
 	Grammar grammar = Grammar::Create(contents.str());
 
-	std::string outputDir(argv[2]);
-	EmitFile(outputDir + "Parser.h", EmitHeader(grammar));
-	EmitFile(outputDir + "Parser.cpp", EmitParser(grammar));
+	std::string outDir(source.substr(0, source.find_last_of("\\/") + 1));
+	EmitFile(outDir + "Parser.h", EmitHeader(grammar));
+	EmitFile(outDir + "Parser.cpp", EmitParser(grammar));
+
     return 0;
 }
