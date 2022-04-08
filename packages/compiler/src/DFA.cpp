@@ -18,7 +18,7 @@ public:
 	}
 };
 
-DFA DFA::FromNFA(NFA& nfa) {
+DFA DFA::FromNFA(NFA nfa) {
 	std::map<std::set<uint32_t>, std::map<char, std::set<uint32_t>>> states{};
 
 	std::set<uint32_t> initialState = nfa.calculateEpsilonClosure(nfa.initialState);

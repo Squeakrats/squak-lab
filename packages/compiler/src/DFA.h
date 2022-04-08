@@ -16,5 +16,5 @@ public:
 	bool Match(std::string);
 	std::pair<std::string, uint32_t> Longest(std::stringstream& stream);
 
-	static DFA FromNFA(NFA& nfa);
+	static DFA FromNFA(NFA nfa);
 };
