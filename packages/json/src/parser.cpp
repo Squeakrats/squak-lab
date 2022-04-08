@@ -1,9 +1,33 @@
+// This file was auto-generated 
 #include <assert.h>
 #include <utility>
 #include "Parser.h"
+#include "RegularExpression.h"
 
 namespace JSON {
 
+Token Tokenize(std::stringstream& stream) {
+	static std::vector<TokenType> tokens = {
+		 TokenType::LeftBrace,
+		 TokenType::RightBrace,
+		 TokenType::Colon,
+		 TokenType::StringLiteral,
+	};
+
+	static DFA dfa = DFA::FromNFA(RegularExpression::Create(std::vector<std::string>({
+		R"({)",
+		R"(})",
+		R"(:)",
+		R"("[^"]*")",
+	})));
+
+	auto longest = dfa.Longest(stream);
+	if (longest.second != 0 && longest.second <= tokens.size()) {
+		return std::make_pair(tokens[longest.second - 1], longest.first); 
+	}
+
+	return std::make_pair(TokenType::EndOfFile, "");
+}
 void* ParseJSON(ParserContext& context) { 
 	switch(context.token.first) {
 		case TokenType::LeftBrace:
