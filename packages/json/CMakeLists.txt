@@ -9,7 +9,7 @@ add_library(json
 	src/json.sg
 )
 target_include_directories(json PUBLIC src/)
-target_link_libraries(json compiler)
+target_link_libraries(json compiler RegularExpression)
 
 add_executable(JsonTests src/tests/JsonTests.cpp)
 target_link_libraries(JsonTests gtest_main json)
