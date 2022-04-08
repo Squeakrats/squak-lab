@@ -2,8 +2,10 @@ cmake_minimum_required(VERSION 3.8)
 project(json)
 
 add_library(json
+	src/AST.h
 	src/parser.h
 	src/parser.cpp
+	src/tokenize.cpp
 	src/json.sg
 )
 target_include_directories(json PUBLIC src/)

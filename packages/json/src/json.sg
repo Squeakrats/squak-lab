@@ -1,0 +1,18 @@
+{
+#include "AST.h"
+}
+
+<JSON> {void*} ::= <Object> { return nullptr; };
+
+<Object> {void*} ::= <LeftBrace> <ObjectEntries> <RightBrace> { return nullptr; };
+
+<ObjectEntries> {void*} ::= <ObjectEntry> <OptionalComma> <ObjectEntries> { return nullptr; };
+
+<ObjectEntry> {void*} ::= <StringLiteral> <Colon> <Value> { return nullptr; };
+
+<OptionalComma> {void*} ::= <Comma> { return nullptr; };
+
+<Value> {void*} ::= <True> { return nullptr; }
+                  | <False> { return nullptr; }
+                  | <StringLiteral> { return nullptr; }
+                  | <NumberLiteral> { return nullptr; };
