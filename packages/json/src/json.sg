@@ -2,7 +2,7 @@
 #include "AST.h"
 }
 
-<JSON> {void*} ::= <Object> { return nullptr; };
+<JSON> {void*} ::= <Object> <EndOfFile> { return nullptr; };
 
 <Object> {void*} ::= <LeftBrace> <ObjectEntries> <RightBrace> { return nullptr; };
 

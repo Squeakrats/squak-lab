@@ -8,6 +8,7 @@ namespace JSON {
 enum class TokenType {
 	Colon,
 	Comma,
+	EndOfFile,
 	False,
 	LeftBrace,
 	NumberLiteral,

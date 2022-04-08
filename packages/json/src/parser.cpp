@@ -9,6 +9,8 @@ void* ParseJSON(ParserContext& context) {
 		case TokenType::LeftBrace:
 		{
 			auto P0 = ParseObject(context); 
+			assert(context.token.first == TokenType::EndOfFile);
+			auto P1 = context.Use();
 
 			{ return nullptr; }
 		}
