@@ -51,6 +51,7 @@ std::string EmitParser(Grammar& grammar) {
 	parser << "#include \"Parser.h\"\n";
 	if (grammar.ast.tokens.size() > 0) {
 		parser << "#include \"RegularExpression.h\"\n";
+		parser << "#include <optional>\n";
 	}
 
 	parser << "\n";
@@ -59,24 +60,33 @@ std::string EmitParser(Grammar& grammar) {
 
 	if (grammar.ast.tokens.size() > 0) {
 		parser << "Token Tokenize(std::stringstream& stream) {\n";
-		parser << "\tstatic std::vector<TokenType> tokens = {\n";
+		parser << "\tstatic std::vector<std::optional<TokenType>> tokens = {\n";
 		for (auto token : grammar.ast.tokens) {
-			parser << "\t\t TokenType::" << token.first << ",\n";
+			if (token.first != "") {
+				parser << "\t\t TokenType::" << token.first << ",\n";
+			} else {
+				parser << "\t\t std::nullopt,\n";
+			}
 		}
 		parser << "\t};\n";
 
 		parser << "\n\tstatic DFA dfa = DFA::FromNFA(RegularExpression::Create(std::vector<std::string>({\n";
 		for (auto token : grammar.ast.tokens) {
-			parser << "\t\tR\"(" << token.second << ")\",\n";
+			parser << "\t\t\"" << token.second << "\",\n";
 		}
 		parser << "\t})));\n\n";
-
-		parser << "\tauto longest = dfa.Longest(stream);\n";
-		parser << "\tif (longest.second != 0 && longest.second <= tokens.size()) {\n";
-		parser << "\t\treturn std::make_pair(tokens[longest.second - 1], longest.first); \n";
+	
+		parser << "\twhile(true) {\n";
+		parser << "\t\tauto longest = dfa.Longest(stream);\n";
+		parser << "\t\tif (longest.second != 0) {\n";
+		parser << "\t\t\tstd::optional<TokenType> token = tokens[longest.second - 1];\n";
+		parser << "\t\t\tif (token != std::nullopt) {\n";
+		parser << "\t\t\t\treturn std::make_pair(token.value(), longest.first); \n";
+		parser << "\t\t\t}\n";
+		parser << "\t\t} else {\n";
+		parser << "\t\t\treturn std::make_pair(TokenType::EndOfFile, \"\");\n";
+		parser << "\t\t}\n";
 		parser << "\t}\n";
-		parser << "\n";
-		parser << "\treturn std::make_pair(TokenType::EndOfFile, \"\");\n";
 		parser << "}\n";
 	}
 

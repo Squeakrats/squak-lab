@@ -8,6 +8,12 @@ Token Tokenize(std::stringstream& source) {
 	while (true) {
 		switch (source.get()) {
 		case '<': {
+			if (source.peek() == '>') {
+				source.get();
+
+				return Token{ TokenType::Symbol, "" };
+			}
+
 			std::stringbuf symbol{};
 			source.get(symbol, '>');
 			assert(source.get() == '>');

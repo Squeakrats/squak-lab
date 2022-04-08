@@ -3,30 +3,38 @@
 #include <utility>
 #include "Parser.h"
 #include "RegularExpression.h"
+#include <optional>
 
 namespace JSON {
 
 Token Tokenize(std::stringstream& stream) {
-	static std::vector<TokenType> tokens = {
+	static std::vector<std::optional<TokenType>> tokens = {
 		 TokenType::LeftBrace,
 		 TokenType::RightBrace,
 		 TokenType::Colon,
 		 TokenType::StringLiteral,
+		 std::nullopt,
 	};
 
 	static DFA dfa = DFA::FromNFA(RegularExpression::Create(std::vector<std::string>({
-		R"({)",
-		R"(})",
-		R"(:)",
-		R"("[^"]*")",
+		"{",
+		"}",
+		":",
+		"\"[^\"]*\"",
+		"[\t\n ]",
 	})));
 
-	auto longest = dfa.Longest(stream);
-	if (longest.second != 0 && longest.second <= tokens.size()) {
-		return std::make_pair(tokens[longest.second - 1], longest.first); 
+	while(true) {
+		auto longest = dfa.Longest(stream);
+		if (longest.second != 0) {
+			std::optional<TokenType> token = tokens[longest.second - 1];
+			if (token != std::nullopt) {
+				return std::make_pair(token.value(), longest.first); 
+			}
+		} else {
+			return std::make_pair(TokenType::EndOfFile, "");
+		}
 	}
-
-	return std::make_pair(TokenType::EndOfFile, "");
 }
 void* ParseJSON(ParserContext& context) { 
 	switch(context.token.first) {

@@ -6,7 +6,8 @@
     <LeftBrace> ::= <{>;
     <RightBrace> ::= <}>;
     <Colon> ::= <:>;
-    <StringLiteral> ::= <"[^"]*">;
+    <StringLiteral> ::= <\"[^\"]*\">;
+    <> ::= <[\t\n ]>;
 ]
 
 <JSON> {void*} ::= <Object> <EndOfFile> { return nullptr; };
