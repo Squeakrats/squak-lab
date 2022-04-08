@@ -5,6 +5,7 @@
 std::string EmitHeader(Grammar& grammar) {
 	std::stringstream header{};
 
+	header << "// This file was auto-generated \n";
 	header << "#pragma once\n";
 	header << "#include \"TokenStream.h\"\n";
 	header << grammar.ast.code;
@@ -44,12 +45,40 @@ std::string EmitParser(Grammar& grammar) {
 
 	auto terminals = grammar.Terminals();
 
+	parser << "// This file was auto-generated \n";
 	parser << "#include <assert.h>\n";
 	parser << "#include <utility>\n";
 	parser << "#include \"Parser.h\"\n";
+	if (grammar.ast.tokens.size() > 0) {
+		parser << "#include \"RegularExpression.h\"\n";
+	}
+
 	parser << "\n";
 	parser << "namespace " << grammar.ast.productions[0].symbol << " {\n";
 	parser << "\n";
+
+	if (grammar.ast.tokens.size() > 0) {
+		parser << "Token Tokenize(std::stringstream& stream) {\n";
+		parser << "\tstatic std::vector<TokenType> tokens = {\n";
+		for (auto token : grammar.ast.tokens) {
+			parser << "\t\t TokenType::" << token.first << ",\n";
+		}
+		parser << "\t};\n";
+
+		parser << "\n\tstatic DFA dfa = DFA::FromNFA(RegularExpression::Create(std::vector<std::string>({\n";
+		for (auto token : grammar.ast.tokens) {
+			parser << "\t\t\"" << token.second << "\",\n";
+		}
+		parser << "\t})));\n\n";
+
+		parser << "\tauto longest = dfa.Longest(stream);\n";
+		parser << "\tif (longest.second != 0 && longest.second <= tokens.size()) {\n";
+		parser << "\t\treturn std::make_pair(tokens[longest.second - 1], longest.first); \n";
+		parser << "\t}\n";
+		parser << "\n";
+		parser << "\treturn std::make_pair(TokenType::EndOfFile, \"\");\n";
+		parser << "}\n";
+	}
 
 	for (auto production : grammar.ast.productions) {
 		auto rules = grammar.Rules(production.symbol);

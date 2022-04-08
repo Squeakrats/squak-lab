@@ -30,6 +30,10 @@ Token Tokenize(std::stringstream& source) {
 			return Token{ TokenType::Alternate, "|" };
 		case ';':
 			return Token{ TokenType::SemiColon, ";" };
+		case '[':
+			return Token{ TokenType::LeftBracket, "["};
+		case ']':
+			return Token{ TokenType::RightBracket, "]"};
 		case '\n':
 		case ' ':
 		case '\t':

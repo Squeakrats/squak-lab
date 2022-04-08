@@ -38,6 +38,7 @@ struct Production {
 
 struct Grammar {
 	std::string code{};
+	std::vector<std::pair<std::string, std::string>> tokens{};
 	std::vector<Production> productions{};
 };
 

@@ -12,6 +12,24 @@ AST::Grammar Parser::Parse()
 	assert(this->token.first == TokenType::Code);
 	grammar.code = this->Use().second;
 
+	if (this->token.first == TokenType::LeftBracket) {
+		this->Use();
+		while (this->token.first == TokenType::Symbol) {
+			std::string token = this->Use().second;
+
+			assert(this->Use().first == TokenType::Replaces);
+
+			assert(this->token.first == TokenType::Symbol);
+			std::string expression = this->Use().second;
+
+			assert(this->Use().first == TokenType::SemiColon);
+
+			grammar.tokens.push_back(std::make_pair(token, expression));
+		}
+
+		assert(this->Use().first == TokenType::RightBracket);
+	}
+
 	grammar.productions = this->ParseProductions();
 	assert(this->token.first == TokenType::EndOfFile);
 

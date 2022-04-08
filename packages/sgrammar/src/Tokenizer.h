@@ -7,6 +7,8 @@ enum class TokenType {
 	Replaces,
 	SemiColon,
 	Code,
+	LeftBracket,
+	RightBracket,
 	Alternate,
 	EndOfFile
 };
