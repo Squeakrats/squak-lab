@@ -4,7 +4,7 @@
 using namespace RegularExpression;
 
 TEST(RegularExpression, PlusOperator) {
-	DFA dfa = RegularExpression::Create("a+");
+	DFA dfa = DFA::FromNFA(RegularExpression::Create("a+"));
 
 	EXPECT_EQ(dfa.Match("a"), true);
 	EXPECT_EQ(dfa.Match("aa"), true);
@@ -14,7 +14,7 @@ TEST(RegularExpression, PlusOperator) {
 }
 
 TEST(RegularExpression, StarOperator) {
-	DFA dfa = RegularExpression::Create("ba*");
+	DFA dfa = DFA::FromNFA(RegularExpression::Create("ba*"));
 
 	EXPECT_EQ(dfa.Match("b"), true);
 	EXPECT_EQ(dfa.Match("ba"), true);
@@ -24,7 +24,7 @@ TEST(RegularExpression, StarOperator) {
 }
 
 TEST(RegularExpression, OptionalOperator) {
-	DFA dfa = RegularExpression::Create("a?c");
+	DFA dfa = DFA::FromNFA(RegularExpression::Create("a?c"));
 
 	EXPECT_EQ(dfa.Match("ac"), true);
 	EXPECT_EQ(dfa.Match("c"), true);
@@ -33,7 +33,7 @@ TEST(RegularExpression, OptionalOperator) {
 }
 
 TEST(RegularExpression, CharacterClass) {
-	DFA dfa = RegularExpression::Create("[abc]");
+	DFA dfa = DFA::FromNFA(RegularExpression::Create("[abc]"));
 
 	EXPECT_EQ(dfa.Match("a"), true);
 	EXPECT_EQ(dfa.Match("b"), true);
@@ -42,7 +42,7 @@ TEST(RegularExpression, CharacterClass) {
 }
 
 TEST(RegularExpression, Number) {
-	DFA dfa = RegularExpression::Create("[0123456789]+.?[0123456789]+");
+	DFA dfa = DFA::FromNFA(RegularExpression::Create("[0123456789]+.?[0123456789]+"));
 
 	EXPECT_EQ(dfa.Match("0123"), true);
 	EXPECT_EQ(dfa.Match("434"), true);
@@ -52,7 +52,7 @@ TEST(RegularExpression, Number) {
 }
 
 TEST(RegularExpression, Negate) {
-	DFA dfa = RegularExpression::Create("[^abc]");
+	DFA dfa = DFA::FromNFA(RegularExpression::Create("[^abc]"));
 
 	EXPECT_EQ(dfa.Match("d"), true);
 	EXPECT_EQ(dfa.Match("e"), true);
@@ -60,4 +60,14 @@ TEST(RegularExpression, Negate) {
 	EXPECT_EQ(dfa.Match("a"), false);
 	EXPECT_EQ(dfa.Match("b"), false);
 	EXPECT_EQ(dfa.Match("c"), false);
+}
+
+TEST(RegularExpression, Merge) {
+	DFA dfa = DFA::FromNFA(RegularExpression::Create(std::vector<std::string>{
+		"true",
+		"false"
+	}));
+
+	EXPECT_EQ(dfa.Longest("true").second, 1);
+	EXPECT_EQ(dfa.Longest("false").second, 2);
 }

@@ -110,7 +110,7 @@ std::pair<size_t, size_t> DFA::Longest(std::string text) {
 		stateId = nextStateId->second;
 
 		if (this->acceptingStates.find(stateId) != this->acceptingStates.end()) {
-			longest = std::make_pair(i+1, stateId);
+			longest = std::make_pair(i+1, this->states.at(stateId).tag);
 		}
 		else if (longest.first > 0) {
 			return longest;

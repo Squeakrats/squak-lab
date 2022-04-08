@@ -1,8 +1,10 @@
 #pragma once
+#include <vector>
 #include "DFA.h"
 
 namespace RegularExpression {
 
-DFA Create(std::string expression);
+NFA Create(std::string expression);
+NFA Create(std::vector<std::string> expressions);
 
 };
