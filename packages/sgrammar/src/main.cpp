@@ -67,7 +67,7 @@ std::string EmitParser(Grammar& grammar) {
 
 		parser << "\n\tstatic DFA dfa = DFA::FromNFA(RegularExpression::Create(std::vector<std::string>({\n";
 		for (auto token : grammar.ast.tokens) {
-			parser << "\t\t\"" << token.second << "\",\n";
+			parser << "\t\tR\"(" << token.second << ")\",\n";
 		}
 		parser << "\t})));\n\n";
 
