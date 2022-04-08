@@ -1,16 +1,20 @@
 #pragma once
 #include <string>
-
-#include "parser.h"
+#include <variant>
+#include <map>
 
 namespace json {
 
-class JSON {
-public:
-	ast::Object object;
+class Object;
+using Value = std::variant<Object, std::string, bool>;
 
-	static JSON Create(std::string source);
+class Object {
+public:
+	std::map<std::string, Value> entries{};
 };
 
+
+
+Value Create(std::string source);
 
 };
