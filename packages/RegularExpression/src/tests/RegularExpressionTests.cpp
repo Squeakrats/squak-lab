@@ -68,6 +68,7 @@ TEST(RegularExpression, Merge) {
 		"false"
 	}));
 
-	EXPECT_EQ(dfa.Longest("true").second, 1);
-	EXPECT_EQ(dfa.Longest("false").second, 2);
+	std::stringstream source("truefalse");
+	EXPECT_EQ(dfa.Longest(source).second, 1);
+	EXPECT_EQ(dfa.Longest(source).second, 2);
 }

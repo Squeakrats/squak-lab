@@ -19,8 +19,13 @@ TEST(Compiler, DFAFromNFA) {
 
 	DFA dfa = DFA::FromNFA(a);
 
-	ASSERT_EQ(dfa.Longest("a").first, 1);
-	ASSERT_EQ(dfa.Longest("a").second, 1);
-	ASSERT_EQ(dfa.Longest("b").first, 1);
-	ASSERT_EQ(dfa.Longest("b").second, 2);
+	std::stringstream source("ab");
+
+	auto longest = dfa.Longest(source);
+	ASSERT_EQ(longest.first, "a");
+	ASSERT_EQ(longest.second, 1);
+
+	longest = dfa.Longest(source);
+	ASSERT_EQ(longest.first, "b");
+	ASSERT_EQ(longest.second, 2);
 }
