@@ -4,15 +4,13 @@
 using namespace json;
 
 TEST(JSON, Parse) {
-	std::string rawJSON(R"(
+	Object json = Create(R"(
 		{
 			"Key1" : "Value1",
 			"Key2" :  true
 		}
 	)");
 
-	Object json = Create(rawJSON);
-
-	EXPECT_EQ(std::get<std::string>(json.entries.at("Key1")), "Value1");
-	EXPECT_EQ(std::get<bool>(json.entries.at("Key2")), true);
+	EXPECT_EQ(json["Key1"].AsString(), "Value1");
+	EXPECT_EQ(json["Key2"].AsBool(), true);
 }

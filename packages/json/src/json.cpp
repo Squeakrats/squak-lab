@@ -7,10 +7,10 @@ Value Create(ast::Value& ast) {
 	if (std::holds_alternative<std::string>(ast.value)) {
 		std::string value = std::get<std::string>(ast.value);
 
-		return value.substr(1, value.size() - 2);
+		return Value{ value.substr(1, value.size() - 2) };
 	}
 	else if (std::holds_alternative<bool>(ast.value)) {
-		return std::get<bool>(ast.value);
+		return Value{ std::get<bool>(ast.value) };
 	}
 
 	throw std::exception("unhandled json value");
