@@ -1,11 +1,14 @@
 #pragma once
 #include <memory>
+#include <variant>
+#include <string>
 
 namespace JSON::AST {
 
 struct Object;
 struct ObjectEntries;
 struct ObjectEntry;
+struct Value;
 
 struct Object {
 	std::shared_ptr<ObjectEntries> entries{};
@@ -22,8 +25,15 @@ struct ObjectEntries {
 
 struct ObjectEntry {
 	std::string key{};
+	std::shared_ptr<Value> value{};
 
-	ObjectEntry(std::string key) : key(key) {};
+	ObjectEntry(std::string key, std::shared_ptr<Value> value) : key(key), value(value) {};
+};
+
+struct Value {
+	std::variant<bool, std::string> value{};
+
+	Value(std::variant<bool, std::string> value) : value(value) {};
 };
 
 };

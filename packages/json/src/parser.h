@@ -34,6 +34,6 @@ std::shared_ptr<AST::Object> ParseObject(ParserContext& context);
 std::shared_ptr<AST::ObjectEntries> ParseObjectEntries(ParserContext& context);
 std::shared_ptr<AST::ObjectEntry> ParseObjectEntry(ParserContext& context);
 void* ParseOptionalComma(ParserContext& context);
-void* ParseValue(ParserContext& context);
+std::shared_ptr<AST::Value> ParseValue(ParserContext& context);
 
 }
