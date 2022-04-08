@@ -3,16 +3,17 @@
 
 using namespace JSON;
 
-TEST(JSON, Tokenize) {
-	std::stringstream stream(R"(
+TEST(JSON, Parse) {
+	std::string rawJSON(R"(
 		{
 			"Key" : "Value"
 		}
 	)");
-	EXPECT_EQ(Tokenize(stream).first, TokenType::LeftBrace);
-	EXPECT_EQ(Tokenize(stream).first, TokenType::StringLiteral);
-	EXPECT_EQ(Tokenize(stream).first, TokenType::Colon);
-	EXPECT_EQ(Tokenize(stream).first, TokenType::StringLiteral);
-	EXPECT_EQ(Tokenize(stream).first, TokenType::RightBrace);
-	EXPECT_EQ(Tokenize(stream).first, TokenType::EndOfFile);
+
+	TokenStream<Token> stream(rawJSON, Tokenize);
+	ParserContext context{ stream.Next(), stream };
+
+	std::shared_ptr<AST::Object> object = ParseJSON(context);
+
+	EXPECT_EQ(object->entries->entry->key, "\"Key\"");
 }

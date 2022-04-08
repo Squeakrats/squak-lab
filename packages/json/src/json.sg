@@ -10,13 +10,13 @@
     <> ::= <[\t\n ]>;
 ]
 
-<JSON> {void*} ::= <Object> <EndOfFile> { return nullptr; };
+<JSON> {std::shared_ptr<AST::Object>} ::= <Object> <EndOfFile> { return P0; };
 
-<Object> {void*} ::= <LeftBrace> <ObjectEntries> <RightBrace> { return nullptr; };
+<Object> {std::shared_ptr<AST::Object>} ::= <LeftBrace> <ObjectEntries> <RightBrace> { return std::make_shared<AST::Object>(P1); };
 
-<ObjectEntries> {void*} ::= <ObjectEntry> <OptionalComma> <ObjectEntries> { return nullptr; };
+<ObjectEntries> {std::shared_ptr<AST::ObjectEntries>} ::= <ObjectEntry> <OptionalComma> <ObjectEntries> { return std::make_shared<AST::ObjectEntries>(P0, P2); };
 
-<ObjectEntry> {void*} ::= <StringLiteral> <Colon> <Value> { return nullptr; };
+<ObjectEntry> {std::shared_ptr<AST::ObjectEntry>} ::= <StringLiteral> <Colon> <Value> { return std::make_shared<AST::ObjectEntry>(P0.second); };
 
 <OptionalComma> {void*} ::= <Comma> { return nullptr; };
 

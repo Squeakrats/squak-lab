@@ -29,10 +29,10 @@ public:
 	Token Use() { auto old = this->token; this->token = this->stream.Next(); return old; }
 };
 
-void* ParseJSON(ParserContext& context);
-void* ParseObject(ParserContext& context);
-void* ParseObjectEntries(ParserContext& context);
-void* ParseObjectEntry(ParserContext& context);
+std::shared_ptr<AST::Object> ParseJSON(ParserContext& context);
+std::shared_ptr<AST::Object> ParseObject(ParserContext& context);
+std::shared_ptr<AST::ObjectEntries> ParseObjectEntries(ParserContext& context);
+std::shared_ptr<AST::ObjectEntry> ParseObjectEntry(ParserContext& context);
 void* ParseOptionalComma(ParserContext& context);
 void* ParseValue(ParserContext& context);
 

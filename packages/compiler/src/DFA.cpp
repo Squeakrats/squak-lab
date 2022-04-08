@@ -98,6 +98,8 @@ std::pair<std::string, uint32_t> DFA::Longest(std::stringstream& stream) {
 	uint32_t stateId = this->initialState;
 	std::pair<std::string, uint32_t> longest = std::make_pair("", 0);
 
+	bool matched = false;
+
 	while (!stream.eof()) {
 		char character = stream.get();
 		auto state = this->states.at(stateId);
@@ -108,13 +110,14 @@ std::pair<std::string, uint32_t> DFA::Longest(std::stringstream& stream) {
 			return longest;
 		}
 
+		longest.first += character;
 		stateId = nextStateId->second;
 
 		if (this->acceptingStates.find(stateId) != this->acceptingStates.end()) {
-			longest.first += character;
+			matched = true;
 			longest.second = this->states.at(stateId).tag;
 		}
-		else if (longest.first.length() > 0) {
+		else if (matched) {
 			stream.putback(character);
 
 			return longest;

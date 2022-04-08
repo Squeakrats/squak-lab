@@ -36,7 +36,7 @@ Token Tokenize(std::stringstream& stream) {
 		}
 	}
 }
-void* ParseJSON(ParserContext& context) { 
+std::shared_ptr<AST::Object> ParseJSON(ParserContext& context) { 
 	switch(context.token.first) {
 		case TokenType::LeftBrace:
 		{
@@ -44,14 +44,14 @@ void* ParseJSON(ParserContext& context) {
 			assert(context.token.first == TokenType::EndOfFile);
 			auto P1 = context.Use();
 
-			{ return nullptr; }
+			{ return P0; }
 		}
 		default:
 			return nullptr;
 	}
 }
 
-void* ParseObject(ParserContext& context) { 
+std::shared_ptr<AST::Object> ParseObject(ParserContext& context) { 
 	switch(context.token.first) {
 		case TokenType::LeftBrace:
 		{
@@ -61,14 +61,14 @@ void* ParseObject(ParserContext& context) {
 			assert(context.token.first == TokenType::RightBrace);
 			auto P2 = context.Use();
 
-			{ return nullptr; }
+			{ return std::make_shared<AST::Object>(P1); }
 		}
 		default:
 			return nullptr;
 	}
 }
 
-void* ParseObjectEntries(ParserContext& context) { 
+std::shared_ptr<AST::ObjectEntries> ParseObjectEntries(ParserContext& context) { 
 	switch(context.token.first) {
 		case TokenType::StringLiteral:
 		{
@@ -76,14 +76,14 @@ void* ParseObjectEntries(ParserContext& context) {
 			auto P1 = ParseOptionalComma(context); 
 			auto P2 = ParseObjectEntries(context); 
 
-			{ return nullptr; }
+			{ return std::make_shared<AST::ObjectEntries>(P0, P2); }
 		}
 		default:
 			return nullptr;
 	}
 }
 
-void* ParseObjectEntry(ParserContext& context) { 
+std::shared_ptr<AST::ObjectEntry> ParseObjectEntry(ParserContext& context) { 
 	switch(context.token.first) {
 		case TokenType::StringLiteral:
 		{
@@ -93,7 +93,7 @@ void* ParseObjectEntry(ParserContext& context) {
 			auto P1 = context.Use();
 			auto P2 = ParseValue(context); 
 
-			{ return nullptr; }
+			{ return std::make_shared<AST::ObjectEntry>(P0.second); }
 		}
 		default:
 			return nullptr;
