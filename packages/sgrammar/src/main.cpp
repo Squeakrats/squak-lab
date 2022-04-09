@@ -22,26 +22,22 @@ std::string format(std::string source, std::vector<std::string> replacements) {
 }
 
 std::string EmitHeader(Grammar& grammar) {
-	std::stringstream header{};
-
 	std::stringstream tokens{};
 	for (auto terminal : grammar.Terminals()) {
 		tokens << '\t' << terminal << ",\n";
 	}
 
-	std::stringstream declerations{};
+	std::stringstream declarations{};
 	for (auto production : grammar.ast.productions) {
-		declerations << production.type << " Parse" << production.symbol << "(ParserContext& context);\n";
+		declarations << production.type << " Parse" << production.symbol << "(ParserContext& context);\n";
 	}
 
-	header << format(fragments::Header, {
+	return format(fragments::Header, {
 		grammar.ast.code,
 		grammar.ast.productions[0].symbol,
 		tokens.str(),
-		declerations.str()
+		declarations.str()
 	});
-
-	return header.str();
 }
 
 std::string EmitParser(Grammar& grammar) {
