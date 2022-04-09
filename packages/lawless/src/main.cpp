@@ -7,6 +7,7 @@
 #endif
 #include <GLFW/glfw3.h>
 #include "SceneNode.h"
+#include "Renderer.h"
 
 GLFWwindow* window = nullptr;
 std::unique_ptr<SceneNode> scene{};
@@ -41,6 +42,7 @@ void start() {
 int main(int argc, char* argv[]) {
     createWindow();
     scene = std::make_unique<SceneNode>();
+    gl::Renderer renderer{};
 
     start();
 

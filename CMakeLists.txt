@@ -18,6 +18,7 @@ FetchContent_MakeAvailable(googletest)
 set_target_properties(gtest gtest_main gmock gmock_main PROPERTIES FOLDER extern)
 
 add_subdirectory(packages/compiler)
+add_subdirectory(packages/gl)
 add_subdirectory(packages/graphics)
 add_subdirectory(packages/json)
 add_subdirectory(packages/lawless)
