@@ -15,3 +15,4 @@ target_link_libraries(RegularExpression compiler)
 
 add_executable(RegularExpressionTests src/tests/RegularExpressionTests.cpp)
 target_link_libraries(RegularExpressionTests gtest_main RegularExpression)
+set_target_properties(RegularExpressionTests PROPERTIES FOLDER test)

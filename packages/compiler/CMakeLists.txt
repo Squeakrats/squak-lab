@@ -14,3 +14,4 @@ target_include_directories(compiler PUBLIC src/)
 
 add_executable(CompilerTests src/tests/CompilerTests.cpp)
 target_link_libraries(CompilerTests gtest_main compiler)
+set_target_properties(CompilerTests PROPERTIES FOLDER test)
