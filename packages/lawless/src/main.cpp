@@ -39,7 +39,7 @@ void start(GLFWwindow* window) {
 int main(int argc, char* argv[]) {
     GLFWwindow* window = createWindow();
 
-    SceneNode scene();
+    SceneNode scene{};
 
     start(window);
 
