@@ -1,15 +1,13 @@
 #include <memory>
+#include <iostream>
 #include <assert.h>
-#ifdef EMSCRIPTEN
-#include <GLES3/gl3.h>
-#else
-#include <glad/glad.h>
-#endif
+#include "gl/Renderer.h"
 #include <GLFW/glfw3.h>
 #include "SceneNode.h"
-#include "gl/Renderer.h"
+
 
 GLFWwindow* window = nullptr;
+std::unique_ptr<gl::Renderer> renderer{};
 std::unique_ptr<SceneNode> scene{};
 
 void createWindow() {
@@ -18,13 +16,16 @@ void createWindow() {
     glfwMakeContextCurrent(window);
 
 #ifndef EMSCRIPTEN
-    assert(gladLoadGLLoader((GLADloadproc)glfwGetProcAddress));
+    glewExperimental = true;
+    assert(glewInit() == GLEW_OK);
 #endif
+
+    std::cout << "OpenGL Version : " << glGetString(GL_VERSION) << std::endl;
 }
 
 void tick() {
-    glClearColor(1, 0, 0, 1);
-    glClear(GL_COLOR_BUFFER_BIT);
+    renderer->Render(*scene);
+
     glfwSwapBuffers(window);
     glfwPollEvents();
 }
@@ -42,7 +43,7 @@ void start() {
 int main(int argc, char* argv[]) {
     createWindow();
     scene = std::make_unique<SceneNode>();
-    gl::Renderer renderer{};
+    renderer = std::make_unique<gl::Renderer>();
 
     start();
 
