@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
-project(sgrammar)
+project(grammar)
 
-add_executable(sgrammar
+add_executable(grammar
     src/main.cpp 
     src/fragments.h
     src/Grammar.h
@@ -11,4 +11,4 @@ add_executable(sgrammar
     src/Tokenizer.cpp
     src/Tokenizer.h
 )
-target_link_libraries(sgrammar compiler)
+target_link_libraries(grammar compiler)

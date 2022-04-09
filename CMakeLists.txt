@@ -23,6 +23,6 @@ add_subdirectory(packages/json)
 add_subdirectory(packages/lawless)
 add_subdirectory(packages/math)
 add_subdirectory(packages/RegularExpression)
-add_subdirectory(packages/sgrammar)
+add_subdirectory(packages/grammar)
 
 
