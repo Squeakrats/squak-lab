@@ -1,4 +1,4 @@
-// This file was auto-generated 
+// This file was auto-generated
 #pragma once
 #include "TokenStream.h"
 
@@ -36,4 +36,4 @@ std::shared_ptr<ast::ObjectEntry> ParseObjectEntry(ParserContext& context);
 void* ParseOptionalComma(ParserContext& context);
 std::shared_ptr<ast::Value> ParseValue(ParserContext& context);
 
-}
+};

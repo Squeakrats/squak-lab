@@ -37,7 +37,7 @@ Token Tokenize(std::stringstream& stream) {
 		if (longest.second != 0) {
 			std::optional<TokenType> token = tokens[longest.second - 1];
 			if (token != std::nullopt) {
-				return std::make_pair(token.value(), longest.first); 
+				return std::make_pair(token.value(), longest.first);
 			}
 		} else {
 			return std::make_pair(TokenType::EndOfFile, "");

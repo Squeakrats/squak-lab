@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 project(squak-lab)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 
 # Follow google test framework setup instructions
 enable_testing()

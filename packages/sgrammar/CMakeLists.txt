@@ -3,6 +3,7 @@ project(sgrammar)
 
 add_executable(sgrammar
     src/main.cpp 
+    src/fragments.h
     src/Grammar.h
     src/Grammar.cpp
     src/Parser.cpp

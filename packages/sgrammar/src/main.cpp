@@ -1,41 +1,45 @@
 #include <iostream>
 #include <fstream>
 #include "Grammar.h"
+#include "fragments.h"
+
+std::string format(std::string source, std::vector<std::string> replacements) {
+	std::stringstream formatted{};
+	size_t size = 0;
+	size_t replace = 0;
+
+	for (size_t i = 0; i < source.size() - 1; i++) {
+		if (source[i] == '{' && source[i + 1] == '}') {
+			formatted << source.substr(size, i - size);
+			formatted << replacements[replace++];
+			i = size = i + 2;
+		}
+	}
+
+	formatted << source.substr(size, source.size() - size);
+
+	return formatted.str();
+}
 
 std::string EmitHeader(Grammar& grammar) {
 	std::stringstream header{};
 
-	header << "// This file was auto-generated \n";
-	header << "#pragma once\n";
-	header << "#include \"TokenStream.h\"\n";
-	header << grammar.ast.code;
-	header << "\n";
-	header << "namespace " << grammar.ast.productions[0].symbol << " {\n";
-	header << "\n";
-	
-	header << "enum class TokenType {\n";
+	std::stringstream tokens{};
 	for (auto terminal : grammar.Terminals()) {
-		header << '\t' << terminal << ",\n";
+		tokens << '\t' << terminal << ",\n";
 	}
-	header << "};\n";
-	header << "\n";
-	header << "using Token = std::pair<TokenType, std::string>;\n";
-	header << "\n";
-	header << "Token Tokenize(std::stringstream& source);\n";
-	header << "\n";
 
-	header << "class ParserContext {\n";
-	header << "public:\n";
-	header << "\tToken token;\n";
-	header << "\tTokenStream<Token>& stream;\n";
-	header << "\tToken Use() { auto old = this->token; this->token = this->stream.Next(); return old; }\n";
-	header << "};\n\n";
-
+	std::stringstream declerations{};
 	for (auto production : grammar.ast.productions) {
-		header << production.type << " Parse" << production.symbol << "(ParserContext& context);\n";
+		declerations << production.type << " Parse" << production.symbol << "(ParserContext& context);\n";
 	}
 
-	header << "\n}\n";
+	header << format(fragments::Header, {
+		grammar.ast.code,
+		grammar.ast.productions[0].symbol,
+		tokens.str(),
+		declerations.str()
+	});
 
 	return header.str();
 }
@@ -76,17 +80,7 @@ std::string EmitParser(Grammar& grammar) {
 		}
 		parser << "\t})));\n\n";
 	
-		parser << "\twhile(true) {\n";
-		parser << "\t\tauto longest = dfa.Longest(stream);\n";
-		parser << "\t\tif (longest.second != 0) {\n";
-		parser << "\t\t\tstd::optional<TokenType> token = tokens[longest.second - 1];\n";
-		parser << "\t\t\tif (token != std::nullopt) {\n";
-		parser << "\t\t\t\treturn std::make_pair(token.value(), longest.first); \n";
-		parser << "\t\t\t}\n";
-		parser << "\t\t} else {\n";
-		parser << "\t\t\treturn std::make_pair(TokenType::EndOfFile, \"\");\n";
-		parser << "\t\t}\n";
-		parser << "\t}\n";
+		parser << fragments::NextToken;
 		parser << "}\n";
 	}
 
