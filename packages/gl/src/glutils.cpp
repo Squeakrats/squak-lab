@@ -7,7 +7,7 @@ GLuint CreateShader(GLenum type, std::string source) {
 	GLuint shader = glCreateShader(type);
 
 	const char* sourceBuffer = source.data();
-	GLint sourceBufferLength = source.length();
+	GLint sourceBufferLength = static_cast<GLint>(source.length());
 	glShaderSource(shader, 1, &sourceBuffer, &sourceBufferLength);
 	glCompileShader(shader);
 
