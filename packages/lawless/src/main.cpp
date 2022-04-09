@@ -7,7 +7,7 @@
 #endif
 #include <GLFW/glfw3.h>
 #include "SceneNode.h"
-#include "Renderer.h"
+#include "gl/Renderer.h"
 
 GLFWwindow* window = nullptr;
 std::unique_ptr<SceneNode> scene{};
