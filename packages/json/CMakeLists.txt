@@ -1,15 +1,31 @@
 cmake_minimum_required(VERSION 3.8)
 project(json)
 
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
+
+add_custom_command(
+    OUTPUT
+		${CMAKE_CURRENT_BINARY_DIR}/generated/parser.h
+		${CMAKE_CURRENT_BINARY_DIR}/generated/parser.cpp
+    COMMAND grammar
+             ${CMAKE_CURRENT_SOURCE_DIR}/src/json.g
+             ${CMAKE_CURRENT_BINARY_DIR}/generated/
+    DEPENDS grammar src/json.g
+)
+
 add_library(json
 	src/AST.h
-	src/parser.h
-	src/parser.cpp
 	src/json.h
 	src/json.cpp
-	src/json.sg
+	${CMAKE_CURRENT_BINARY_DIR}/generated/parser.h
+	${CMAKE_CURRENT_BINARY_DIR}/generated/parser.cpp
 )
-target_include_directories(json PUBLIC src/)
+target_include_directories(json
+	PUBLIC
+		src/
+	PRIVATE 
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
+)
 target_link_libraries(json compiler RegularExpression)
 
 add_executable(JsonTests src/tests/JsonTests.cpp)
