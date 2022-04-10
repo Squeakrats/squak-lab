@@ -1,5 +1,5 @@
 #include "json.h"
-#include "Parser.h"
+#include "Parser.generated.h"
 #include <assert.h>
 
 namespace json {

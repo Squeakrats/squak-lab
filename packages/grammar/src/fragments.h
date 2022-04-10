@@ -30,7 +30,7 @@ public:
 const char* Parser = R"ESC(// This file was auto-generated
 #include <assert.h>
 #include <utility>
-#include "Parser.h"
+#include "Parser.generated.h"
 {}
 
 namespace {} {

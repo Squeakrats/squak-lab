@@ -1,5 +1,5 @@
 #include <assert.h>
-#include "Parser.h"
+#include "Parser.generated.h"
 
 namespace RegularExpression {
 

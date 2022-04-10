@@ -102,8 +102,8 @@ int main(int argc, char* argv[]) {
 	Grammar grammar = Grammar::Create(contents.str());
 
 	std::string outDir(argv[2]);
-	EmitFile(outDir + "Parser.h", GenHeader(grammar));
-	EmitFile(outDir + "Parser.cpp", GenParser(grammar));
+	EmitFile(outDir + "Parser.generated.h", GenHeader(grammar));
+	EmitFile(outDir + "Parser.generated.cpp", GenParser(grammar));
 
     return 0;
 }
