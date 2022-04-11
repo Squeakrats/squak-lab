@@ -5,18 +5,20 @@
 #include "Tokenizer.h"
 
 /*
-<grammer> ::= <code> <productions>
+<grammer> ::= <code> <tokens> <productions>
 
-<productions> ::= <production>
-				| <production> <productions>
+<productions> ::= <production> <productions>
+				|
 
-<production> ::= <symbol> <derives> <expression> <semicolon> <code>
+<production> ::= <symbol> <code> <derives> <expression> <semicolon>
 
-<expression> ::= <sequence>
-               | <sequence> <alternate> <expression>
+<expression> ::= <sequence> <code> <alternateexp>
 
-<sequence>	::= <symbol>
-			 | <symbol> | <sequence>
+<alternateexp> ::= <alternate> <expression>
+			  |
+
+<sequence>	::= <symbol> <sequence>
+			 |
 */
 
 namespace AST {
@@ -59,7 +61,9 @@ public:
 	}
 
 private:
-	Token Use() {
+	Token Use(TokenType type) {
+		assert(this->token.first == type);
+
 		Token token = this->token;
 		this->token = this->source.Next();
 

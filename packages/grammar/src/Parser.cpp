@@ -9,25 +9,20 @@ AST::Grammar Parser::Parse()
 	this->token = this->source.Next();
 
 	AST::Grammar grammar{};
-	assert(this->token.first == TokenType::Code);
-	grammar.code = this->Use().second;
+	grammar.code = this->Use(TokenType::Code).second;
 
 	if (this->token.first == TokenType::LeftBracket) {
-		this->Use();
+		this->Use(TokenType::LeftBracket);
 		while (this->token.first == TokenType::Symbol) {
-			std::string token = this->Use().second;
-
-			assert(this->Use().first == TokenType::Replaces);
-
-			assert(this->token.first == TokenType::Symbol);
-			std::string expression = this->Use().second;
-
-			assert(this->Use().first == TokenType::SemiColon);
+			std::string token = this->Use(TokenType::Symbol).second;
+			this->Use(TokenType::Replaces).first;
+			std::string expression = this->Use(TokenType::Symbol).second;
+			this->Use(TokenType::SemiColon);
 
 			grammar.tokens.push_back(std::make_pair(token, expression));
 		}
 
-		assert(this->Use().first == TokenType::RightBracket);
+		this->Use(TokenType::RightBracket);
 	}
 
 	grammar.productions = this->ParseProductions();
@@ -52,16 +47,11 @@ AST::Production Parser::ParseProduction()
 {
 	AST::Production production{};
 
-	assert(this->token.first == TokenType::Symbol);
-	production.symbol = this->Use().second;
-
-	assert(this->token.first == TokenType::Code);
-	production.type = this->Use().second;
-
-	assert(this->Use().first == TokenType::Replaces);
-
+	production.symbol = this->Use(TokenType::Symbol).second;
+	production.type = this->Use(TokenType::Code).second;
+	this->Use(TokenType::Replaces);
 	production.expression = this->ParseExpression();
-	assert(this->Use().first == TokenType::SemiColon);
+	this->Use(TokenType::SemiColon);
 
 	return production;
 }
@@ -70,7 +60,7 @@ AST::Expression Parser::ParseExpression()
 {
 	AST::Expression expression{ this->ParseSequence() };
 	if (this->token.first == TokenType::Alternate) {
-		this->Use();
+		this->Use(TokenType::Alternate);
 
 		AST::Expression tail = this->ParseExpression();
 		expression.insert(expression.end(), tail.begin(), tail.end());
@@ -83,11 +73,10 @@ AST::Sequence Parser::ParseSequence()
 {
 	AST::Sequence sequence{};
 	while (this->token.first == TokenType::Symbol) {
-		sequence.symbols.push_back(this->Use().second);
+		sequence.symbols.push_back(this->Use(TokenType::Symbol).second);
 	}
 
-	assert(this->token.first == TokenType::Code);
-	sequence.code = this->Use().second;
+	sequence.code = this->Use(TokenType::Code).second;
 
 	return sequence;
 }
