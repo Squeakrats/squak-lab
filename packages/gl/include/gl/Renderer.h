@@ -12,6 +12,9 @@ private:
 	// TODO - cleanup memory
 	std::map<void*, GLuint> cache{};
 
+	GLuint EnsureArrayBuffer(std::shared_ptr<Geometry::Buffer> buffer);
+	GLuint EnsureElementArrayBuffer(std::shared_ptr<Geometry::BufferView> buffer);
+
 	void RenderNode(Matrix4& camera, SceneNode& node);
 
 public:
