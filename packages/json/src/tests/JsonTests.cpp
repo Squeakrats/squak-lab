@@ -10,7 +10,8 @@ TEST(JSON, Parse) {
 			"Key2" :  true,
 			"Key3" : 17,
 			"Key4" : { "Key1" : true },
-			"Key5" : [1, true, false]
+			"Key5" : [1, true, false],
+			"Key7" : -19.39
 		}
 	)");
 
@@ -21,4 +22,5 @@ TEST(JSON, Parse) {
 	EXPECT_EQ(json["Key5"].get<std::vector<Value>>()[0].get<double>(), 1);
 	EXPECT_EQ(json["Key5"].get<std::vector<Value>>()[1].get<bool>(), true);
 	EXPECT_EQ(json["Key5"].get<std::vector<Value>>()[2].get<bool>(), false);
+	EXPECT_EQ(json["Key7"].get<double>(), -19.39);
 }
