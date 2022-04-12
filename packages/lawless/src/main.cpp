@@ -42,9 +42,21 @@ void start() {
 
 int main(int argc, char* argv[]) {
     createWindow(600, 600);
-    scene = std::make_unique<SceneNode>(Matrix4::Identity());
     renderer = std::make_unique<gl::Renderer>();
     camera = std::make_unique<Matrix4>(Matrix4::Orthographic(-300, 300, -300, 300, -300, 300));
+
+    scene = std::make_unique<SceneNode>(Matrix4::Identity());
+
+    std::vector<float> positions = {
+         100.0,  100.0,
+        -100.0,  100.0,
+        -100.0, -100.0,
+
+         100.0,  100.0,
+        -100.0, -100.0,
+         100.0, -100.0,
+    };
+    scene->geometry = std::make_unique<Geometry>(std::move(positions));
 
     start();
 
