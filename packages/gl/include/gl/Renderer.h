@@ -10,7 +10,7 @@ private:
 	GLuint buffer;
 
 public:
-	void Render(SceneNode& scene);
+	void Render(Matrix4& camera, SceneNode& scene);
 };
 
 }

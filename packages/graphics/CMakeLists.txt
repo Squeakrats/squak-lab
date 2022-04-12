@@ -4,8 +4,6 @@ project(graphics)
 add_library(graphics
 	src/SceneNode.h
 	src/SceneNode.cpp
-	src/Transform.h
-	src/Transform.cpp
 )
 target_include_directories(graphics PUBLIC src/)
 target_link_libraries(graphics math)

@@ -1,7 +1,7 @@
 #pragma once
-#include "Transform.h"
+#include "Matrix4.h"
 
 class SceneNode {
 public:
-	Transform transform{};
+	Matrix4 transform;
 };

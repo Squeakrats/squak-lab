@@ -4,6 +4,8 @@ project(math)
 add_library(math
 	src/Vector3.h
 	src/Vector3.cpp
+	src/Matrix4.h
+	src/Matrix4.cpp
 )
 target_include_directories(math PUBLIC src/)
 

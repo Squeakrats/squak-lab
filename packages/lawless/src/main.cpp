@@ -8,10 +8,11 @@
 GLFWwindow* window = nullptr;
 std::unique_ptr<gl::Renderer> renderer{};
 std::unique_ptr<SceneNode> scene{};
+std::unique_ptr<Matrix4> camera{};
 
-void createWindow() {
+void createWindow(int width, int height) {
     assert(glfwInit());
-    window = glfwCreateWindow(600, 600, "Lawless", nullptr, nullptr);
+    window = glfwCreateWindow(width, height, "Lawless", nullptr, nullptr);
     glfwMakeContextCurrent(window);
 
 #ifndef EMSCRIPTEN
@@ -23,7 +24,7 @@ void createWindow() {
 }
 
 void tick() {
-    renderer->Render(*scene);
+    renderer->Render(*camera, *scene);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -40,9 +41,10 @@ void start() {
 }
 
 int main(int argc, char* argv[]) {
-    createWindow();
-    scene = std::make_unique<SceneNode>();
+    createWindow(600, 600);
+    scene = std::make_unique<SceneNode>(Matrix4::Identity());
     renderer = std::make_unique<gl::Renderer>();
+    camera = std::make_unique<Matrix4>(Matrix4::Orthographic(-300, 300, -300, 300, -300, 300));
 
     start();
 
