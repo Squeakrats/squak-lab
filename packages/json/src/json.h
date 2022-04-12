@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <variant>
+#include <vector>
 #include <map>
 
 namespace json {
@@ -19,7 +20,7 @@ public:
 
 class Value {
 public:
-	std::variant<Object, std::string, bool, double> value;
+	std::variant<Object, std::vector<Value>, std::string, bool, double> value;
 
 	template<typename T>
 	T& get() { return std::get<T>(this->value); };

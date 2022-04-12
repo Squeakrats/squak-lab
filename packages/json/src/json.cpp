@@ -5,6 +5,7 @@
 namespace json {
 
 Object Create(ast::Object& ast);
+std::vector<Value> Create(ast::Array& ast);
 
 Value Create(ast::Value& ast) {
 	if (std::holds_alternative<std::string>(ast.value)) {
@@ -20,6 +21,9 @@ Value Create(ast::Value& ast) {
 	}
 	else if (std::holds_alternative<std::shared_ptr<ast::Object>>(ast.value)) {
 		return Value{ Create(*std::get<std::shared_ptr<ast::Object>>(ast.value)) };
+	}
+	else if (std::holds_alternative<std::shared_ptr<ast::Array>>(ast.value)) {
+		return Value{ Create(*std::get<std::shared_ptr<ast::Array>>(ast.value)) };
 	}
 
 	// unhandled json value
@@ -37,6 +41,18 @@ Object Create(ast::Object& ast) {
 	}
 
 	return object;
+}
+
+std::vector<Value> Create(ast::Array& ast) {
+	std::vector<Value> array{};
+
+	std::shared_ptr<ast::ArrayEntry> current = ast.entry;
+	while (current != nullptr) {
+		array.push_back(Create(*current->value));
+		current = current->rhs;
+	}
+
+	return array;
 }
 
 Object Parse(std::string source) {

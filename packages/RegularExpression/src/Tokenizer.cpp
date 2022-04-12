@@ -21,6 +21,17 @@ Token Tokenize(std::stringstream& source) {
 				return Token{ TokenType::LeftBracket, std::string(1, current) };
 			case ']':
 				return Token{ TokenType::RightBracket, std::string(1, current) };
+			case '\\':
+			{
+				switch (current = source.get()) {
+					case '[':
+					case ']':
+						return Token{ TokenType::Character, std::string(1, current) };
+					default:
+						throw std::exception();
+				}	
+			}
+				
 			case EOF:
 				return Token{ TokenType::EndOfFile, "" };
 			default:

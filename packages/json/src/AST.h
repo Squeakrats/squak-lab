@@ -8,6 +8,10 @@ namespace json::ast {
 struct Object;
 struct ObjectEntries;
 struct ObjectEntry;
+
+struct Array;
+struct ArrayEntry;
+
 struct Value;
 
 struct Object {
@@ -31,9 +35,22 @@ struct ObjectEntry {
 };
 
 struct Value {
-	std::variant<std::shared_ptr<ast::Object>, double, bool, std::string> value;
+	std::variant<std::shared_ptr<ast::Object>, std::shared_ptr<ast::Array>, double, bool, std::string> value;
 
-	Value(std::variant<std::shared_ptr<ast::Object>, double, bool, std::string> value) : value(value) {};
+	Value(std::variant<std::shared_ptr<ast::Object>, std::shared_ptr<ast::Array>, double, bool, std::string> value) : value(value) {};
+};
+
+struct Array {
+	std::shared_ptr<ArrayEntry> entry{};
+
+	Array(std::shared_ptr<ArrayEntry> entry) : entry(entry) {};
+};
+
+struct ArrayEntry {
+	std::shared_ptr<Value> value;
+	std::shared_ptr<ArrayEntry> rhs{};
+
+	ArrayEntry(std::shared_ptr<Value> value, std::shared_ptr<ArrayEntry> rhs) : value(value), rhs(rhs) {};
 };
 
 };
