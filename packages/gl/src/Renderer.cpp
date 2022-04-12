@@ -6,6 +6,35 @@
 
 namespace gl {
 
+GLenum Convert(Geometry::ComponentType type) {
+	switch (type) {
+		case Geometry::ComponentType::Float:
+			return GL_FLOAT;
+		case Geometry::ComponentType::UnsignedInt:
+			return GL_UNSIGNED_INT;
+		case Geometry::ComponentType::UnsignedShort:
+			return GL_UNSIGNED_SHORT;
+		default:
+			assert(false);
+			throw std::exception();
+	}
+}
+
+GLenum Convert(Geometry::AccessorType type) {
+	switch (type) {
+		case Geometry::AccessorType::Scalar:
+			return 1;
+		case Geometry::AccessorType::Vector2:
+			return 2;
+		case Geometry::AccessorType::Vector3:
+			return 3;
+		default:
+			assert(false);
+			throw std::exception();
+	}
+}
+
+
 GLuint Renderer::EnsureArrayBuffer(std::shared_ptr<Geometry::Buffer> source) {
 	auto find = this->cache.find(source.get());
 	if (find != this->cache.end()) {
@@ -61,9 +90,8 @@ void Renderer::RenderNode(Matrix4& camera, SceneNode& node) {
 		glEnableVertexAttribArray(0);
 
 		auto& position = geometry.attributes.at(Geometry::AttributeType::Position);
-		GLuint buffer = this->EnsureArrayBuffer(position->view->buffer);
-		glBindBuffer(GL_ARRAY_BUFFER, buffer);
-		glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, nullptr);
+		glBindBuffer(GL_ARRAY_BUFFER, this->EnsureArrayBuffer(position->view->buffer));
+		glVertexAttribPointer(0, Convert(position->type), Convert(position->componentType), false, 0, nullptr);
 
 		GLint uPerspective = glGetUniformLocation(this->program, "uPerspective");
 		glUniformMatrix4fv(uPerspective, 1, false, camera.data);
@@ -71,10 +99,8 @@ void Renderer::RenderNode(Matrix4& camera, SceneNode& node) {
 		GLint uModel = glGetUniformLocation(this->program, "uModel");
 		glUniformMatrix4fv(uModel, 1, false, node.transform.data);
 
-		GLuint indexBuffer = this->EnsureElementArrayBuffer(geometry.indices->view);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-
-		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(geometry.indices->count), GL_UNSIGNED_SHORT, nullptr);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EnsureElementArrayBuffer(geometry.indices->view));
+		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(geometry.indices->count), Convert(geometry.indices->componentType), nullptr);
 	}
 
 	for (auto child : node.children) {

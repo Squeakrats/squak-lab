@@ -21,7 +21,8 @@ public:
 
 	enum class ComponentType {
 		Float,
-		UnsignedInt
+		UnsignedInt,
+		UnsignedShort
 	};
 
 	struct Accessor {
@@ -32,7 +33,9 @@ public:
 	};
 
 	enum class AttributeType {
-		Position
+		Position,
+		Normal,
+		TextureCoordinate_0
 	};
 
 	using Attributes = std::map<AttributeType, std::shared_ptr<Accessor>>;
