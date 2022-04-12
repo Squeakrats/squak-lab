@@ -40,7 +40,7 @@ GLuint Renderer::EnsureElementArrayBuffer(std::shared_ptr<Geometry::BufferView> 
 }
 
 void Renderer::Render(Matrix4& camera, SceneNode& scene) {
-	glClearColor(1, 0, 0, 1);
+	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 	
 	this->RenderNode(camera, scene);

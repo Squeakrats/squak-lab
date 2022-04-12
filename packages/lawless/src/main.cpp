@@ -5,6 +5,7 @@
 #include "gltf.h"
 
 void tick(SceneNode& scene, gl::Renderer& renderer, Matrix4& camera, uint32_t& frameId) {
+    scene.children[0]->transform.SetPosition(std::sin(static_cast<float>(frameId) / 9000) * 1.0f, 0.0f, 0.f);
     renderer.Render(camera, scene);
     frameId++;
 }
@@ -17,7 +18,7 @@ int main(int argc, char* argv[]) {
     gl::Renderer renderer{};
     Matrix4 camera = Matrix4::Identity();
 
-    std::shared_ptr<SceneNode> scene = gltf::Load("..\\..\\..\\..\\assets\\cube.glb");
+    std::shared_ptr<SceneNode> scene = gltf::Load("..\\..\\..\\..\\assets\\suzanne.glb");
 
     uint32_t frameId = 0;
     window.Tick([&scene, &renderer, &camera, &frameId]() {
