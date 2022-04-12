@@ -4,7 +4,7 @@
 using namespace json;
 
 TEST(JSON, Parse) {
-	Object json = Create(R"(
+	Object json = Parse(R"(
 		{
 			"Key1" : "Value1",
 			"Key2" :  true,
@@ -13,8 +13,8 @@ TEST(JSON, Parse) {
 		}
 	)");
 
-	EXPECT_EQ(json["Key1"].AsString(), "Value1");
-	EXPECT_EQ(json["Key2"].AsBool(), true);
-	EXPECT_EQ(json["Key3"].AsNumber(), 17);
-	EXPECT_EQ(json["Key4"].AsObject()["Key1"].AsBool(), true);
+	EXPECT_EQ(json["Key1"].get<std::string>(), "Value1");
+	EXPECT_EQ(json["Key2"].get<bool>(), true);
+	EXPECT_EQ(json["Key3"].get<double>(), 17);
+	EXPECT_EQ(json["Key4"].get<Object>()["Key1"].get<bool>(), true);
 }

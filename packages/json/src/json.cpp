@@ -39,7 +39,7 @@ Object Create(ast::Object& ast) {
 	return object;
 }
 
-Object Create(std::string source) {
+Object Parse(std::string source) {
 	TokenStream<Token> stream(source, Tokenize);
 	ParserContext context{ stream.Next(), stream };
 
