@@ -6,13 +6,13 @@ Geometry Geometry::CreatePlane(float width, float height) {
     float hh = height / 2;
 
     float positionBuffer[] = {
-         hw,  hh,
-        -hw,  hh,
-        -hw, -hh,
-         hw, -hh
+         hw,  hh, 0.0,
+        -hw,  hh, 0.0,
+        -hw, -hh, 0.0,
+         hw, -hh, 0.0
     };
 
-    uint32_t indexBuffer[] = {
+    uint16_t indexBuffer[] = {
         0, 1, 2,
         0, 2, 3
     };

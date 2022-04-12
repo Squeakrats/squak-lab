@@ -23,8 +23,8 @@ GLuint Renderer::EnsureArrayBuffer(std::shared_ptr<Geometry::Buffer> source) {
 }
 
 
-GLuint Renderer::EnsureElementArrayBuffer(std::shared_ptr<Geometry::BufferView> source) {
-	auto find = this->cache.find(source.get());
+GLuint Renderer::EnsureElementArrayBuffer(std::shared_ptr<Geometry::BufferView> view) {
+	auto find = this->cache.find(view.get());
 	if (find != this->cache.end()) {
 		return find->second;
 	}
@@ -32,9 +32,9 @@ GLuint Renderer::EnsureElementArrayBuffer(std::shared_ptr<Geometry::BufferView> 
 	GLuint buffer{};
 	glCreateBuffers(1, &buffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, source->length, source->buffer->data() + source->offset, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, view->length, view->buffer->data() + view->offset, GL_STATIC_DRAW);
 
-	this->cache.insert(std::make_pair(source.get(), buffer));
+	this->cache.insert(std::make_pair(view.get(), buffer));
 
 	return buffer;
 }
@@ -63,7 +63,7 @@ void Renderer::RenderNode(Matrix4& camera, SceneNode& node) {
 		auto& position = geometry.attributes.at(Geometry::AttributeType::Position);
 		GLuint buffer = this->EnsureArrayBuffer(position->view->buffer);
 		glBindBuffer(GL_ARRAY_BUFFER, buffer);
-		glVertexAttribPointer(0, 2, GL_FLOAT, false, 0, nullptr);
+		glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, nullptr);
 
 		GLint uPerspective = glGetUniformLocation(this->program, "uPerspective");
 		glUniformMatrix4fv(uPerspective, 1, false, camera.data);
@@ -74,7 +74,7 @@ void Renderer::RenderNode(Matrix4& camera, SceneNode& node) {
 		GLuint indexBuffer = this->EnsureElementArrayBuffer(geometry.indices->view);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 
-		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(geometry.indices->count), GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(geometry.indices->count), GL_UNSIGNED_SHORT, nullptr);
 	}
 
 	for (auto child : node.children) {
