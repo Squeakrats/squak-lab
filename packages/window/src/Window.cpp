@@ -20,14 +20,14 @@ Window Window::Create(int width, int height, const char* name) {
     return Window{ window };
 }
 
-bool Window::ShouldClose() {
-    return glfwWindowShouldClose(this->window);
-}
-
-void Window::Poll() {
-    glfwPollEvents();
-}
-
-void Window::Swap() {
-    glfwSwapBuffers(this->window);
+void Window::Tick(std::function<void(void)> tick) {
+#ifndef EMSCRIPTEN
+    while (!glfwWindowShouldClose(this->window)) {
+        tick();
+        glfwSwapBuffers(this->window);
+        glfwPollEvents();
+    }
+#else
+    tick();
+#endif
 }

@@ -17,18 +17,6 @@ void tick() {
     frameId++;
 }
 
-void start() {
-#ifndef EMSCRIPTEN
-    while (!window->ShouldClose()) {
-        tick();
-        window->Swap();
-        window->Poll();
-    }
-#else
-    tick();
-#endif
-}
-
 int main(int argc, char* argv[]) {
     window = std::make_unique<Window>(Window::Create(600, 600, "Lawless"));
     std::cout << "OpenGL Version : " << glGetString(GL_VERSION) << std::endl;
@@ -39,7 +27,8 @@ int main(int argc, char* argv[]) {
     scene = std::make_unique<SceneNode>(Matrix4::Identity());
     scene->geometry = std::make_unique<Geometry>(Geometry::CreatePlane(200, 200));
 
-    start();
+
+    window->Tick(tick);
 
     return 0;
 }

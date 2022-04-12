@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 
 struct GLFWwindow;
 
@@ -9,9 +10,7 @@ private:
 	Window(GLFWwindow* window) : window(window) {};
 
 public:
-	bool ShouldClose();
-	void Poll();
-	void Swap();
+	void Tick(std::function<void(void)> tick);
 
 	static Window Create(int width, int height, const char* name);
 };
