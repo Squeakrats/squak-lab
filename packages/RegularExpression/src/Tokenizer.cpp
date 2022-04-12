@@ -31,7 +31,6 @@ Token Tokenize(std::stringstream& source) {
 						throw std::exception();
 				}	
 			}
-				
 			case EOF:
 				return Token{ TokenType::EndOfFile, "" };
 			default:
