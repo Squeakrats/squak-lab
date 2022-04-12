@@ -27,4 +27,5 @@
 <Value> {std::shared_ptr<ast::Value>} ::= <True> { return std::make_shared<ast::Value>(true); }
                   | <False> { return std::make_shared<ast::Value>(false); }
                   | <StringLiteral> { return std::make_shared<ast::Value>(P0.second); }
-                  | <NumberLiteral> { return std::make_shared<ast::Value>(std::stod(P0.second)); };
+                  | <NumberLiteral> { return std::make_shared<ast::Value>(std::stod(P0.second)); }
+                  | <Object> { return std::make_shared<ast::Value>(P0); };

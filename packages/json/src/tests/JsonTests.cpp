@@ -8,11 +8,13 @@ TEST(JSON, Parse) {
 		{
 			"Key1" : "Value1",
 			"Key2" :  true,
-			"Key3" : 17
+			"Key3" : 17,
+			"Key4" : { "Key1" : true }
 		}
 	)");
 
 	EXPECT_EQ(json["Key1"].AsString(), "Value1");
 	EXPECT_EQ(json["Key2"].AsBool(), true);
 	EXPECT_EQ(json["Key3"].AsNumber(), 17);
+	EXPECT_EQ(json["Key4"].AsObject()["Key1"].AsBool(), true);
 }

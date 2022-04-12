@@ -31,9 +31,9 @@ struct ObjectEntry {
 };
 
 struct Value {
-	std::variant<double, bool, std::string> value{};
+	std::variant<std::shared_ptr<ast::Object>, double, bool, std::string> value;
 
-	Value(std::variant<double, bool, std::string> value) : value(value) {};
+	Value(std::variant<std::shared_ptr<ast::Object>, double, bool, std::string> value) : value(value) {};
 };
 
 };

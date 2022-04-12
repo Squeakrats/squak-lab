@@ -4,6 +4,8 @@
 
 namespace json {
 
+Object Create(ast::Object& ast);
+
 Value Create(ast::Value& ast) {
 	if (std::holds_alternative<std::string>(ast.value)) {
 		std::string value = std::get<std::string>(ast.value);
@@ -15,6 +17,9 @@ Value Create(ast::Value& ast) {
 	}
 	else if (std::holds_alternative<double>(ast.value)) {
 		return Value{ std::get<double>(ast.value) };
+	}
+	else if (std::holds_alternative<std::shared_ptr<ast::Object>>(ast.value)) {
+		return Value{ Create(*std::get<std::shared_ptr<ast::Object>>(ast.value)) };
 	}
 
 	// unhandled json value

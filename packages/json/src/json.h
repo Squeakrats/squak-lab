@@ -24,6 +24,7 @@ public:
 	std::string AsString() { return std::get<std::string>(this->value); }
 	bool AsBool() { return std::get<bool>(this->value); }
 	double AsNumber() { return std::get<double>(this->value); }
+	Object& AsObject() { return std::get<Object>(this->value); }
 };
 
 Object Create(std::string source);
