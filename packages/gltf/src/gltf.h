@@ -1,6 +1,6 @@
 #pragma once
 #include "json.h"
-#include <stdint.h>
+#include "SceneNode.h"
 
 namespace gltf {
 
@@ -12,7 +12,7 @@ const uint32_t BIN = 0x004E4942;
 
 };
 
-json::Object Parse(const std::vector<uint8_t>& buffer);
-json::Object Load(std::string path);
+std::shared_ptr<SceneNode> Parse(const std::vector<uint8_t>& buffer);
+std::shared_ptr<SceneNode> Load(std::string path);
 
 };

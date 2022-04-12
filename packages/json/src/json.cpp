@@ -5,7 +5,7 @@
 namespace json {
 
 Object Create(ast::Object& ast);
-std::vector<Value> Create(ast::Array& ast);
+Array Create(ast::Array& ast);
 
 Value Create(ast::Value& ast) {
 	if (std::holds_alternative<std::string>(ast.value)) {
@@ -43,8 +43,8 @@ Object Create(ast::Object& ast) {
 	return object;
 }
 
-std::vector<Value> Create(ast::Array& ast) {
-	std::vector<Value> array{};
+Array Create(ast::Array& ast) {
+	Array array{};
 
 	std::shared_ptr<ast::ArrayEntry> current = ast.entry;
 	while (current != nullptr) {

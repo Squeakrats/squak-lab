@@ -9,6 +9,7 @@ namespace json {
 
 class Object;
 class Value;
+using Array = std::vector<Value>;
 
 class Object {
 public:
@@ -21,7 +22,7 @@ public:
 
 class Value {
 public:
-	std::variant<Object, std::vector<Value>, std::string, bool, double> value;
+	std::variant<Object, Array, std::string, bool, double> value;
 
 	template<typename T>
 	T& get() { return std::get<T>(this->value); };
@@ -33,9 +34,9 @@ public:
 	}
 
 	Value& operator[](size_t index) {
-		assert(std::holds_alternative<std::vector<Value>>(this->value));
+		assert(std::holds_alternative<Array>(this->value));
 
-		return std::get<std::vector<Value>>(this->value)[index];
+		return std::get<Array>(this->value)[index];
 	}
 };
 

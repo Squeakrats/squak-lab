@@ -12,6 +12,8 @@ private:
 	// TODO - cleanup memory
 	std::map<void*, GLuint> cache{};
 
+	void RenderNode(Matrix4& camera, SceneNode& node);
+
 public:
 	void Render(Matrix4& camera, SceneNode& scene);
 };

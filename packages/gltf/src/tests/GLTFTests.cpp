@@ -4,6 +4,8 @@
 
 TEST(GLTF, GLTFBasic) {
 	// TODO - create an asset loading / path framework
-	json::Object json = gltf::Load("..\\..\\..\\..\\..\\assets\\cube.glb");
-	ASSERT_EQ(json["meshes"][0]["name"].get<std::string>(), "Cube.001");
+	std::shared_ptr<SceneNode> scene = gltf::Load("..\\..\\..\\..\\..\\assets\\cube.glb");
+	
+	ASSERT_EQ(scene->name, "Scene");
+	ASSERT_EQ(scene->children[0]->name, "Cube");
 }
