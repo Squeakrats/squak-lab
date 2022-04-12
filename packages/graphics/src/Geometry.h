@@ -7,4 +7,6 @@ public:
 
 	Geometry() : positions() {};
 	Geometry(std::vector<float>&& positions) : positions(positions) {};
+
+	static Geometry CreatePlane(float width, float height);
 };
