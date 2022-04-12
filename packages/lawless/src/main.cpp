@@ -23,11 +23,17 @@ void createWindow(int width, int height) {
     std::cout << "OpenGL Version : " << glGetString(GL_VERSION) << std::endl;
 }
 
+uint32_t frameId = 0;
+
 void tick() {
+    scene->transform.SetPosition(std::sin(static_cast<float>(frameId) / 9000) * 300.0f, 0.0f, 0.f);
+
     renderer->Render(*camera, *scene);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
+
+    frameId++;
 }
 
 void start() {

@@ -27,6 +27,12 @@ Matrix4::Matrix4(
 	data[15] = a44;
 };
 
+void Matrix4::SetPosition(float x, float y, float z) {
+	data[12] = x;
+	data[13] = y;
+	data[14] = z;
+}
+
 Matrix4 Matrix4::Orthographic(float left, float right, float bottom, float top, float far, float near) {
 	// solve for x
 	float a11 = 2.0f / (right - left);

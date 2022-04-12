@@ -35,6 +35,9 @@ void Renderer::Render(Matrix4& camera, SceneNode& scene) {
 	GLint uPerspective = glGetUniformLocation(this->program, "uPerspective");
 	glUniformMatrix4fv(uPerspective, 1, false, camera.data);
 
+	GLint uModel = glGetUniformLocation(this->program, "uModel");
+	glUniformMatrix4fv(uModel, 1, false, scene.transform.data);
+
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	GLenum error = glGetError();
