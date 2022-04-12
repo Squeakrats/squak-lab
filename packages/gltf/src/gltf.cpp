@@ -1,5 +1,6 @@
 #include "gltf.h"
 #include <assert.h>
+#include <fstream>
 
 namespace gltf {
 
@@ -24,6 +25,16 @@ json::Object Parse(const std::vector<uint8_t>& buffer) {
 	std::string source(buffer.begin() + 20, buffer.begin() + 20 + chunkLength);
 
 	return json::Parse(source);
+}
+
+json::Object Load(std::string path) {
+	std::ifstream file(path, std::ios::binary);
+
+	// TODO - dont copy memory like this
+	std::vector<uint8_t> buffer{};
+	while (!file.eof()) { buffer.push_back(file.get()); }
+
+	return Parse(buffer);
 }
 
 };

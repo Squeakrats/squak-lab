@@ -13,5 +13,6 @@ const uint32_t BIN = 0x004E4942;
 };
 
 json::Object Parse(const std::vector<uint8_t>& buffer);
+json::Object Load(std::string path);
 
 };
