@@ -27,7 +27,6 @@ int main(int argc, char* argv[]) {
     scene = std::make_unique<SceneNode>(Matrix4::Identity());
     scene->geometry = std::make_unique<Geometry>(Geometry::CreatePlane(200, 200));
 
-
     window->Tick(tick);
 
     return 0;
