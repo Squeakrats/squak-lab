@@ -1,4 +1,5 @@
 #include "Matrix4.h"
+#include <cmath>
 
 Matrix4::Matrix4(
 	float a11, float a21, float a31, float a41,
@@ -61,30 +62,34 @@ Matrix4 Matrix4::Orthographic(float left, float right, float bottom, float top, 
 	return Matrix4(a11, a21, a31, a41, a12, a22, a32, a42, a13, a23, a33, a43, a14, a24, a34, a44);
 }
 
-Matrix4 Matrix4::Projection(float far) {
+Matrix4 Matrix4::Perspective(float fov, float near, float far) {
+	float theta = fov / 2.0f;
+	float right = std::tan(fov) * near;
+	float top = right; // 1:1 aspect ratio
+
 	// solve for x
-	float a11 = far;
+	float a11 = near / right;
 	float a21 = 0.0f;
 	float a31 = 0.0f;
 	float a41 = 0.0f;
 
 	// solve for y
 	float a12 = 0.0f;
-	float a22 = far;
+	float a22 = near / top;
 	float a32 = 0.0f;
 	float a42 = 0.0f;
 
 	// solve for z
 	float a13 = 0.0f;
 	float a23 = 0.0f;
-	float a33 = -far;
-	float a43 = 1.0f;
+	float a33 = -(far + near) / (far - near);
+	float a43 = -1.0f;
 
 	// solve for w
 	float a14 = 0.0f;
 	float a24 = 0.0f;
-	float a34 = 0.0;
-	float a44 = 0.0;
+	float a34 = -2.0f * (far * near) / (far - near);
+	float a44 = 0.0f;
 
 	return Matrix4(a11, a21, a31, a41, a12, a22, a32, a42, a13, a23, a33, a43, a14, a24, a34, a44);
 }

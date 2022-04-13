@@ -21,6 +21,6 @@ public:
 			0, 0, 0, 1);
 	}
 
-	static Matrix4 Projection(float far);
+	static Matrix4 Perspective(float fov, float near, float far);
 	static Matrix4 Orthographic(float left, float right, float bottom, float top, float far, float near);
 };
