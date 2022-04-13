@@ -24,7 +24,8 @@ const char* const fragment = R"ESC(
 varying vec3 vNormal;
 
 void main() {
-    gl_FragColor = vec4(abs(vNormal), 1.0);
+    float s = max(0, dot(normalize(vNormal), vec3(0.0, 1.0, 0.0)));
+    gl_FragColor = vec4(s * vec3(0.3, 0.2, 0.2) + vec3(0.2, 0.4, 0.6), 1.0);
 }
 )ESC";
 
