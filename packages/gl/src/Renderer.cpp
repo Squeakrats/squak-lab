@@ -104,7 +104,7 @@ void Renderer::RenderNode(Matrix4& camera, SceneNode& node) {
 		glUniformMatrix4fv(uPerspective, 1, false, camera.data);
 
 		GLint uModel = glGetUniformLocation(this->program, "uModel");
-		glUniformMatrix4fv(uModel, 1, false, node.transform.data);
+		glUniformMatrix4fv(uModel, 1, false, node.transform.ToMatrix().data);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EnsureElementArrayBuffer(geometry.indices->view));
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(geometry.indices->view->length / sizeof(uint16_t)), Convert(geometry.indices->componentType), nullptr);

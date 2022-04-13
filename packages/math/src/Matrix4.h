@@ -25,4 +25,5 @@ public:
 
 	static Matrix4 Perspective(float fov, float near, float far);
 	static Matrix4 Orthographic(float left, float right, float bottom, float top, float far, float near);
+	static Matrix4 Create(Vector3 position, Vector3 rotation);
 };
