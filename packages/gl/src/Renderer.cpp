@@ -69,8 +69,10 @@ GLuint Renderer::EnsureElementArrayBuffer(std::shared_ptr<Geometry::BufferView> 
 }
 
 void Renderer::Render(Matrix4& camera, SceneNode& scene) {
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
 	glClearColor(0, 0, 0, 1);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	this->RenderNode(camera, scene);
 
@@ -88,10 +90,15 @@ void Renderer::RenderNode(Matrix4& camera, SceneNode& node) {
 
 		glUseProgram(this->program);
 		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
 
 		auto& position = geometry.attributes.at(Geometry::AttributeType::Position);
 		glBindBuffer(GL_ARRAY_BUFFER, this->EnsureArrayBuffer(position->view->buffer));
 		glVertexAttribPointer(0, Convert(position->type), Convert(position->componentType), false, 0, nullptr);
+
+		auto& normal = geometry.attributes.at(Geometry::AttributeType::Normal);
+		glBindBuffer(GL_ARRAY_BUFFER, this->EnsureArrayBuffer(normal->view->buffer));
+		glVertexAttribPointer(1, Convert(normal->type), Convert(normal->componentType), false, 0, (void*)(normal->view->offset));
 
 		GLint uPerspective = glGetUniformLocation(this->program, "uPerspective");
 		glUniformMatrix4fv(uPerspective, 1, false, camera.data);
@@ -100,7 +107,7 @@ void Renderer::RenderNode(Matrix4& camera, SceneNode& node) {
 		glUniformMatrix4fv(uModel, 1, false, node.transform.data);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EnsureElementArrayBuffer(geometry.indices->view));
-		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(geometry.indices->count), Convert(geometry.indices->componentType), nullptr);
+		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(geometry.indices->view->length / sizeof(uint16_t)), Convert(geometry.indices->componentType), nullptr);
 	}
 
 	for (auto child : node.children) {

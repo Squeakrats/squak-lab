@@ -12,33 +12,50 @@ Geometry Geometry::CreatePlane(float width, float height) {
          hw, -hh, 0.0
     };
 
+    float normalBuffer[] = {
+        0.0,  0.0, 1.0,
+        0.0,  0.0, 1.0,
+        0.0,  0.0, 1.0,
+        0.0,  0.0, 1.0,
+    };
+
     uint16_t indexBuffer[] = {
         0, 1, 2,
         0, 2, 3
     };
 
     std::shared_ptr<Buffer> buffer = std::make_shared<Buffer>();
-    buffer->resize(sizeof(positionBuffer) + sizeof(indexBuffer));
+    buffer->resize(sizeof(positionBuffer) + + sizeof(normalBuffer) + sizeof(indexBuffer));
     std::memcpy(buffer->data(), positionBuffer, sizeof(positionBuffer));
-    std::memcpy(buffer->data() + sizeof(positionBuffer), indexBuffer, sizeof(indexBuffer));
+    std::memcpy(buffer->data() + sizeof(positionBuffer), normalBuffer, sizeof(normalBuffer));
+    std::memcpy(buffer->data() + sizeof(positionBuffer) + sizeof(normalBuffer), indexBuffer, sizeof(indexBuffer));
 
     Attributes attributes = {
         {
             AttributeType::Position,
             std::make_shared<Accessor>(Accessor{
-                AccessorType::Vector2,
+                AccessorType::Vector3,
                 ComponentType::Float,
                 4,
                 std::make_shared<BufferView>(BufferView{ buffer, 0, sizeof(positionBuffer) })
+            })
+        },
+        {
+            AttributeType::Normal,
+            std::make_shared<Accessor>(Accessor{
+                AccessorType::Vector3,
+                ComponentType::Float,
+                4,
+                std::make_shared<BufferView>(BufferView{ buffer, sizeof(positionBuffer), sizeof(normalBuffer) })
             })
         }
     };
 
     std::shared_ptr<Accessor> indices = std::make_shared<Accessor>(Accessor{
         AccessorType::Scalar,
-        ComponentType::UnsignedInt,
-        6,
-        std::make_shared<BufferView>(BufferView{ buffer, sizeof(positionBuffer), sizeof(indexBuffer) })
+        ComponentType::UnsignedShort,
+        4,
+        std::make_shared<BufferView>(BufferView{ buffer, sizeof(positionBuffer) + sizeof(normalBuffer), sizeof(indexBuffer) })
     });
 
     return Geometry(std::move(attributes), indices);

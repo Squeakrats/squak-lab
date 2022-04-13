@@ -5,7 +5,7 @@
 #include "gltf.h"
 
 void tick(SceneNode& scene, gl::Renderer& renderer, Matrix4& camera, uint32_t& frameId) {
-    scene.children[0]->transform.SetPosition(std::sin(static_cast<float>(frameId) / 9000) * 1.0f, 0.0f, 0.f);
+    scene.children[0]->transform.SetPosition(0.0, -0.5, -0.5);
     renderer.Render(camera, scene);
     frameId++;
 }
