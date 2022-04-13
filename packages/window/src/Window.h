@@ -1,10 +1,12 @@
 #pragma once
 #include <functional>
-
-struct GLFWwindow;
+#ifndef EMSCRIPTEN
+#include <gl/glew.h>
+#endif
+#include "GLFW/glfw3.h"
 
 class Window {
-private:
+public:
 	GLFWwindow* window;
 
 	Window(GLFWwindow* window) : window(window) {};

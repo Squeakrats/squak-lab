@@ -4,26 +4,42 @@
 #include "Window.h"
 #include "gltf.h"
 
-void tick(SceneNode& scene, gl::Renderer& renderer, Matrix4& camera, uint32_t& frameId) {
-    scene.children[0]->transform.SetPosition(0.0f, -0.0f, -30.0);
-    renderer.Render(camera, scene);
-    frameId++;
+struct App {
+    Window window;
+    gl::Renderer renderer;
+    Matrix4 camera;
+    std::shared_ptr<SceneNode> scene;
+    uint32_t frameId;
+};
+
+std::unique_ptr<App> app{};
+
+void tick() {
+    app->renderer.Render(app->camera, *app->scene);
+    app->frameId++;
+}
+
+void onCursorMoved(GLFWwindow* window, double x, double y) {
+    // rotate 
 }
 
 int main(int argc, char* argv[]) {
-    Window window = Window::Create(600, 600, "Lawless");
+    app = std::make_unique<App>(App{
+       Window::Create(600, 600, "Lawless"),
+       gl::Renderer{},
+       Matrix4::Perspective(110.0f, 1, 100),
+       gltf::Load("..\\..\\..\\..\\assets\\suzanne.glb"),
+       0
+    });
+
     std::cout << "OpenGL Version : " << glGetString(GL_VERSION) << std::endl;
     std::cout << "CWD : " << std::filesystem::current_path() << std::endl;
 
-    gl::Renderer renderer{};
-    Matrix4 camera = Matrix4::Perspective(110.0f, 1, 100);
+    glfwSetCursorPosCallback(app->window.window, onCursorMoved);
 
-    std::shared_ptr<SceneNode> scene = gltf::Load("..\\..\\..\\..\\assets\\suzanne.glb");
+    app->scene->children[0]->transform.SetPosition(0.0f, -0.0f, -30.0);
 
-    uint32_t frameId = 0;
-    window.Tick([&scene, &renderer, &camera, &frameId]() {
-        tick(*scene, renderer, camera, frameId);
-    });
+    app->window.Tick([]() { tick(); });
 
     return 0;
 }
