@@ -42,7 +42,7 @@ GLuint Renderer::EnsureArrayBuffer(std::shared_ptr<Geometry::Buffer> source) {
 	}
 
 	GLuint buffer{};
-	glCreateBuffers(1, &buffer);
+	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
 	glBufferData(GL_ARRAY_BUFFER, source->size(), source->data(), GL_STATIC_DRAW);
 
@@ -59,7 +59,7 @@ GLuint Renderer::EnsureElementArrayBuffer(std::shared_ptr<Geometry::BufferView> 
 	}
 
 	GLuint buffer{};
-	glCreateBuffers(1, &buffer);
+	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, view->length, view->buffer->data() + view->offset, GL_STATIC_DRAW);
 

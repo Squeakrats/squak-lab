@@ -43,6 +43,7 @@ Token Tokenize(std::stringstream& source) {
 		case '\n':
 		case ' ':
 		case '\t':
+		case '\r':
 			break;
 		case EOF:
 			return Token{ TokenType::EndOfFile, "" };
