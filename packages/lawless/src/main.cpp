@@ -17,6 +17,8 @@ std::unique_ptr<App> app{};
 void tick() {
     app->renderer.Render(app->camera, *app->scene);
     app->frameId++;
+    
+    app->scene->children[0]->transform.rotation.y += .0001f;
 }
 
 void onCursorMoved(GLFWwindow* window, double x, double y) {

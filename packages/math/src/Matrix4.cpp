@@ -1,5 +1,6 @@
 #include "Matrix4.h"
 #include <cmath>
+#include <assert.h>
 
 Matrix4::Matrix4(
 	float a11, float a21, float a31, float a41,
@@ -99,9 +100,12 @@ Matrix4 Matrix4::Perspective(float fov, float near, float far) {
 }
 
 Matrix4 Matrix4::Create(Vector3 position, Vector3 rotation) {
-	float a11 = 1.0f;
+	float cos = std::cos(rotation.y);
+	float sin = std::sin(rotation.y);
+
+	float a11 = cos;
 	float a21 = 0.0f;
-	float a31 = 0.0f;
+	float a31 = -sin;
 	float a41 = 0.0f;
 
 	float a12 = 0.0f;
@@ -109,9 +113,9 @@ Matrix4 Matrix4::Create(Vector3 position, Vector3 rotation) {
 	float a32 = 0.0f;
 	float a42 = 0.0f;
 
-	float a13 = 0.0f;
+	float a13 = sin;
 	float a23 = 0.0f;
-	float a33 = 1.0f;
+	float a33 = cos;
 	float a43 = 0.0f;
 
 	float a14 = position.x;
