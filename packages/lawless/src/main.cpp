@@ -20,7 +20,7 @@ void tick() {
 }
 
 void onCursorMoved(GLFWwindow* window, double x, double y) {
-    // rotate 
+    // rotate
 }
 
 int main(int argc, char* argv[]) {
@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
 
     glfwSetCursorPosCallback(app->window.window, onCursorMoved);
 
-    app->scene->children[0]->transform.SetPosition(0.0f, -0.0f, -30.0);
+    app->scene->children[0]->transform.SetPosition(Vector3(0.0f, -0.0f, -30.0));
 
     app->window.Tick([]() { tick(); });
 

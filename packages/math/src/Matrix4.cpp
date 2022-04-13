@@ -28,10 +28,14 @@ Matrix4::Matrix4(
 	data[15] = a44;
 };
 
-void Matrix4::SetPosition(float x, float y, float z) {
-	data[12] = x;
-	data[13] = y;
-	data[14] = z;
+Vector3 Matrix4::GetPosition() {
+	return Vector3(data[12], data[13], data[14]);
+}
+
+void Matrix4::SetPosition(Vector3 position) {
+	data[12] = position.x;
+	data[13] = position.y;
+	data[14] = position.z;
 }
 
 Matrix4 Matrix4::Orthographic(float left, float right, float bottom, float top, float far, float near) {

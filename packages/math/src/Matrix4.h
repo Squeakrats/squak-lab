@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include "Vector3.h"
 
 class Matrix4 {
 public:
@@ -11,7 +12,8 @@ public:
 		float a13, float a23, float a33, float a43,
 		float a14, float a24, float a34, float a44);
 
-	void SetPosition(float x, float y, float z);
+	Vector3 GetPosition();
+	void SetPosition(Vector3 position);
 
 	static Matrix4 Identity() {
 		return Matrix4(
