@@ -3,10 +3,11 @@
 #include "SceneNode.h"
 #include "glutils.h"
 #include <stack>
+#include "IRenderer.h"
 
 namespace gl {
 
-class Renderer {
+class Renderer : public IRenderer {
 private:
 	GLuint program;
 	std::stack<Matrix4> transforms{};
@@ -20,7 +21,7 @@ private:
 	void RenderNode(Matrix4& camera, SceneNode& node);
 
 public:
-	void Render(Matrix4& camera, SceneNode& scene);
+	virtual void Render(Matrix4& camera, SceneNode& scene) override;
 };
 
 }
