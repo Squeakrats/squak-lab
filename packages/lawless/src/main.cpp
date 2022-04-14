@@ -12,10 +12,23 @@ struct App {
     gl::Renderer renderer;
     Matrix4 camera;
     std::shared_ptr<SceneNode> scene;
-    uint32_t frameId;
+    uint32_t frameId{};
 };
 
 std::unique_ptr<App> app{};
+
+GLFWwindow* createWindow() {
+    assert(glfwInit());
+    GLFWwindow* window = glfwCreateWindow(600, 600, "Lawless", nullptr, nullptr);
+    glfwMakeContextCurrent(window);
+
+#ifndef EMSCRIPTEN
+    glewExperimental = true;
+    assert(glewInit() == GLEW_OK);
+#endif
+
+    return window;
+}
 
 void tick() {
     app->renderer.Render(app->camera, *app->scene);
@@ -34,14 +47,7 @@ void onCursorMoved(GLFWwindow* window, double x, double y) {
 int main(int argc, char* argv[]) {
     std::cout << "CWD : " << std::filesystem::current_path() << std::endl;
 
-    assert(glfwInit());
-    GLFWwindow* window = glfwCreateWindow(600, 600, "Lawless", nullptr, nullptr);
-    glfwMakeContextCurrent(window);
 
-#ifndef EMSCRIPTEN
-    glewExperimental = true;
-    assert(glewInit() == GLEW_OK);
-#endif
 
 #ifndef EMSCRIPTEN
     std::string path = "..\\..\\..\\..\\assets\\suzanne.glb";
@@ -50,21 +56,33 @@ int main(int argc, char* argv[]) {
 #endif
 
     app = std::make_unique<App>(App{
-       window,
+       createWindow(),
        gl::Renderer{},
        Matrix4::Perspective(110.0f, 1, 100),
-       gltf::Load(path),
-       0
+       std::make_shared<SceneNode>()
     });
 
     std::cout << "OpenGL Version : " << glGetString(GL_VERSION) << std::endl;
 
-    glfwSetCursorPosCallback(app->window, onCursorMoved);
+    std::shared_ptr<SceneNode> suzanne = gltf::Load(path);
+
+    std::shared_ptr<SceneNode> node1 = std::make_shared<SceneNode>();
+    node1->transform.position = Vector3(4, 0.0, 0.0);
+    node1->children.push_back(suzanne);
+
+    std::shared_ptr<SceneNode> node2 = std::make_shared<SceneNode>();
+    node2->transform.position = Vector3(-4, 0.0, 0.0);
+    node2->children.push_back(suzanne);
+
+    app->scene->children.push_back(node1);
+    app->scene->children.push_back(node2);
 
     app->scene->transform.position = Vector3(0.0f, -0.0f, -30.0);
 
+    glfwSetCursorPosCallback(app->window, onCursorMoved);
+
 #ifndef EMSCRIPTEN
-    while (!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(app->window)) {
         tick();
     }
 #else
