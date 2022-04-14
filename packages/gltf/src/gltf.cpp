@@ -155,4 +155,10 @@ std::shared_ptr<SceneNode> Load(std::string path) {
 	return Parse(file);
 }
 
+std::shared_ptr<IAsset> GLBLoader::Load(std::string name) {
+	std::ifstream file(name, std::ios::binary);
+
+	return std::make_shared<Asset>(Parse(file));
+}
+
 };

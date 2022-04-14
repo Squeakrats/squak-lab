@@ -11,10 +11,12 @@
 #include "SceneNode.h"
 #include "IRenderer.h"
 #include <functional>
+#include "AssetManager.h"
 
 class Engine {
 private:
 	GLFWwindow* window{};
+	AssetManager assetManager{};
 	std::shared_ptr<SceneNode> scene{};
 	std::shared_ptr<Matrix4> camera{};
 	std::shared_ptr<IRenderer> renderer{};
@@ -26,6 +28,7 @@ private:
 	{};
 
 public:
+	AssetManager& GetAssetManager() { return this->assetManager; };
 	std::shared_ptr<SceneNode> GetScene() { return this->scene; };
 	void OnTick(std::function<void(float deltaMs)> tick) { this->tick = tick; };
 
