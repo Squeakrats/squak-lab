@@ -1,5 +1,5 @@
 #include "gltf.h"
-#include <assert.h>
+#include "utility.h"
 #include <fstream>
 #include "SceneAsset.h"
 
@@ -21,8 +21,7 @@ Geometry::AccessorType ConvertAccessorType(const std::string& type) {
 		return Geometry::AccessorType::Scalar;
 	}
 
-	assert(false);
-	throw std::exception();
+	Panic(std::format("unsupported type {}!", type));
 }
 
 Geometry::ComponentType ConvertComponentType(const double& type) {
@@ -36,8 +35,7 @@ Geometry::ComponentType ConvertComponentType(const double& type) {
 		return Geometry::ComponentType::Float;
 	}
 
-	assert(false);
-	throw std::exception();
+	Panic(std::format("unsupported type {}!", type));
 }
 
 Geometry::AttributeType ConvertAttributeType(const std::string& type) {
@@ -51,8 +49,7 @@ Geometry::AttributeType ConvertAttributeType(const std::string& type) {
 		return Geometry::AttributeType::TextureCoordinate_0;
 	}
 
-	assert(false);
-	throw std::exception();
+	Panic(std::format("unsupported type {}!" + type));
 }
 
 std::shared_ptr<SceneNode> Parse(std::ifstream& source) {

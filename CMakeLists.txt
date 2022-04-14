@@ -28,5 +28,6 @@ add_subdirectory(packages/lawless)
 add_subdirectory(packages/math)
 add_subdirectory(packages/RegularExpression)
 add_subdirectory(packages/grammar)
+add_subdirectory(packages/utility)
 
 

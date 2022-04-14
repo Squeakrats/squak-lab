@@ -6,7 +6,7 @@ add_library(gltf
     src/gltf.cpp
 )
 target_include_directories(gltf PUBLIC src/)
-target_link_libraries(gltf json graphics core)
+target_link_libraries(gltf json graphics core utility)
 
 add_executable(GLTFTests src/tests/GLTFTests.cpp)
 target_link_libraries(GLTFTests gtest_main gltf)

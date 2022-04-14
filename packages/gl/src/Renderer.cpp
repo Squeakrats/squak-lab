@@ -1,8 +1,8 @@
-#include <assert.h>
 #include "gl/Renderer.h"
 #include "gl/glutils.h"
 #include "shaders.h"
 #include "Matrix4.h"
+#include "utility.h"
 
 namespace gl {
 
@@ -15,8 +15,7 @@ GLenum Convert(Geometry::ComponentType type) {
 		case Geometry::ComponentType::UnsignedShort:
 			return GL_UNSIGNED_SHORT;
 		default:
-			assert(false);
-			throw std::exception();
+			Panic(std::format("unsupported type {}!", static_cast<int>(type)));
 	}
 }
 
@@ -29,8 +28,7 @@ GLenum Convert(Geometry::AccessorType type) {
 		case Geometry::AccessorType::Vector3:
 			return 3;
 		default:
-			assert(false);
-			throw std::exception();
+			Panic(std::format("unsupported type {}!", static_cast<int>(type)));
 	}
 }
 

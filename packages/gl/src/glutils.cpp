@@ -1,5 +1,5 @@
-#include <assert.h>
 #include "gl/glutils.h"
+#include "utility.h"
 
 namespace gl {
 
@@ -18,7 +18,7 @@ GLuint CreateShader(GLenum type, std::string source) {
 		GLsizei errorBufferLength = 0;
 
 		glGetShaderInfoLog(shader, 2048, &errorBufferLength, errorBuffer);
-		assert(false);
+		Panic(errorBuffer);
 	}
 
 	return shader;
@@ -37,7 +37,7 @@ GLuint CreateProgram(std::string vertexShaderSource, std::string fragmentShaderS
 		GLsizei errorBufferLength = 0;
 
 		glGetProgramInfoLog(program, 2048, &errorBufferLength, errorBuffer);
-		assert(false);
+		Panic(errorBuffer);
 	}
 
 	status = 0;
@@ -48,7 +48,7 @@ GLuint CreateProgram(std::string vertexShaderSource, std::string fragmentShaderS
 		GLsizei errorBufferLength = 0;
 
 		glGetProgramInfoLog(program, 2048, &errorBufferLength, errorBuffer);
-		assert(false);
+		Panic(errorBuffer);
 	}
 
 	return program;
