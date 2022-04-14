@@ -2,6 +2,54 @@
 #include <fstream>
 #include "Grammar.h"
 #include "fragments.h"
+#ifdef EMSCRIPTEN
+#include <emscripten.h>
+
+EM_JS(char*, readFileSync, (const char* path), {
+  var contents = fs.readFileSync(UTF8ToString(path)).toString();
+  var length = lengthBytesUTF8(contents);
+
+  var buffer = _malloc(length);
+  stringToUTF8(contents, buffer, length);
+
+  return buffer;
+});
+
+EM_JS(void, writeFileSync, (const char* path, const char* contents), {
+  fs.writeFileSync(UTF8ToString(path), UTF8ToString(contents));
+});
+
+#endif
+
+std::string ReadFile(std::string path) {
+#ifdef EMSCRIPTEN
+	char* buffer = readFileSync(path.c_str());
+	std::string result(buffer);
+	delete buffer;
+
+	return result;
+#else
+	std::ifstream file(path);
+	assert(file.is_open());
+
+	std::stringstream stream{};
+	stream << file.rdbuf();
+
+	return stream.str();
+#endif
+}
+
+void EmitFile(std::string path, std::string contents) {
+#ifdef EMSCRIPTEN
+	writeFileSync(path.c_str(), contents.c_str());
+#else
+	std::ofstream file(path);
+	assert(file.is_open());
+
+	file << contents;
+	file.close();
+#endif
+}
 
 std::string GenHeader(Grammar& grammar) {
 	std::stringstream tokens{};
@@ -88,18 +136,9 @@ std::string GenParser(Grammar& grammar) {
 	});
 }
 
-void EmitFile(std::string name, std::string contents) {
-	std::ofstream file(name);
-	file << contents;
-	file.close();
-}
 
 int main(int argc, char* argv[]) {
-	std::ifstream file(argv[1]);
-	std::stringstream contents{};
-	contents << file.rdbuf();
-
-	Grammar grammar = Grammar::Create(contents.str());
+	Grammar grammar = Grammar::Create(ReadFile(argv[1]));
 
 	std::string outDir(argv[2]);
 	EmitFile(outDir + "Parser.generated.h", GenHeader(grammar));
