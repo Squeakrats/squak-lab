@@ -11,4 +11,6 @@ public:
 	Transform transform{};
 	std::shared_ptr<Geometry> geometry{};
 	std::vector<std::shared_ptr<SceneNode>> children{};
+
+	void AddChild(std::shared_ptr<SceneNode> child) { this->children.push_back(child); }
 };

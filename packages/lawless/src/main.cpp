@@ -30,15 +30,15 @@ int main(int argc, char* argv[]) {
 
     std::shared_ptr<SceneNode> node1 = std::make_shared<SceneNode>();
     node1->transform.position = Vector3(4, 0.0, 0.0);
-    node1->children.push_back(suzanne);
+    node1->AddChild(suzanne);
 
     std::shared_ptr<SceneNode> node2 = std::make_shared<SceneNode>();
     node2->transform.position = Vector3(-4, 0.0, 0.0);
-    node2->children.push_back(suzanne);
+    node2->AddChild(suzanne);
 
     auto scene = engine->GetScene();
-    scene->children.push_back(node1);
-    scene->children.push_back(node2);
+    scene->AddChild(node1);
+    scene->AddChild(node2);
 
     scene->transform.position = Vector3(0.0f, -0.0f, -30.0);
 
