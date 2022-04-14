@@ -2,12 +2,14 @@
 #include <map>
 #include "SceneNode.h"
 #include "glutils.h"
+#include <stack>
 
 namespace gl {
 
 class Renderer {
 private:
 	GLuint program;
+	std::stack<Matrix4> transforms{};
 	
 	// TODO - cleanup memory
 	std::map<void*, GLuint> cache{};

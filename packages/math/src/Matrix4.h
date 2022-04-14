@@ -6,6 +6,7 @@ class Matrix4 {
 public:
 	float data[16];
 
+	Matrix4() {};
 	Matrix4(
 		float a11, float a21, float a31, float a41,
 		float a12, float a22, float a32, float a42,
@@ -27,3 +28,5 @@ public:
 	static Matrix4 Orthographic(float left, float right, float bottom, float top, float far, float near);
 	static Matrix4 Create(Vector3 position, Vector3 rotation);
 };
+
+Matrix4 operator*(const Matrix4& lhs, const Matrix4& rhs);

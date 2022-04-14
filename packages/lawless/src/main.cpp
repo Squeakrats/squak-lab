@@ -21,7 +21,7 @@ void tick() {
     app->renderer.Render(app->camera, *app->scene);
     app->frameId++;
     
-    app->scene->children[0]->transform.rotation.y += .001f;
+    app->scene->transform.rotation.y += .001f;
 
     glfwSwapBuffers(app->window);
     glfwPollEvents();
@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
 
     glfwSetCursorPosCallback(app->window, onCursorMoved);
 
-    app->scene->children[0]->transform.position = Vector3(0.0f, -0.0f, -30.0);
+    app->scene->transform.position = Vector3(0.0f, -0.0f, -30.0);
 
 #ifndef EMSCRIPTEN
     while (!glfwWindowShouldClose(window)) {

@@ -74,13 +74,17 @@ void Renderer::Render(Matrix4& camera, SceneNode& scene) {
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
+	this->transforms.push(Matrix4::Identity());
 	this->RenderNode(camera, scene);
+	this->transforms.pop();
 
 	GLenum error = glGetError();
 	assert(error == 0);
 }
 
 void Renderer::RenderNode(Matrix4& camera, SceneNode& node) {
+	this->transforms.push(this->transforms.top() * node.transform.ToMatrix());
+
 	if (node.geometry != nullptr) {
 		Geometry& geometry = *node.geometry;
 
@@ -104,7 +108,7 @@ void Renderer::RenderNode(Matrix4& camera, SceneNode& node) {
 		glUniformMatrix4fv(uPerspective, 1, false, camera.data);
 
 		GLint uModel = glGetUniformLocation(this->program, "uModel");
-		glUniformMatrix4fv(uModel, 1, false, node.transform.ToMatrix().data);
+		glUniformMatrix4fv(uModel, 1, false, this->transforms.top().data);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EnsureElementArrayBuffer(geometry.indices->view));
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(geometry.indices->view->length / sizeof(uint16_t)), Convert(geometry.indices->componentType), nullptr);

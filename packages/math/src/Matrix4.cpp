@@ -125,3 +125,23 @@ Matrix4 Matrix4::Create(Vector3 position, Vector3 rotation) {
 
 	return Matrix4(a11, a21, a31, a41, a12, a22, a32, a42, a13, a23, a33, a43, a14, a24, a34, a44);
 }
+
+Matrix4 operator*(const Matrix4& lhs, const Matrix4& rhs) {
+	const float* a = lhs.data;
+	const float* b = rhs.data;
+
+	Matrix4 result{};
+
+	for (size_t r = 0; r < 4; r++) {
+		for (size_t c = 0; c < 4; c++) {
+			size_t index = c * 4 + r;
+			result.data[index] =
+				  a[0 * 4 + r] * b[c * 4 + 0]
+				+ a[1 * 4 + r] * b[c * 4 + 1] 
+				+ a[2 * 4 + r] * b[c * 4 + 2]  
+				+ a[3 * 4 + r] * b[c * 4 + 3];
+		}
+	}
+
+	return result;
+}
