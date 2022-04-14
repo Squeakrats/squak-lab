@@ -7,6 +7,7 @@ add_library(graphics
 	src/Geometry.cpp
 	src/Transform.h
 	src/IRenderer.h
+	src/SceneAsset.h
 )
 target_include_directories(graphics PUBLIC src/)
-target_link_libraries(graphics math)
+target_link_libraries(graphics math core)

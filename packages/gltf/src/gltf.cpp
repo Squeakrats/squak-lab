@@ -1,6 +1,7 @@
 #include "gltf.h"
 #include <assert.h>
 #include <fstream>
+#include "SceneAsset.h"
 
 namespace gltf {
 
@@ -158,7 +159,7 @@ std::shared_ptr<SceneNode> Load(std::string path) {
 std::shared_ptr<IAsset> GLBLoader::Load(std::string name) {
 	std::ifstream file(name, std::ios::binary);
 
-	return std::make_shared<Asset>(Parse(file));
+	return std::make_shared<SceneAsset>(Parse(file));
 }
 
 };

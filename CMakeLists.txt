@@ -19,6 +19,7 @@ set_target_properties(gtest gtest_main gmock gmock_main PROPERTIES FOLDER extern
 
 add_subdirectory(packages/compiler)
 add_subdirectory(packages/core)
+add_subdirectory(packages/engine)
 add_subdirectory(packages/gl)
 add_subdirectory(packages/gltf)
 add_subdirectory(packages/graphics)

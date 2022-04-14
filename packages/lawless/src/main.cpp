@@ -4,6 +4,7 @@
 #include "glfw/glfw3.h"
 #include "gltf.h"
 #include "Engine.h"
+#include "SceneAsset.h"
 
 std::unique_ptr<Engine> engine{};
 
@@ -16,11 +17,11 @@ std::string assetDir = "..\\..\\..\\..\\assets\\";
 #endif
 
 std::shared_ptr<SceneNode> CreateSuzanne(Vector3 position) {
-    gltf::GLBLoader::Asset& suzanne = static_cast<gltf::GLBLoader::Asset&>(*(engine->GetAssetManager().Get(assetDir + "suzanne.glb")));
+    auto asset = std::static_pointer_cast<SceneAsset>(engine->GetAssetManager().Get(assetDir + "suzanne.glb"));
 
     std::shared_ptr<SceneNode> node = std::make_shared<SceneNode>();
     node->transform.position = position;
-    node->AddChild(suzanne.scene);
+    node->AddChild(asset->scene);
 
     return node;
 }

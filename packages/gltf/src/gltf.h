@@ -18,12 +18,6 @@ std::shared_ptr<SceneNode> Load(std::string path);
 
 class GLBLoader : public IAssetLoader {
 public:
-	struct Asset : public IAsset {
-		std::shared_ptr<SceneNode> scene{};
-
-		Asset(std::shared_ptr<SceneNode> scene) : scene(scene) {};
-	};
-
 	virtual std::shared_ptr<IAsset> Load(std::string name) override;
 };
 
