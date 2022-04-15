@@ -27,7 +27,7 @@ std::shared_ptr<SceneNode> CreateSuzanne(Vector3 position) {
 }
 
 int main(int argc, char* argv[]) {
-    engine = std::make_unique<Engine>(Engine::Create(600, 600, "Lawless"));
+    engine = std::make_unique<Engine>(Engine::Create(1000, 1000, "Lawless"));
     std::cout << "Working Directory : " << std::filesystem::current_path() << std::endl;
     std::cout << "OpenGL Version : " << glGetString(GL_VERSION) << std::endl;
 
@@ -39,9 +39,8 @@ int main(int argc, char* argv[]) {
     engine->SetCamera(std::make_shared<Matrix4>(Matrix4::Perspective(110.0f, 1, 100)));
 
     auto scene = engine->GetScene();
-    scene->transform.position = Vector3(0.0f, -0.0f, -30.0);
-    scene->AddChild(CreateSuzanne(Vector3(4, 0.0, 0.0)));
-    scene->AddChild(CreateSuzanne(Vector3(-4, 0.0, 0.0)));
+    scene->transform.position = Vector3(0.0f, 0.0f, -30.0);
+    scene->AddChild(CreateSuzanne(Vector3(0, 0.0, 0.0)));
 
     engine->OnTick([&scene](float deltaMs) {
         scene->transform.rotation.y += 0.001f * deltaMs;
