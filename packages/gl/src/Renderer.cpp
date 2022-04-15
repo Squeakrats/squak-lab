@@ -94,12 +94,15 @@ void Renderer::RenderNode(Matrix4& camera, SceneNode& node) {
 		glUseProgram(this->program);
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
-		glEnableVertexAttribArray(2);
 
 		Geometry& geometry = *node.geometry;
-		this->MapAttribute(0, *geometry.attributes.at(Geometry::AttributeType::Position));
-		this->MapAttribute(1, *geometry.attributes.at(Geometry::AttributeType::Normal));
-		this->MapAttribute(2, *geometry.attributes.at(Geometry::AttributeType::TextureCoordinate_0));
+		auto& position = geometry.attributes.at(Geometry::AttributeType::Position);
+		glBindBuffer(GL_ARRAY_BUFFER, this->EnsureArrayBuffer(position->view->buffer));
+		glVertexAttribPointer(0, Convert(position->type), Convert(position->componentType), false, 0, nullptr);
+
+		auto& normal = geometry.attributes.at(Geometry::AttributeType::Normal);
+		glBindBuffer(GL_ARRAY_BUFFER, this->EnsureArrayBuffer(normal->view->buffer));
+		glVertexAttribPointer(1, Convert(normal->type), Convert(normal->componentType), false, 0, (void*)(normal->view->offset));
 
 		GLint uPerspective = glGetUniformLocation(this->program, "uPerspective");
 		glUniformMatrix4fv(uPerspective, 1, false, camera.data);
@@ -114,6 +117,8 @@ void Renderer::RenderNode(Matrix4& camera, SceneNode& node) {
 	for (auto child : node.children) {
 		this->RenderNode(camera, *child);
 	}
+
+	this->transforms.pop();
 }
 
 };
