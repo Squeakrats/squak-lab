@@ -25,9 +25,12 @@ GLuint CreateShader(GLenum type, std::string source) {
 }
 
 GLuint CreateProgram(std::string vertexShaderSource, std::string fragmentShaderSource) {
+	GLuint vertexShader = CreateShader(GL_VERTEX_SHADER, vertexShaderSource);
+	GLuint fragmentShader = CreateShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
+
 	GLuint program = glCreateProgram();
-	glAttachShader(program, CreateShader(GL_VERTEX_SHADER, vertexShaderSource));
-	glAttachShader(program, CreateShader(GL_FRAGMENT_SHADER, fragmentShaderSource));
+	glAttachShader(program, vertexShader);
+	glAttachShader(program, fragmentShader);
 	
 	GLint status{};
 	glLinkProgram(program);
@@ -50,6 +53,9 @@ GLuint CreateProgram(std::string vertexShaderSource, std::string fragmentShaderS
 		glGetProgramInfoLog(program, 2048, &errorBufferLength, errorBuffer);
 		Panic(errorBuffer);
 	}
+
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
 
 	return program;
 }
