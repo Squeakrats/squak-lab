@@ -20,7 +20,7 @@ private:
 	std::shared_ptr<SceneNode> scene{};
 	std::shared_ptr<Matrix4> camera{};
 	std::shared_ptr<IRenderer> renderer{};
-	std::function<void(float deltaMs)> tick{};
+	std::function<void(float deltaMs)> tick = [](float) {};
 	
 	Engine(GLFWwindow* window) : 
 		window(window),

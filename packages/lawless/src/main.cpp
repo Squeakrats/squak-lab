@@ -42,10 +42,6 @@ int main(int argc, char* argv[]) {
     scene->transform.position = Vector3(0.0f, 0.0f, -30.0);
     scene->AddChild(CreateSuzanne(Vector3(0, 0.0, 0.0)));
 
-    engine->OnTick([&scene](float deltaMs) {
-        scene->transform.rotation.y += 0.001f * deltaMs;
-    });
-
 #ifndef EMSCRIPTEN
     while (engine->isRunning()) { main_loop(); }
 #else
