@@ -9,7 +9,7 @@ namespace gl {
 
 class Renderer : public IRenderer {
 private:
-	GLuint program;
+	GLuint program{};
 	std::stack<Matrix4> transforms{};
 	
 	// TODO - cleanup memory
@@ -17,10 +17,15 @@ private:
 
 	GLuint EnsureArrayBuffer(std::shared_ptr<Geometry::Buffer> buffer);
 	GLuint EnsureElementArrayBuffer(std::shared_ptr<Geometry::BufferView> buffer);
+	void MapAttribute(GLuint location, const Geometry::Accessor& accessor);
 
 	void RenderNode(Matrix4& camera, SceneNode& node);
 
 public:
+	Renderer() {
+		this->transforms.push(Matrix4::Identity());
+	}
+
 	virtual void Render(Matrix4& camera, SceneNode& scene) override;
 };
 

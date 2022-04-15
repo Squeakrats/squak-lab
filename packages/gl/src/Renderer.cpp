@@ -66,15 +66,18 @@ GLuint Renderer::EnsureElementArrayBuffer(std::shared_ptr<Geometry::BufferView> 
 	return buffer;
 }
 
+void Renderer::MapAttribute(GLuint location, const Geometry::Accessor& accessor) {
+	glBindBuffer(GL_ARRAY_BUFFER, this->EnsureArrayBuffer(accessor.view->buffer));
+	glVertexAttribPointer(location, Convert(accessor.type), Convert(accessor.componentType), false, 0, (void*)(accessor.view->offset));
+}
+
 void Renderer::Render(Matrix4& camera, SceneNode& scene) {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-	this->transforms.push(Matrix4::Identity());
 	this->RenderNode(camera, scene);
-	this->transforms.pop();
 
 	GLenum error = glGetError();
 	assert(error == 0);
@@ -84,8 +87,6 @@ void Renderer::RenderNode(Matrix4& camera, SceneNode& node) {
 	this->transforms.push(this->transforms.top() * node.transform.ToMatrix());
 
 	if (node.geometry != nullptr) {
-		Geometry& geometry = *node.geometry;
-
 		if (!this->program) {
 			this->program = CreateProgram(shaders::vertex, shaders::fragment);
 		}
@@ -93,14 +94,12 @@ void Renderer::RenderNode(Matrix4& camera, SceneNode& node) {
 		glUseProgram(this->program);
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(2);
 
-		auto& position = geometry.attributes.at(Geometry::AttributeType::Position);
-		glBindBuffer(GL_ARRAY_BUFFER, this->EnsureArrayBuffer(position->view->buffer));
-		glVertexAttribPointer(0, Convert(position->type), Convert(position->componentType), false, 0, nullptr);
-
-		auto& normal = geometry.attributes.at(Geometry::AttributeType::Normal);
-		glBindBuffer(GL_ARRAY_BUFFER, this->EnsureArrayBuffer(normal->view->buffer));
-		glVertexAttribPointer(1, Convert(normal->type), Convert(normal->componentType), false, 0, (void*)(normal->view->offset));
+		Geometry& geometry = *node.geometry;
+		this->MapAttribute(0, *geometry.attributes.at(Geometry::AttributeType::Position));
+		this->MapAttribute(1, *geometry.attributes.at(Geometry::AttributeType::Normal));
+		this->MapAttribute(2, *geometry.attributes.at(Geometry::AttributeType::TextureCoordinate_0));
 
 		GLint uPerspective = glGetUniformLocation(this->program, "uPerspective");
 		glUniformMatrix4fv(uPerspective, 1, false, camera.data);
