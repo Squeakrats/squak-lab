@@ -75,6 +75,10 @@ public:
 		return this->assetManager.Get<T>(name);
 	}
 
+	void AddChild(std::shared_ptr<Actor> child) {
+		this->scene->AddChild(child->GetRoot());
+	}
+
 	int GetKey(int key){
 		return glfwGetKey(this->window, key);
 	}

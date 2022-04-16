@@ -9,7 +9,6 @@ public:
     const static float DEFAULT_SPEED;
 
     Player(const ActorInitializer& initializer) : Actor(initializer) {
-        this->root = std::make_shared<SceneNode>();
         this->root->AddChild(engine.GetAsset<SceneAsset>("suzanne.glb")->scene);
     }
 

@@ -29,8 +29,8 @@ int main(int argc, char* argv[]) {
     engine->SetRenderer(std::make_shared<gl::Renderer>());
     engine->SetCamera(std::make_shared<Matrix4>(Matrix4::Perspective(110.0f, 1, 100)));
 
-    engine->GetScene()->AddChild(
-        engine->Spawn<Player>(Transform(Vector3(0, 0.0, -30.0)))->GetRoot()
+    engine->AddChild(
+        engine->Spawn<Player>(Transform(Vector3(0, 0.0, -30.0)))
     );
 
     run();
