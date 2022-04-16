@@ -26,6 +26,10 @@ void Engine::Tick() {
 
     lastTick = now;
 
+    for (auto actor : this->actors) {
+        actor.second->Tick(deltaMs);
+    }
+
     this->tick(deltaMs);
 
     if (this->renderer != nullptr) {
@@ -34,4 +38,11 @@ void Engine::Tick() {
 
     glfwSwapBuffers(this->window);
     glfwPollEvents();
+}
+
+std::shared_ptr<Actor> Engine::Spawn(std::string id, std::string type) {
+    std::shared_ptr<Actor> object = this->creators.at(type)(id);
+    this->actors.insert(std::make_pair(id, object));
+
+    return object;
 }

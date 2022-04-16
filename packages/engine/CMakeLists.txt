@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.8)
 project(engine)
 
 add_library(engine
+	src/Actor.h
+	src/Actor.cpp
 	src/Engine.h
 	src/Engine.cpp
 )
