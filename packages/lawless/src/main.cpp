@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
     engine->RegisterCreator(Player::CREATORENTRY);
 
     engine->SetRenderer(std::make_shared<gl::Renderer>());
-    engine->SetCamera(std::make_shared<Matrix4>(Matrix4::Perspective(110.0f, 1, 100)));
+    engine->SetCamera(std::make_shared<CameraNode>(Matrix4::Perspective(110.0f, 1, 100)));
 
     engine->RegisterAxis("horizontal", { {
         { GLFW_KEY_A, -1.0f},

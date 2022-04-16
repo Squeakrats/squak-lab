@@ -1,6 +1,7 @@
 #pragma once
 #include "SceneNode.h"
+#include "CameraNode.h"
 
 struct IRenderer {
-    virtual void Render(Matrix4& camera, SceneNode& scene) = 0;
+    virtual void Render(CameraNode& camera, SceneNode& scene) = 0;
 };

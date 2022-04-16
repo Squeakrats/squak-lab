@@ -30,15 +30,12 @@ struct Axis {
 	std::map<int, float> bindings;
 };
 
-// engine.GetAxis("Horizontal")
-
-
 class Engine {
 private:
 	GLFWwindow* window{};
 	AssetManager assetManager;
 	std::shared_ptr<SceneNode> scene{};
-	std::shared_ptr<Matrix4> camera{};
+	std::shared_ptr<CameraNode> camera{};
 	std::shared_ptr<IRenderer> renderer{};
 	std::map<std::string, ActorCreator> creators{};
 	std::map<std::string, std::shared_ptr<Actor>> actors{};
@@ -60,8 +57,8 @@ public:
 	std::shared_ptr<SceneNode> GetScene() { return this->scene; };
 	void OnTick(std::function<void(float deltaMs)> tick) { this->tick = tick; };
 
-	std::shared_ptr<Matrix4> GetCamera() { return this->camera; };
-	void SetCamera(std::shared_ptr<Matrix4> camera) { this->camera = camera; };
+	std::shared_ptr<CameraNode> GetCamera() { return this->camera; };
+	void SetCamera(std::shared_ptr<CameraNode> camera) { this->camera = camera; };
 
 	std::shared_ptr<IRenderer> GetRenderer() { return this->renderer; };
 	void SetRenderer(std::shared_ptr<IRenderer> renderer) { this->renderer = renderer; };

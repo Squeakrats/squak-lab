@@ -19,14 +19,14 @@ private:
 	GLuint EnsureElementArrayBuffer(std::shared_ptr<Geometry::BufferView> buffer);
 	void MapAttribute(GLuint location, const Geometry::Accessor& accessor);
 
-	void RenderNode(Matrix4& camera, SceneNode& node);
+	void RenderNode(CameraNode& camera, SceneNode& node);
 
 public:
 	Renderer() {
 		this->transforms.push(Matrix4::Identity());
 	}
 
-	virtual void Render(Matrix4& camera, SceneNode& scene) override;
+	virtual void Render(CameraNode& camera, SceneNode& scene) override;
 };
 
 }

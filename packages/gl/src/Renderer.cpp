@@ -71,7 +71,7 @@ void Renderer::MapAttribute(GLuint location, const Geometry::Accessor& accessor)
 	glVertexAttribPointer(location, Convert(accessor.type), Convert(accessor.componentType), false, 0, (void*)(accessor.view->offset));
 }
 
-void Renderer::Render(Matrix4& camera, SceneNode& scene) {
+void Renderer::Render(CameraNode& camera, SceneNode& scene) {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glClearColor(0, 0, 0, 1);
@@ -83,7 +83,7 @@ void Renderer::Render(Matrix4& camera, SceneNode& scene) {
 	assert(error == 0);
 }
 
-void Renderer::RenderNode(Matrix4& camera, SceneNode& node) {
+void Renderer::RenderNode(CameraNode& camera, SceneNode& node) {
 	this->transforms.push(this->transforms.top() * node.transform.ToMatrix());
 
 	if (node.geometry != nullptr) {
@@ -102,7 +102,7 @@ void Renderer::RenderNode(Matrix4& camera, SceneNode& node) {
 		this->MapAttribute(2, *geometry.attributes.at(Geometry::AttributeType::TextureCoordinate_0));
 
 		GLint uPerspective = glGetUniformLocation(this->program, "uPerspective");
-		glUniformMatrix4fv(uPerspective, 1, false, camera.data);
+		glUniformMatrix4fv(uPerspective, 1, false, camera.perspective.data);
 
 		GLint uModel = glGetUniformLocation(this->program, "uModel");
 		glUniformMatrix4fv(uModel, 1, false, this->transforms.top().data);
