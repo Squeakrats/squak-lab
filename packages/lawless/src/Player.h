@@ -17,9 +17,7 @@ public:
         this->GetTransform().rotation.y += .001f * deltaMs;
 
         Vector3 movement(0, 0, engine.GetAxis("vertical"));
-        movement *= .01f * deltaMs;
-
-        this->GetTransform().position += DEFAULT_SPEED * movement.normalize();
+        this->GetTransform().position += DEFAULT_SPEED * deltaMs *  movement.normalize();
     }
 
     static const ActorCreatorEntry CREATORENTRY;
