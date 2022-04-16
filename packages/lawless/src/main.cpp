@@ -25,18 +25,18 @@ int main(int argc, char* argv[]) {
     engine = std::make_unique<Engine>(Engine::Create(1000, 1000, "Lawless", assetDir));
     engine->GetAssetManager().Register("glb", std::make_shared<gltf::GLBLoader>());
     engine->RegisterCreator(Player::CREATORENTRY);
-
     engine->SetRenderer(std::make_shared<gl::Renderer>());
-    engine->SetCamera(std::make_shared<CameraNode>(Matrix4::Perspective(110.0f, 1, 100)));
 
     engine->RegisterAxis("horizontal", { {
         { GLFW_KEY_A, -1.0f},
         { GLFW_KEY_D,  1.0f}
     } });
 
-    engine->AddChild(
-        engine->Spawn<Player>(Transform(Vector3(0, 0.0, -70.0)))
-    );
+    auto camera = std::make_shared<CameraNode>(Matrix4::Perspective(110.0f, 1, 100));
+    engine->SetCamera(camera);
+
+    auto player = engine->Spawn<Player>(Transform(Vector3(0, 0.0, -70.0)));
+    engine->AddChild(player);
 
     run();
 
