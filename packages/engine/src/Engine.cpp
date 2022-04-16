@@ -45,9 +45,9 @@ void Engine::Tick() {
 }
 
 std::shared_ptr<Actor> Engine::SpawnCore(std::string type) {
-    std::string id = "" + this->nextActorId++;
-    std::shared_ptr<Actor> object = this->creators.at(type)(id);
-    this->actors.insert(std::make_pair(id, object));
+    ActorInitializer initializer{ "" + this->nextActorId++, *this };
+    std::shared_ptr<Actor> object = this->creators.at(type)(initializer);
+    this->actors.insert(std::make_pair(initializer.id, object));
 
     return object;
 }

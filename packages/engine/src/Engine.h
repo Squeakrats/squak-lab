@@ -14,7 +14,15 @@
 #include "AssetManager.h"
 #include "Actor.h"
 
-using ActorCreator = std::function<std::shared_ptr<Actor>(std::string id)>;
+class Engine;
+
+class ActorInitializer {
+public:
+	std::string id;
+	Engine& engine;
+};
+
+using ActorCreator = std::function<std::shared_ptr<Actor>(const ActorInitializer& Initializer)>;
 using ActorCreatorEntry = std::pair<std::string, ActorCreator>;
 
 class Engine {

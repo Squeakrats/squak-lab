@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 3.8)
 project(lawless)
 
-add_executable(lawless src/main.cpp)
+add_executable(lawless 
+    src/Player.h
+    src/Player.cpp
+    src/main.cpp
+)
 target_link_libraries(lawless gl gltf core engine)
 
 if (EMSCRIPTEN)

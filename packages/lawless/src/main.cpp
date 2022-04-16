@@ -2,7 +2,7 @@
 #include "glfw/glfw3.h"
 #include "gltf.h"
 #include "Engine.h"
-#include "SceneAsset.h"
+#include "Player.h"
 
 std::unique_ptr<Engine> engine{};
 
@@ -21,43 +21,10 @@ std::string assetDir = "./";
 std::string assetDir = "..\\..\\..\\..\\assets\\";
 #endif
 
-class Suzzane : public Actor {
-public:
-    using Super = Actor;
-
-    const static float DEFAULT_SPEED;
-
-    Suzzane(std::string id) : Actor(id) {
-        this->root = std::make_shared<SceneNode>();
-        this->root->AddChild(engine->GetAsset<SceneAsset>("suzanne.glb")->scene);
-    }
-
-    virtual void Tick(float deltaMs) override {
-        Super::Tick(deltaMs);
-        this->GetTransform().rotation.y += .001f * deltaMs;
-
-        Vector3 movement(0, 0, 0);
-        if (engine->GetKey(GLFW_KEY_W)) {
-            movement.z -= .01f * deltaMs;
-        }
-        else if (engine->GetKey(GLFW_KEY_S)) {
-            movement.z += .01f * deltaMs;
-        }
-
-        this->GetTransform().position += DEFAULT_SPEED * movement.normalize();
-    }
-
-    static const ActorCreatorEntry CREATORENTRY;
-};
-
-const float Suzzane::DEFAULT_SPEED = 2.0f;
-const ActorCreatorEntry Suzzane::CREATORENTRY = std::make_pair("Suzzane", [](std::string id) { return std::make_shared<Suzzane>(id); });
-
-
 int main(int argc, char* argv[]) {
     engine = std::make_unique<Engine>(Engine::Create(1000, 1000, "Lawless", assetDir));
     engine->GetAssetManager().Register("glb", std::make_shared<gltf::GLBLoader>());
-    engine->RegisterCreator(Suzzane::CREATORENTRY);
+    engine->RegisterCreator(Player::CREATORENTRY);
 
     engine->SetRenderer(std::make_shared<gl::Renderer>());
     engine->SetCamera(std::make_shared<Matrix4>(Matrix4::Perspective(110.0f, 1, 100)));
@@ -65,9 +32,9 @@ int main(int argc, char* argv[]) {
     auto scene = engine->GetScene();
     scene->transform.position = Vector3(0.0f, 0.0f, -30.0);
 
-    auto suzanne = engine->Spawn<Suzzane>();
-    suzanne->GetTransform().position = Vector3(0, 0.0, 0.0);
-    scene->AddChild(suzanne->GetRoot());
+    auto player = engine->Spawn<Player>();
+    player->GetTransform().position = Vector3(0, 0.0, 0.0);
+    scene->AddChild(player->GetRoot());
 
     run();
 
