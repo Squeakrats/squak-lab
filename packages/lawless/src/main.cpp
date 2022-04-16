@@ -47,15 +47,11 @@ public:
         this->GetTransform().position += DEFAULT_SPEED * movement.normalize();
     }
 
-    static std::shared_ptr<Suzzane> Create(std::string id) {
-        return std::make_shared<Suzzane>(id);
-    }
-
     static const ActorCreatorEntry CREATORENTRY;
 };
 
 const float Suzzane::DEFAULT_SPEED = 2.0f;
-const ActorCreatorEntry Suzzane::CREATORENTRY = std::make_pair("Suzzane", Suzzane::Create);
+const ActorCreatorEntry Suzzane::CREATORENTRY = std::make_pair("Suzzane", [](std::string id) { return std::make_shared<Suzzane>(id); });
 
 
 int main(int argc, char* argv[]) {
