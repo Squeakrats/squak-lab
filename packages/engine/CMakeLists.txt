@@ -8,4 +8,4 @@ add_library(engine
 	src/Engine.cpp
 )
 target_include_directories(engine PUBLIC src/)
-target_link_libraries(engine graphics core)
+target_link_libraries(engine graphics core utility)

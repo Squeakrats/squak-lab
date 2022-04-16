@@ -15,6 +15,7 @@
 #include "Actor.h"
 
 using ActorCreator = std::function<std::shared_ptr<Actor>(std::string id)>;
+using ActorCreatorEntry = std::pair<std::string, ActorCreator>;
 
 class Engine {
 private:
@@ -25,6 +26,7 @@ private:
 	std::shared_ptr<IRenderer> renderer{};
 	std::map<std::string, ActorCreator> creators{};
 	std::map<std::string, std::shared_ptr<Actor>> actors{};
+	uint64_t nextActorId{}; // TODO - use rng
 
 	std::function<void(float deltaMs)> tick = [](float) {};
 	
@@ -33,6 +35,8 @@ private:
 		assetManager(assetDir),
 		scene(std::make_shared<SceneNode>())
 	{};
+
+	std::shared_ptr<Actor> SpawnCore(std::string type);
 
 public:
 	AssetManager& GetAssetManager() { return this->assetManager; };
@@ -48,11 +52,23 @@ public:
 	void Tick();
 	bool isRunning() { return !glfwWindowShouldClose(this->window); }
 
-	void RegisterCreator(std::string type, ActorCreator creator) {
-		this->creators.insert(std::make_pair(type, creator));
+	void RegisterCreator(ActorCreatorEntry entry) {
+		this->creators.insert(entry);
 	}
 
-	std::shared_ptr<Actor> Spawn(std::string id, std::string type);
+	template<typename T, std::enable_if<std::is_base_of<Actor, T>::value>* = nullptr>
+	std::shared_ptr<T> Spawn() {
+		return std::dynamic_pointer_cast<T>(SpawnCore(T::CREATORENTRY.first));
+	}
+
+	template<typename T>
+	std::shared_ptr<T> GetAsset(std::string name) {
+		return this->assetManager.Get<T>(name);
+	}
+
+	int GetKey(int key){
+		return glfwGetKey(this->window, key);
+	}
 
 	static Engine Create(uint32_t width, uint32_t height, std::string name, std::string assetDir);
 };

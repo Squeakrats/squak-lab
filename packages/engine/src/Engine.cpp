@@ -1,6 +1,7 @@
 #include "Engine.h"
-#include <assert.h>
+#include "utility.h"
 #include <chrono>
+#include <filesystem>
 
 Engine Engine::Create(uint32_t width, uint32_t height, std::string name, std::string assetDir) {
     assert(glfwInit());
@@ -11,6 +12,9 @@ Engine Engine::Create(uint32_t width, uint32_t height, std::string name, std::st
     glewExperimental = true;
     assert(glewInit() == GLEW_OK);
 #endif
+
+    Log(std::format("Working Directory : {}", std::filesystem::current_path().string()));
+    Log(std::format("OpenGL Version : {}", std::string((char*)glGetString(GL_VERSION))));
 
     return Engine(window, assetDir);
 }
@@ -40,7 +44,8 @@ void Engine::Tick() {
     glfwPollEvents();
 }
 
-std::shared_ptr<Actor> Engine::Spawn(std::string id, std::string type) {
+std::shared_ptr<Actor> Engine::SpawnCore(std::string type) {
+    std::string id = "" + this->nextActorId++;
     std::shared_ptr<Actor> object = this->creators.at(type)(id);
     this->actors.insert(std::make_pair(id, object));
 

@@ -13,5 +13,7 @@ public:
 	virtual ~Actor() {};
 
 	std::shared_ptr<SceneNode> GetRoot() { return root; }
+	Transform& GetTransform() { return root->transform; }
+
 	virtual void Tick(float deltaMs);
 };
