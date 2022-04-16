@@ -16,13 +16,8 @@ public:
         Super::Tick(deltaMs);
         this->GetTransform().rotation.y += .001f * deltaMs;
 
-        Vector3 movement(0, 0, 0);
-        if (engine.GetKey(GLFW_KEY_W)) {
-            movement.z -= .01f * deltaMs;
-        }
-        else if (engine.GetKey(GLFW_KEY_S)) {
-            movement.z += .01f * deltaMs;
-        }
+        Vector3 movement(0, 0, engine.GetAxis("vertical"));
+        movement *= .01f * deltaMs;
 
         this->GetTransform().position += DEFAULT_SPEED * movement.normalize();
     }

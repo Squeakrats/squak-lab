@@ -26,6 +26,13 @@ public:
 using ActorCreator = std::function<std::shared_ptr<Actor>(const ActorInitializer& Initializer)>;
 using ActorCreatorEntry = std::pair<std::string, ActorCreator>;
 
+struct Axis {
+	std::map<int, float> bindings;
+};
+
+// engine.GetAxis("Horizontal")
+
+
 class Engine {
 private:
 	GLFWwindow* window{};
@@ -36,6 +43,7 @@ private:
 	std::map<std::string, ActorCreator> creators{};
 	std::map<std::string, std::shared_ptr<Actor>> actors{};
 	uint64_t nextActorId{}; // TODO - use rng
+	std::map<std::string, Axis> axes{};
 
 	std::function<void(float deltaMs)> tick = [](float) {};
 	
@@ -81,6 +89,21 @@ public:
 
 	int GetKey(int key){
 		return glfwGetKey(this->window, key);
+	}
+
+	void RegisterAxis(std::string name, Axis axis) {
+		this->axes.insert(std::make_pair(name, axis));
+	}
+
+	float GetAxis(std::string name) {
+		Axis& axis = this->axes.at(name);
+		for (auto binding : axis.bindings) {
+			if (glfwGetKey(this->window, binding.first)) {
+				return binding.second;
+			}
+		}
+
+		return 0.0f;
 	}
 
 	static Engine Create(uint32_t width, uint32_t height, std::string name, std::string assetDir);
