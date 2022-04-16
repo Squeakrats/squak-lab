@@ -19,6 +19,7 @@ class Engine;
 class ActorInitializer {
 public:
 	std::string id;
+	Transform transform;
 	Engine& engine;
 };
 
@@ -44,7 +45,7 @@ private:
 		scene(std::make_shared<SceneNode>())
 	{};
 
-	std::shared_ptr<Actor> SpawnCore(std::string type);
+	std::shared_ptr<Actor> SpawnCore(std::string type, Transform transform);
 
 public:
 	AssetManager& GetAssetManager() { return this->assetManager; };
@@ -65,8 +66,8 @@ public:
 	}
 
 	template<typename T, std::enable_if<std::is_base_of<Actor, T>::value>* = nullptr>
-	std::shared_ptr<T> Spawn() {
-		return std::dynamic_pointer_cast<T>(SpawnCore(T::CREATORENTRY.first));
+	std::shared_ptr<T> Spawn(Transform transform = Transform()) {
+		return std::dynamic_pointer_cast<T>(SpawnCore(T::CREATORENTRY.first, transform));
 	}
 
 	template<typename T>

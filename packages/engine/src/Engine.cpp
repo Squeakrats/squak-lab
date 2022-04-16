@@ -44,8 +44,8 @@ void Engine::Tick() {
     glfwPollEvents();
 }
 
-std::shared_ptr<Actor> Engine::SpawnCore(std::string type) {
-    ActorInitializer initializer{ "" + this->nextActorId++, *this };
+std::shared_ptr<Actor> Engine::SpawnCore(std::string type, Transform transform) {
+    ActorInitializer initializer{ "" + this->nextActorId++, transform, *this };
     std::shared_ptr<Actor> object = this->creators.at(type)(initializer);
     this->actors.insert(std::make_pair(initializer.id, object));
 

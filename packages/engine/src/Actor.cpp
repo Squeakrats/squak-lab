@@ -2,7 +2,9 @@
 #include "Engine.h"
 
 Actor::Actor(const ActorInitializer& initializer)
-	: id(initializer.id), engine(initializer.engine) {}
+	: id(initializer.id),
+	root(std::make_shared<SceneNode>(initializer.transform)),
+	engine(initializer.engine) {}
 
 Transform& Actor::GetTransform() {
 	return this->root->transform;

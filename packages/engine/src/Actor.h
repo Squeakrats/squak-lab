@@ -9,7 +9,7 @@ class Engine;
 
 class Actor {
 protected:
-	std::shared_ptr<SceneNode> root{};
+	std::shared_ptr<SceneNode> root;
 	Engine& engine;
 
 public:
