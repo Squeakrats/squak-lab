@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <chrono>
 
-Engine Engine::Create(uint32_t width, uint32_t height, std::string name) {
+Engine Engine::Create(uint32_t width, uint32_t height, std::string name, std::string assetDir) {
     assert(glfwInit());
     GLFWwindow* window = glfwCreateWindow(width, height, name.c_str(), nullptr, nullptr);
     glfwMakeContextCurrent(window);
@@ -12,7 +12,7 @@ Engine Engine::Create(uint32_t width, uint32_t height, std::string name) {
     assert(glewInit() == GLEW_OK);
 #endif
 
-    return Engine{ window };
+    return Engine(window, assetDir);
 }
 
 void Engine::Tick() {

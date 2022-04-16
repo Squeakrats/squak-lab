@@ -5,6 +5,7 @@
 #include <functional>
 
 struct IAsset {
+	virtual ~IAsset() {};
 };
 
 struct IAssetLoader {
@@ -12,22 +13,20 @@ struct IAssetLoader {
 };
 
 class AssetManager {
-	struct Record {
-		std::string type;
-		std::shared_ptr<IAsset> asset{};
-	};
-
+	std::string basePath;
 	std::map<std::string, std::shared_ptr<IAssetLoader>> loaders{};
-	std::map<std::string, Record> assets{};
+	std::map<std::string, std::shared_ptr<IAsset>> assets{};
 
+	std::shared_ptr<IAsset> GetAsset(std::string name);
 public:
-	void Register(std::string name) { 
-		this->assets.insert(std::make_pair(name, Record{ name.substr(name.find_last_of(".") + 1) }));
-	}
+	AssetManager(std::string basePath) : basePath(basePath) {};
 
 	void Register(std::string type, std::shared_ptr<IAssetLoader> loader) { 
 		this->loaders.insert(std::make_pair(type, loader));
 	}
 
-	std::shared_ptr<IAsset> Get(std::string name);
+	template<typename T, typename std::enable_if<std::is_base_of<IAsset, T>::value>::type* = nullptr>
+	std::shared_ptr<T> Get(std::string name) {
+		return std::dynamic_pointer_cast<T>(this->GetAsset(name));
+	}
 };

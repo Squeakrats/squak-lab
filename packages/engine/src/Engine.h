@@ -16,14 +16,15 @@
 class Engine {
 private:
 	GLFWwindow* window{};
-	AssetManager assetManager{};
+	AssetManager assetManager;
 	std::shared_ptr<SceneNode> scene{};
 	std::shared_ptr<Matrix4> camera{};
 	std::shared_ptr<IRenderer> renderer{};
 	std::function<void(float deltaMs)> tick = [](float) {};
 	
-	Engine(GLFWwindow* window) : 
+	Engine(GLFWwindow* window, std::string assetDir) : 
 		window(window),
+		assetManager(assetDir),
 		scene(std::make_shared<SceneNode>())
 	{};
 
@@ -41,5 +42,5 @@ public:
 	void Tick();
 	bool isRunning() { return !glfwWindowShouldClose(this->window); }
 
-	static Engine Create(uint32_t width, uint32_t height, std::string name);
+	static Engine Create(uint32_t width, uint32_t height, std::string name, std::string assetDir);
 };

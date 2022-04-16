@@ -149,12 +149,14 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 
 std::shared_ptr<SceneNode> Load(std::string path) {
 	std::ifstream file(path, std::ios::binary);
+	Assert(file.is_open(), "file must be valid to read");
 
 	return Parse(file);
 }
 
 std::shared_ptr<IAsset> GLBLoader::Load(std::string name) {
 	std::ifstream file(name, std::ios::binary);
+	Assert(file.is_open(), "file must be valid to read");
 
 	return std::make_shared<SceneAsset>(Parse(file));
 }

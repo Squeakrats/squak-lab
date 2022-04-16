@@ -17,7 +17,7 @@ std::string assetDir = "..\\..\\..\\..\\assets\\";
 #endif
 
 std::shared_ptr<SceneNode> CreateSuzanne(Vector3 position) {
-    auto asset = std::static_pointer_cast<SceneAsset>(engine->GetAssetManager().Get(assetDir + "suzanne.glb"));
+    auto asset = engine->GetAssetManager().Get<SceneAsset>("suzanne.glb");
 
     std::shared_ptr<SceneNode> node = std::make_shared<SceneNode>();
     node->transform.position = position;
@@ -27,14 +27,11 @@ std::shared_ptr<SceneNode> CreateSuzanne(Vector3 position) {
 }
 
 int main(int argc, char* argv[]) {
-    engine = std::make_unique<Engine>(Engine::Create(1000, 1000, "Lawless"));
+    engine = std::make_unique<Engine>(Engine::Create(1000, 1000, "Lawless", assetDir));
     std::cout << "Working Directory : " << std::filesystem::current_path() << std::endl;
     std::cout << "OpenGL Version : " << glGetString(GL_VERSION) << std::endl;
 
-    AssetManager& assetManager = engine->GetAssetManager();
-    assetManager.Register("glb", std::make_shared<gltf::GLBLoader>());
-    assetManager.Register(assetDir +  "suzanne.glb");
-
+    engine->GetAssetManager().Register("glb", std::make_shared<gltf::GLBLoader>());
     engine->SetRenderer(std::make_shared<gl::Renderer>());
     engine->SetCamera(std::make_shared<Matrix4>(Matrix4::Perspective(110.0f, 1, 100)));
 
