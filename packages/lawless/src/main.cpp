@@ -29,7 +29,6 @@ int main(int argc, char* argv[]) {
         .Register(std::make_shared<gltf::GLBLoader>());
 
     engine.InitWindow(1000, 1000, "lawless");
-    engine.RegisterClass<Player>();
     engine.SetRenderer(std::make_shared<gl::Renderer>());
 
     engine.RegisterAxis("horizontal", { { { GLFW_KEY_A, -1.0f}, { GLFW_KEY_D,  1.0f } } });

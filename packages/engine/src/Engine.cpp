@@ -3,6 +3,13 @@
 #include <chrono>
 #include <filesystem>
 
+
+std::map<std::string, ActorCreator>& Engine::GetCreators() {
+    static std::map<std::string, ActorCreator> creators{};
+
+    return creators;
+}
+
 void Engine::InitWindow(uint32_t width, uint32_t height, std::string name) {
     assert(glfwInit());
     this->window = glfwCreateWindow(width, height, name.c_str(), nullptr, nullptr);
@@ -44,7 +51,7 @@ void Engine::Tick() {
 
 std::shared_ptr<Actor> Engine::SpawnCore(std::string type, Transform transform) {
     ActorInitializer initializer{ "" + this->nextActorId++, transform, *this };
-    std::shared_ptr<Actor> object = this->creators.at(type)(initializer);
+    std::shared_ptr<Actor> object = GetCreators().at(type)(initializer);
     this->actors.insert(std::make_pair(initializer.id, object));
 
     return object;

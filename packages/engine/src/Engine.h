@@ -37,7 +37,7 @@ private:
 	std::shared_ptr<SceneNode> scene{};
 	std::shared_ptr<CameraNode> camera{};
 	std::shared_ptr<IRenderer> renderer{};
-	std::map<std::string, ActorCreator> creators{};
+	
 	std::map<std::string, std::shared_ptr<Actor>> actors{};
 	uint64_t nextActorId{}; // TODO - use rng
 	std::map<std::string, Axis> axes{};
@@ -47,6 +47,14 @@ private:
 	std::shared_ptr<Actor> SpawnCore(std::string type, Transform transform);
 
 public:
+	static std::map<std::string, ActorCreator>& GetCreators();
+	static ActorCreatorEntry RegisterClass(std::string name, ActorCreator creator) {
+		auto pair = std::make_pair(name, creator);
+		GetCreators().insert(pair);
+
+		return pair;
+	}
+
 	Engine() : scene(std::make_shared<SceneNode>()) {};
 
 	AssetManager& GetAssetManager() { return this->assetManager; };
@@ -61,11 +69,6 @@ public:
 
 	void Tick();
 	bool isRunning() { return !glfwWindowShouldClose(this->window); }
-
-	template<typename T>
-	void RegisterClass() {
-		this->creators.insert(T::CREATORENTRY);
-	}
 
 	void InitWindow(uint32_t width, uint32_t height, std::string name);
 
