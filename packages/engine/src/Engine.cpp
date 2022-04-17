@@ -3,9 +3,9 @@
 #include <chrono>
 #include <filesystem>
 
-Engine Engine::Create(uint32_t width, uint32_t height, std::string name, std::string assetDir) {
+void Engine::InitWindow(uint32_t width, uint32_t height, std::string name) {
     assert(glfwInit());
-    GLFWwindow* window = glfwCreateWindow(width, height, name.c_str(), nullptr, nullptr);
+    this->window = glfwCreateWindow(width, height, name.c_str(), nullptr, nullptr);
     glfwMakeContextCurrent(window);
 
 #ifndef EMSCRIPTEN
@@ -13,11 +13,9 @@ Engine Engine::Create(uint32_t width, uint32_t height, std::string name, std::st
     assert(glewInit() == GLEW_OK);
 #endif
 
-    Log(std::format("Working Directory : {}", std::filesystem::current_path().string()));
     Log(std::format("OpenGL Version : {}", std::string((char*)glGetString(GL_VERSION))));
-
-    return Engine(window, assetDir);
 }
+
 
 void Engine::Tick() {
     static auto lastTick = std::chrono::system_clock::now();

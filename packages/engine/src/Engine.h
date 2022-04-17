@@ -33,7 +33,7 @@ struct Axis {
 class Engine {
 private:
 	GLFWwindow* window{};
-	AssetManager assetManager;
+	AssetManager assetManager{};
 	std::shared_ptr<SceneNode> scene{};
 	std::shared_ptr<CameraNode> camera{};
 	std::shared_ptr<IRenderer> renderer{};
@@ -44,15 +44,11 @@ private:
 
 	std::function<void(float deltaMs)> tick = [](float) {};
 	
-	Engine(GLFWwindow* window, std::string assetDir) : 
-		window(window),
-		assetManager(assetDir),
-		scene(std::make_shared<SceneNode>())
-	{};
-
 	std::shared_ptr<Actor> SpawnCore(std::string type, Transform transform);
 
 public:
+	Engine() : scene(std::make_shared<SceneNode>()) {};
+
 	AssetManager& GetAssetManager() { return this->assetManager; };
 	std::shared_ptr<SceneNode> GetScene() { return this->scene; };
 	void OnTick(std::function<void(float deltaMs)> tick) { this->tick = tick; };
@@ -66,9 +62,12 @@ public:
 	void Tick();
 	bool isRunning() { return !glfwWindowShouldClose(this->window); }
 
-	void RegisterCreator(ActorCreatorEntry entry) {
-		this->creators.insert(entry);
+	template<typename T>
+	void RegisterClass() {
+		this->creators.insert(T::CREATORENTRY);
 	}
+
+	void InitWindow(uint32_t width, uint32_t height, std::string name);
 
 	template<typename T, std::enable_if<std::is_base_of<Actor, T>::value>* = nullptr>
 	std::shared_ptr<T> Spawn(Transform transform = Transform()) {
