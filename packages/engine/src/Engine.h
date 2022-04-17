@@ -27,7 +27,7 @@ using ActorCreator = std::function<std::shared_ptr<Actor>(const ActorInitializer
 using ActorCreatorEntry = std::pair<std::string, ActorCreator>;
 
 struct Axis {
-	std::map<int, float> bindings;
+	std::map<char, float> bindings;
 };
 
 class Engine {
@@ -49,7 +49,7 @@ private:
 
 public:
 	static Engine engine;
-	static Engine& Init(uint32_t width, uint32_t height, std::string name);
+	static Engine& Init(std::string assetDir);
 
 	static std::map<std::string, ActorCreator>& GetCreators();
 	static ActorCreatorEntry RegisterClass(std::string name, ActorCreator creator) {

@@ -1,7 +1,7 @@
 #include "Engine.h"
 #include "utility.h"
 #include <chrono>
-#include <filesystem>
+#include "JSONLoader.h"
 
 Engine Engine::engine = Engine{};
 
@@ -11,9 +11,26 @@ std::map<std::string, ActorCreator>& Engine::GetCreators() {
     return creators;
 }
 
-Engine& Engine::Init(uint32_t width, uint32_t height, std::string name) {
+Engine& Engine::Init(std::string assetDir) {
+    engine.assetManager.SetBasePath(assetDir);
+    engine.assetManager.Register(std::make_shared<JSONLoader>());
+
+    auto& config = engine.assetManager.Get<JSONAsset>("settings.json")->json;
+    auto& window = config["window"];
+    std::string name = window["name"].get<std::string>();
+    json::Array& size = window["size"].get<json::Array>();
+
+    for (auto& entry : config["axes"].get<json::Object>().entries) {
+        Axis axis{};
+        for (auto& binding : entry.second.get<json::Object>().entries) {
+            axis.bindings.insert(std::make_pair(binding.first[0], static_cast<float>(binding.second.get<double>())));
+        }
+
+        engine.RegisterAxis(entry.first, axis);
+    }
+
     assert(glfwInit());
-    engine.window = glfwCreateWindow(width, height, name.c_str(), nullptr, nullptr);
+    engine.window = glfwCreateWindow(static_cast<uint32_t>(size[0].get<double>()), static_cast<uint32_t>(size[1].get<double>()), name.c_str(), nullptr, nullptr);
     glfwMakeContextCurrent(engine.window);
 
 #ifndef EMSCRIPTEN
@@ -66,7 +83,7 @@ void Engine::Tick() {
 }
 
 std::shared_ptr<Actor> Engine::SpawnCore(std::string type, Transform transform) {
-    ActorInitializer initializer{ "" + this->nextActorId++, transform, *this };
+    ActorInitializer initializer{ std::to_string(this->nextActorId++), transform, *this };
     std::shared_ptr<Actor> object = GetCreators().at(type)(initializer);
     this->actors.insert(std::make_pair(initializer.id, object));
     this->AddChild(object);

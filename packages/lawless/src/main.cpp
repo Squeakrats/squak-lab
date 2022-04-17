@@ -4,6 +4,7 @@
 #include "Engine.h"
 #include "Player.h"
 #include "PlayerCamera.h"
+#include "GLBLoader.h"
 
 #ifdef EMSCRIPTEN
 std::string assetDir = "./";
@@ -12,16 +13,10 @@ std::string assetDir = "..\\..\\..\\..\\assets\\";
 #endif
 
 int main(int argc, char* argv[]) {
-    Engine& engine = Engine::Init(1000, 1000, "lawless");
+    Engine& engine = Engine::Init(assetDir);
 
-    engine.GetAssetManager()
-        .SetBasePath(assetDir)
-        .Register(std::make_shared<gltf::GLBLoader>());
-
+    engine.GetAssetManager().Register(std::make_shared<GLBLoader>());
     engine.SetRenderer(std::make_shared<gl::Renderer>());
-
-    engine.RegisterAxis("horizontal", { { { GLFW_KEY_A, -1.0f}, { GLFW_KEY_D,  1.0f } } });
-    engine.RegisterAxis("vertical", { { { GLFW_KEY_W, 1.0f}, { GLFW_KEY_S,  -1.0f } } });
 
     engine.Spawn<PlayerCamera>();
     engine.Spawn<Player>();
