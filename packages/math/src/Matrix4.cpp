@@ -99,9 +99,36 @@ Matrix4 Matrix4::Perspective(float fov, float near, float far) {
 	return Matrix4(a11, a21, a31, a41, a12, a22, a32, a42, a13, a23, a33, a43, a14, a24, a34, a44);
 }
 
-Matrix4 Matrix4::Create(Vector3 position, Vector3 rotation) {
-	float cos = std::cos(rotation.y);
-	float sin = std::sin(rotation.y);
+Matrix4 Matrix4::RotateX(float theta) {
+	float cos = std::cos(theta);
+	float sin = std::sin(theta);
+
+	float a11 = 1.0;
+	float a21 = 0.0f;
+	float a31 = 0.0f;
+	float a41 = 0.0f;
+
+	float a12 = 0.0f;
+	float a22 = cos;
+	float a32 = sin;
+	float a42 = 0.0f;
+
+	float a13 = 0.0;
+	float a23 = -sin;
+	float a33 = cos;
+	float a43 = 0.0f;
+
+	float a14 = 0.0f;
+	float a24 = 0.0f;
+	float a34 = 0.0f;
+	float a44 = 1.0f;
+
+	return Matrix4(a11, a21, a31, a41, a12, a22, a32, a42, a13, a23, a33, a43, a14, a24, a34, a44);
+}
+
+Matrix4 Matrix4::RotateY(float theta) {
+	float cos = std::cos(theta);
+	float sin = std::sin(theta);
 
 	float a11 = cos;
 	float a21 = 0.0f;
@@ -118,12 +145,47 @@ Matrix4 Matrix4::Create(Vector3 position, Vector3 rotation) {
 	float a33 = cos;
 	float a43 = 0.0f;
 
-	float a14 = position.x;
-	float a24 = position.y;
-	float a34 = position.z;
+	float a14 = 0.0f;
+	float a24 = 0.0f;
+	float a34 = 0.0f;
 	float a44 = 1.0f;
 
 	return Matrix4(a11, a21, a31, a41, a12, a22, a32, a42, a13, a23, a33, a43, a14, a24, a34, a44);
+}
+
+Matrix4 Matrix4::RotateZ(float theta) {
+	float cos = std::cos(theta);
+	float sin = std::sin(theta);
+
+	float a11 = cos;
+	float a21 = sin;
+	float a31 = 0.0f;
+	float a41 = 0.0f;
+
+	float a12 = -sin;
+	float a22 = cos;
+	float a32 = 0.0f;
+	float a42 = 0.0f;
+
+	float a13 = 0.0f;
+	float a23 = 0.0f;
+	float a33 = 1.0f;
+	float a43 = 0.0f;
+
+	float a14 = 0.0f;
+	float a24 = 0.0f;
+	float a34 = 0.0f;
+	float a44 = 1.0f;
+
+	return Matrix4(a11, a21, a31, a41, a12, a22, a32, a42, a13, a23, a33, a43, a14, a24, a34, a44);
+}
+
+
+Matrix4 Matrix4::Create(Vector3 position, Vector3 rotation) {
+	Matrix4 matrix = RotateZ(rotation.z)* RotateY(rotation.y)* RotateX(rotation.x);
+	matrix.SetPosition(position);
+
+	return matrix;
 }
 
 Matrix4 Matrix4::FastInverse(const Matrix4& m) {
