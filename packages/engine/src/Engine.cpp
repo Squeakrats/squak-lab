@@ -69,6 +69,7 @@ std::shared_ptr<Actor> Engine::SpawnCore(std::string type, Transform transform) 
     ActorInitializer initializer{ "" + this->nextActorId++, transform, *this };
     std::shared_ptr<Actor> object = GetCreators().at(type)(initializer);
     this->actors.insert(std::make_pair(initializer.id, object));
+    this->AddChild(object);
 
     return object;
 }
