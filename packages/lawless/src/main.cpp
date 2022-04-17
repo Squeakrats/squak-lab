@@ -7,12 +7,14 @@
 std::unique_ptr<Engine> engine{};
 
 void main_loop() { engine->Tick(); }
-void run() {
+int run() {
 #ifndef EMSCRIPTEN
     while (engine->isRunning()) { main_loop(); }
 #else
     emscripten_set_main_loop(main_loop, 0, true);
 #endif
+    
+    return 0;
 }
 
 #ifdef EMSCRIPTEN
@@ -38,7 +40,5 @@ int main(int argc, char* argv[]) {
     auto player = engine->Spawn<Player>(Transform(Vector3(0, 0.0, -70.0)));
     engine->AddChild(player);
 
-    run();
-
-    return 0;
+    return run();
 }
