@@ -126,6 +126,29 @@ Matrix4 Matrix4::Create(Vector3 position, Vector3 rotation) {
 	return Matrix4(a11, a21, a31, a41, a12, a22, a32, a42, a13, a23, a33, a43, a14, a24, a34, a44);
 }
 
+Matrix4 Matrix4::FastInverse(const Matrix4& m) {
+	float a11 = m.At(1, 1);
+	float a21 = m.At(1, 2);
+	float a31 = m.At(1, 3);
+	float a41 = 0.0f;
+
+	float a12 = m.At(2, 1);
+	float a22 = m.At(2, 2);
+	float a32 = m.At(2, 3);
+	float a42 = 0.0f;
+
+	float a13 = m.At(3, 1);
+	float a23 = m.At(3, 2);
+	float a33 = m.At(3, 3);
+	float a43 = 0.0f;
+
+	float a14 = -m.At(1, 4);
+	float a24 = -m.At(2, 4);
+	float a34 = -m.At(3, 4);
+	float a44 = 1.0f;
+
+	return Matrix4(a11, a21, a31, a41, a12, a22, a32, a42, a13, a23, a33, a43, a14, a24, a34, a44);
+}
 Matrix4 operator*(const Matrix4& lhs, const Matrix4& rhs) {
 	const float* a = lhs.data;
 	const float* b = rhs.data;

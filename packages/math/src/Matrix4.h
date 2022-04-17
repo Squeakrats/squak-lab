@@ -16,6 +16,10 @@ public:
 	Vector3 GetPosition();
 	void SetPosition(Vector3 position);
 
+	float At(size_t row, size_t col) const {
+		return this->data[(col - 1) * 4 + (row - 1)];
+	}
+
 	static Matrix4 Identity() {
 		return Matrix4(
 			1, 0, 0, 0,
@@ -27,6 +31,7 @@ public:
 	static Matrix4 Perspective(float fov, float near, float far);
 	static Matrix4 Orthographic(float left, float right, float bottom, float top, float far, float near);
 	static Matrix4 Create(Vector3 position, Vector3 rotation);
+	static Matrix4 FastInverse(const Matrix4& matrix);
 };
 
 Matrix4 operator*(const Matrix4& lhs, const Matrix4& rhs);
