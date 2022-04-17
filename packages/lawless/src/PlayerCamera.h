@@ -11,7 +11,7 @@ public:
 
     PlayerCamera(const ActorInitializer& initializer) : Actor(initializer) {
         this->root = this->camera;
-        this->camera->transform.position.z = 70.0f;
+        this->camera->transform.position.z = 50.0f;
         
         // make the camera active
         engine.SetCamera(this->camera);

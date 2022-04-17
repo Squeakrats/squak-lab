@@ -22,6 +22,8 @@ public:
         this->velocity += deltaMs * walkSpeed * force.normalize();
         transform.position += deltaMs * velocity;
         this->velocity *= 0.9f;
+
+        transform.rotation.y += 0.001 * deltaMs;
     }
 
     static const ActorCreatorEntry CREATORENTRY;
