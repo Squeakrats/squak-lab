@@ -4,19 +4,6 @@
 #include "Engine.h"
 #include "Player.h"
 
-Engine engine{};
-
-void main_loop() { engine.Tick(); }
-int run() {
-#ifndef EMSCRIPTEN
-    while (engine.isRunning()) { main_loop(); }
-#else
-    emscripten_set_main_loop(main_loop, 0, true);
-#endif
-    
-    return 0;
-}
-
 #ifdef EMSCRIPTEN
 std::string assetDir = "./";
 #else
@@ -24,11 +11,12 @@ std::string assetDir = "..\\..\\..\\..\\assets\\";
 #endif
 
 int main(int argc, char* argv[]) {
+    Engine& engine = Engine::Init(1000, 1000, "lawless");
+
     engine.GetAssetManager()
         .SetBasePath(assetDir)
         .Register(std::make_shared<gltf::GLBLoader>());
 
-    engine.InitWindow(1000, 1000, "lawless");
     engine.SetRenderer(std::make_shared<gl::Renderer>());
 
     engine.RegisterAxis("horizontal", { { { GLFW_KEY_A, -1.0f}, { GLFW_KEY_D,  1.0f } } });
@@ -40,5 +28,7 @@ int main(int argc, char* argv[]) {
 
     engine.AddChild(engine.Spawn<Player>());
 
-    return run();
+    engine.Run();
+
+    return 0;
 }

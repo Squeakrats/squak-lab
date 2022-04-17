@@ -44,9 +44,13 @@ private:
 
 	std::function<void(float deltaMs)> tick = [](float) {};
 	
+	Engine() : scene(std::make_shared<SceneNode>()) {};
 	std::shared_ptr<Actor> SpawnCore(std::string type, Transform transform);
 
 public:
+	static Engine engine;
+	static Engine& Init(uint32_t width, uint32_t height, std::string name);
+
 	static std::map<std::string, ActorCreator>& GetCreators();
 	static ActorCreatorEntry RegisterClass(std::string name, ActorCreator creator) {
 		auto pair = std::make_pair(name, creator);
@@ -54,8 +58,6 @@ public:
 
 		return pair;
 	}
-
-	Engine() : scene(std::make_shared<SceneNode>()) {};
 
 	AssetManager& GetAssetManager() { return this->assetManager; };
 	std::shared_ptr<SceneNode> GetScene() { return this->scene; };
@@ -68,9 +70,8 @@ public:
 	void SetRenderer(std::shared_ptr<IRenderer> renderer) { this->renderer = renderer; };
 
 	void Tick();
+	void Run();
 	bool isRunning() { return !glfwWindowShouldClose(this->window); }
-
-	void InitWindow(uint32_t width, uint32_t height, std::string name);
 
 	template<typename T, std::enable_if<std::is_base_of<Actor, T>::value>* = nullptr>
 	std::shared_ptr<T> Spawn(Transform transform = Transform()) {

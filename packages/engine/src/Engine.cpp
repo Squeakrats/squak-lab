@@ -3,6 +3,7 @@
 #include <chrono>
 #include <filesystem>
 
+Engine Engine::engine = Engine{};
 
 std::map<std::string, ActorCreator>& Engine::GetCreators() {
     static std::map<std::string, ActorCreator> creators{};
@@ -10,10 +11,10 @@ std::map<std::string, ActorCreator>& Engine::GetCreators() {
     return creators;
 }
 
-void Engine::InitWindow(uint32_t width, uint32_t height, std::string name) {
+Engine& Engine::Init(uint32_t width, uint32_t height, std::string name) {
     assert(glfwInit());
-    this->window = glfwCreateWindow(width, height, name.c_str(), nullptr, nullptr);
-    glfwMakeContextCurrent(window);
+    engine.window = glfwCreateWindow(width, height, name.c_str(), nullptr, nullptr);
+    glfwMakeContextCurrent(engine.window);
 
 #ifndef EMSCRIPTEN
     glewExperimental = true;
@@ -21,8 +22,23 @@ void Engine::InitWindow(uint32_t width, uint32_t height, std::string name) {
 #endif
 
     Log(std::format("OpenGL Version : {}", std::string((char*)glGetString(GL_VERSION))));
+
+    return engine;
 }
 
+#ifndef EMSCRIPTEN
+void Engine::Run() {
+    while (engine.isRunning()) { engine.Tick(); }
+}
+#else
+void Engine_loop() {
+    Engine::engine.Tick();
+}
+
+void Engine::Run() {
+    emscripten_set_main_loop(Engine_loop, 0, true);
+}
+#endif
 
 void Engine::Tick() {
     static auto lastTick = std::chrono::system_clock::now();
