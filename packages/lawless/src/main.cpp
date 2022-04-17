@@ -3,6 +3,7 @@
 #include "gltf.h"
 #include "Engine.h"
 #include "Player.h"
+#include "PlayerCamera.h"
 
 #ifdef EMSCRIPTEN
 std::string assetDir = "./";
@@ -22,10 +23,7 @@ int main(int argc, char* argv[]) {
     engine.RegisterAxis("horizontal", { { { GLFW_KEY_A, -1.0f}, { GLFW_KEY_D,  1.0f } } });
     engine.RegisterAxis("vertical", { { { GLFW_KEY_W, 1.0f}, { GLFW_KEY_S,  -1.0f } } });
 
-    auto camera = std::make_shared<CameraNode>(Matrix4::Perspective(110.0f, 1, 100));
-    camera->transform.position.z = 70.0f;
-    engine.SetCamera(camera);
-
+    engine.SetCamera(engine.Spawn<PlayerCamera>()->camera);
     engine.AddChild(engine.Spawn<Player>());
 
     engine.Run();
