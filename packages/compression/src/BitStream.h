@@ -17,15 +17,6 @@ struct BitStream {
         return (buffer[base] & (1 << offset)) != 0;
     }
 
-    size_t ReadCode(size_t n) {
-        size_t value{};
-        for (size_t i = 0; i < n; i++) {
-            value = (value << 1) + this->ReadBit();
-        }
-
-        return value;
-    }
-
     size_t ReadLiteral(size_t n) {
         size_t value{};
         for (size_t i = 0; i < n; i++) {
