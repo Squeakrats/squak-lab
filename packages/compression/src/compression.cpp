@@ -24,35 +24,25 @@ struct HuffmaNode {
     }
 };
 
-std::unique_ptr<HuffmaNode> CreateHuffmanTree() {
-    // DEFLATE Compressed Data Format Specification version 1.3 - https://www.ietf.org/rfc/rfc1951.txt 
-    size_t ranges[4][3] = {
-        {   0, 143, 8},
-        { 144, 255, 9},
-        { 256, 279, 7},
-        { 280, 287, 8}
-    };
-
-    std::array<size_t, 288> lengths{};
-    for (size_t range = 0; range < 4; range++) {
-        for (size_t symbol = ranges[range][0]; symbol <= ranges[range][1]; symbol++) {
-            lengths[symbol] = ranges[range][2];
-        }
-    }
-
-    std::array<size_t, 10> counts{};
+std::unique_ptr<HuffmaNode> CreateHuffmanTree(std::vector<size_t>& lengths, size_t maxLength) {
+    std::vector<size_t> counts{};
+    counts.resize(maxLength + 1);
     for (size_t i = 0; i < lengths.size(); i++) {
         counts[lengths[i]]++;
     }
 
-    std::array<size_t, 10> bases{};
+    std::vector<size_t> bases{};
+    bases.resize(maxLength + 1);
     for (size_t i = 1; i < counts.size(); i++) {
         bases[i] = (bases[i - 1] + counts[i - 1]) << 1;
     }
 
-    std::array<size_t, 288> huffmanCodes{};
+    std::vector<size_t> huffmanCodes{};
+    huffmanCodes.resize(lengths.size());
     for (size_t i = 0; i < huffmanCodes.size(); i++) {
-        huffmanCodes[i] = bases[lengths[i]]++;
+        if (lengths[i] > 0) {
+            huffmanCodes[i] = bases[lengths[i]]++;
+        }
     }
 
     std::unique_ptr<HuffmaNode> tree = std::make_unique<HuffmaNode>();
@@ -73,6 +63,27 @@ std::unique_ptr<HuffmaNode> CreateHuffmanTree() {
     }
 
     return tree;
+}
+
+std::unique_ptr<HuffmaNode> CreateStaticLiteralLengthTree() {
+    std::vector<size_t> lengths{};
+    lengths.resize(288);
+
+    // DEFLATE Compressed Data Format Specification version 1.3 - https://www.ietf.org/rfc/rfc1951.txt 
+    size_t ranges[4][3] = {
+        {   0, 143, 8},
+        { 144, 255, 9},
+        { 256, 279, 7},
+        { 280, 287, 8}
+    };
+
+    for (size_t range = 0; range < 4; range++) {
+        for (size_t symbol = ranges[range][0]; symbol <= ranges[range][1]; symbol++) {
+            lengths[symbol] = ranges[range][2];
+        }
+    }
+
+    return CreateHuffmanTree(lengths, 9);
 }
 
 size_t inflate_length(size_t code, BitStream& stream) {
@@ -118,7 +129,7 @@ size_t inflate_length(size_t code, BitStream& stream) {
 }
 
 size_t inflate_code(BitStream& stream) {
-    static std::unique_ptr<HuffmaNode> tree = CreateHuffmanTree();
+    static std::unique_ptr<HuffmaNode> tree = CreateStaticLiteralLengthTree();
 
     HuffmaNode* current = tree.get();
     while (current->code == 0) {
