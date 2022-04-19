@@ -101,6 +101,31 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 		}));
 	}
 
+	std::vector<std::pair<std::string, std::shared_ptr<Geometry::BufferView>>> images{};
+	for (json::Value& image : json["images"].get<json::Array>()) {
+		images.push_back(std::make_pair(
+			image["mimeType"].get<std::string>(),
+			bufferViews[static_cast<size_t>(image["bufferView"].get<double>())]
+		));
+	}
+
+	std::vector<std::shared_ptr<Geometry::Texture>> textures{};
+	for (json::Value& texture : json["textures"].get<json::Array>()) {
+		auto& source = images[static_cast<size_t>(texture["source"].get<double>())];
+
+		textures.push_back(std::make_shared<Geometry::Texture>(
+			source.first,
+			source.second
+		));
+	}
+
+	std::vector<std::shared_ptr<Geometry::Material>> materials{};
+	for (json::Value& jsonMaterial : json["materials"].get<json::Array>()) {
+		std::shared_ptr<Geometry::Material> material = std::make_shared<Geometry::Material>();
+		material->baseColorTexture = textures[static_cast<size_t>(jsonMaterial["pbrMetallicRoughness"]["baseColorTexture"]["index"].get<double>())];
+		materials.push_back(material);
+	}
+
 	std::vector<std::shared_ptr<Geometry>> meshes{};
 	for (json::Value& mesh : json["meshes"].get<json::Array>()) {
 		json::Array& primitives = mesh["primitives"].get<json::Array>();
@@ -117,7 +142,10 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 		}
 
 		std::shared_ptr<Geometry::Accessor> indices = accessors[static_cast<size_t>(primitive["indices"].get<double>())];
-		meshes.push_back(std::make_shared<Geometry>(std::move(attributes), indices));
+
+		std::shared_ptr<Geometry::Material> material = materials[static_cast<size_t>(primitive["material"].get<double>())];
+
+		meshes.push_back(std::make_shared<Geometry>(std::move(attributes), indices, material));
 	}
 
 	std::vector<std::shared_ptr<SceneNode>> nodes{};

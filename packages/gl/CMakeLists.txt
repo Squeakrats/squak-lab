@@ -10,4 +10,4 @@ add_library(gl
 	src/Renderer.cpp
 )
 target_include_directories(gl PRIVATE src/ PUBLIC include/)
-target_link_libraries(gl graphics utility)
+target_link_libraries(gl graphics utility png)

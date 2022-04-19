@@ -6,15 +6,16 @@ const char* const vertex = R"ESC(#version 300 es
 precision highp float;
 layout(location = 0) in vec3 aPosition;
 layout(location = 1) in vec3 aNormal;
+layout(location = 2) in vec2 aTextureCoordinate;
 
 uniform mat4 uPerspective;
 uniform mat4 uView;
 uniform mat4 uModel;
 
-out vec3 vNormal;
+out vec2 vTextureCoordinate;
 
 void main() {
-    vNormal = aNormal;
+    vTextureCoordinate = aTextureCoordinate;
     gl_Position = uPerspective * uView * uModel * vec4(aPosition, 1.0);
 }
 )ESC";
@@ -22,13 +23,14 @@ void main() {
 const char* const fragment = R"ESC(#version 300 es
 precision highp float;
 
-in vec3 vNormal;
+in vec2 vTextureCoordinate;
+
+uniform sampler2D uTexture;
 
 out vec4 position;
 
 void main() {
-    float s = dot(normalize(vNormal), vec3(0.0, 1.0, 0.0));
-    position = vec4(s * vec3(0.3, 0.2, 0.2) + vec3(0.2, 0.4, 0.6), 1.0);
+    position = vec4(texture2D(uTexture, vTextureCoordinate).xyz, 1.0);
 }
 )ESC";
 

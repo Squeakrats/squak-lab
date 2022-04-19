@@ -58,5 +58,5 @@ Geometry Geometry::CreatePlane(float width, float height) {
         std::make_shared<BufferView>(BufferView{ buffer, sizeof(positionBuffer) + sizeof(normalBuffer), sizeof(indexBuffer) })
     });
 
-    return Geometry(std::move(attributes), indices);
+    return Geometry(std::move(attributes), indices, nullptr);
 }

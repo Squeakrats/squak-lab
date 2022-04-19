@@ -3,6 +3,7 @@
 #include "shaders.h"
 #include "Matrix4.h"
 #include "utility.h"
+#include "png.h"
 
 namespace gl {
 
@@ -49,7 +50,6 @@ GLuint Renderer::EnsureArrayBuffer(std::shared_ptr<Geometry::Buffer> source) {
 	return buffer;
 }
 
-
 GLuint Renderer::EnsureElementArrayBuffer(std::shared_ptr<Geometry::BufferView> view) {
 	auto find = this->cache.find(view.get());
 	if (find != this->cache.end()) {
@@ -64,6 +64,36 @@ GLuint Renderer::EnsureElementArrayBuffer(std::shared_ptr<Geometry::BufferView> 
 	this->cache.insert(std::make_pair(view.get(), buffer));
 
 	return buffer;
+}
+
+GLuint Renderer::EnsureTexture(std::shared_ptr<Geometry::Texture> texture) {
+	auto find = this->cache.find(texture.get());
+	if (find != this->cache.end()) {
+		return find->second;
+	}
+
+	GLuint textureId{};
+	glGenTextures(1, &textureId);
+	glBindTexture(GL_TEXTURE_2D, textureId);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// TODO - avoid this copy
+	std::vector<uint8_t> buffer{};
+	for (size_t i = 0; i < texture->image->length; i++) {
+		buffer.push_back((*texture->image->buffer)[texture->image->offset + i]);
+	}
+
+	png::PNG png = png::parse(buffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, png.width, png.height, 0, GL_RGB, GL_UNSIGNED_BYTE, png.data.data());
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	this->cache.insert(std::make_pair(texture.get(), textureId));
+
+	return textureId;
 }
 
 void Renderer::MapAttribute(GLuint location, const Geometry::Accessor& accessor) {
@@ -97,9 +127,15 @@ void Renderer::RenderNode(CameraNode& camera, SceneNode& node) {
 		glEnableVertexAttribArray(2);
 
 		Geometry& geometry = *node.geometry;
+		Geometry::Material& material = *node.geometry->material;
+
 		this->MapAttribute(0, *geometry.attributes.at(Geometry::AttributeType::Position));
 		this->MapAttribute(1, *geometry.attributes.at(Geometry::AttributeType::Normal));
 		this->MapAttribute(2, *geometry.attributes.at(Geometry::AttributeType::TextureCoordinate_0));
+
+		GLint uTexture = this->EnsureTexture(material.baseColorTexture);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, uTexture);
 
 		GLint uPerspective = glGetUniformLocation(this->program, "uPerspective");
 		glUniformMatrix4fv(uPerspective, 1, false, camera.perspective.data);

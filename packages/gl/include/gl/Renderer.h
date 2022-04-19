@@ -17,6 +17,8 @@ private:
 
 	GLuint EnsureArrayBuffer(std::shared_ptr<Geometry::Buffer> buffer);
 	GLuint EnsureElementArrayBuffer(std::shared_ptr<Geometry::BufferView> buffer);
+	GLuint EnsureTexture(std::shared_ptr<Geometry::Texture> texture);
+
 	void MapAttribute(GLuint location, const Geometry::Accessor& accessor);
 
 	void RenderNode(CameraNode& camera, SceneNode& node);
