@@ -12,15 +12,24 @@ struct BitStream {
         uint64_t base = static_cast<uint64_t>(std::floor(position / 8));
         uint8_t offset = position % 8;
 
-        position++;
+         position++;
 
         return (buffer[base] & (1 << offset)) != 0;
     }
 
-    size_t Read(size_t n) {
+    size_t ReadCode(size_t n) {
         size_t value{};
         for (size_t i = 0; i < n; i++) {
             value = (value << 1) + this->ReadBit();
+        }
+
+        return value;
+    }
+
+    size_t ReadLiteral(size_t n) {
+        size_t value{};
+        for (size_t i = 0; i < n; i++) {
+            value |= static_cast<size_t>(this->ReadBit()) << i;
         }
 
         return value;

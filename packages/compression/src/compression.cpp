@@ -77,43 +77,43 @@ std::unique_ptr<HuffmaNode> CreateHuffmanTree() {
 
 size_t inflate_length(size_t code, BitStream& stream) {
     switch (code) {
-    case 257: return 3;
-    case 258: return 4;
-    case 259: return 5;
-    case 260: return 6;
-    case 261: return 7;
-    case 262: return 8;
-    case 263: return 9;
-    case 264: return 10;
+        case 257: return 3;
+        case 258: return 4;
+        case 259: return 5;
+        case 260: return 6;
+        case 261: return 7;
+        case 262: return 8;
+        case 263: return 9;
+        case 264: return 10;
 
-    case 265: return 11LL + stream.ReadBit();
-    case 266: return 13LL + stream.ReadBit();
-    case 267: return 15LL + stream.ReadBit();
-    case 268: return 17LL + stream.ReadBit();
+        case 265: return 11LL + stream.ReadBit();
+        case 266: return 13LL + stream.ReadBit();
+        case 267: return 15LL + stream.ReadBit();
+        case 268: return 17LL + stream.ReadBit();
 
-    case 269: return 19LL + stream.Read(2);
-    case 270: return 23LL + stream.Read(2);
-    case 271: return 27LL + stream.Read(2);
-    case 272: return 31LL + stream.Read(2);
+        case 269: return 19LL + stream.ReadLiteral(2);
+        case 270: return 23LL + stream.ReadLiteral(2);
+        case 271: return 27LL + stream.ReadLiteral(2);
+        case 272: return 31LL + stream.ReadLiteral(2);
 
-    case 273: return 35LL + stream.Read(3);
-    case 274: return 43LL + stream.Read(3);
-    case 275: return 51LL + stream.Read(3);
-    case 276: return 59LL + stream.Read(3);
+        case 273: return 35LL + stream.ReadLiteral(3);
+        case 274: return 43LL + stream.ReadLiteral(3);
+        case 275: return 51LL + stream.ReadLiteral(3);
+        case 276: return 59LL + stream.ReadLiteral(3);
 
-    case 277: return 67LL + stream.Read(4);
-    case 278: return 83LL + stream.Read(4);
-    case 279: return 99LL + stream.Read(4);
-    case 280: return 115LL + stream.Read(4);
+        case 277: return 67LL + stream.ReadLiteral(4);
+        case 278: return 83LL + stream.ReadLiteral(4);
+        case 279: return 99LL + stream.ReadLiteral(4);
+        case 280: return 115LL + stream.ReadLiteral(4);
 
-    case 281: return 131LL + stream.Read(5);
-    case 282: return 163LL + stream.Read(5);
-    case 283: return 195LL + stream.Read(5);
-    case 284: return 227LL + stream.Read(5);
+        case 281: return 131LL + stream.ReadLiteral(5);
+        case 282: return 163LL + stream.ReadLiteral(5);
+        case 283: return 195LL + stream.ReadLiteral(5);
+        case 284: return 227LL + stream.ReadLiteral(5);
 
-    case 285: return 258;
-    default:
-        Assert(false, "unhandled code");
+        case 285: return 258;
+        default:
+            Assert(false, "unhandled code");
     }
 }
 
@@ -129,25 +129,42 @@ size_t inflate_code(BitStream& stream) {
 }
 
 size_t inflate_distance(BitStream& stream) {
-    size_t code = stream.Read(5);
+    size_t code = stream.ReadCode(5);
     switch (code) {
-    case 0: return 1;
-    case 1: return 2;
-    case 2: return 3;
-    case 3: return 4;
+        case 0: return 1;
+        case 1: return 2;
+        case 2: return 3;
+        case 3: return 4;
 
-    case 4: return 5LL + stream.ReadBit();
-    case 5: return 7LL + stream.ReadBit();
+        case 4: return 5LL + stream.ReadBit();
+        case 5: return 7LL + stream.ReadBit();
 
-    case 6: return 9LL + stream.Read(2);
-    case 7: return 13LL + stream.Read(2);
+        case 6: return 9LL + stream.ReadLiteral(2);
+        case 7: return 13LL + stream.ReadLiteral(2);
 
-    case 8: return 17LL + stream.Read(3);
-    case 9: return 25LL + stream.Read(3);
+        case 8: return 17LL + stream.ReadLiteral(3);
+        case 9: return 25LL + stream.ReadLiteral(3);
 
-    case 11: return 49LL + stream.Read(4);
-    default:
-        Assert(false, "unhandled code");
+        case 10: return 33LL + stream.ReadLiteral(4);
+        case 11: return 49LL + stream.ReadLiteral(4);
+
+        case 12: return 65LL + stream.ReadLiteral(5);
+        case 13: return 97LL + stream.ReadLiteral(5);
+
+        case 14: return 129LL + stream.ReadLiteral(6);
+        case 15: return 193LL + stream.ReadLiteral(6);
+
+        case 16: return 257LL + stream.ReadLiteral(7);
+        case 17: return 385LL + stream.ReadLiteral(7);
+
+        case 18: return 513LL + stream.ReadLiteral(8);
+        case 19: return 769LL + stream.ReadLiteral(8);
+
+        case 20: return 1025LL + stream.ReadLiteral(9);
+        case 21: return 1537LL + stream.ReadLiteral(9);
+
+        default:
+            Assert(false, "unhandled code");
     }
 }
 
@@ -157,7 +174,7 @@ std::vector<uint8_t> inflate_block(BitStream& stream) {
     uint8_t bFinal = stream.ReadBit();
     uint8_t bType = stream.ReadBit() | stream.ReadBit() << 1;
 
-    Assert(bFinal == 1 && bType == 1, "invalid header");
+    Assert(bType == 1, "invalid header");
 
     while (true) {
         size_t code = inflate_code(stream);
