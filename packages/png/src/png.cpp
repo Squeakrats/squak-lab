@@ -1,0 +1,133 @@
+#include "png.h"
+#include <array>
+#include <string>
+#include "utility.h"
+#include "ByteStream.h"
+#include <iostream>
+#include "compression.h"
+
+namespace png {
+
+std::array<uint8_t, 8> PNG_HEADER = { 137, 80, 78, 71, 13, 10, 26, 10 };
+std::array<uint8_t, 4> CHUNK_TYPE_IHDR = { 73, 72, 68, 82 };
+std::array<uint8_t, 4> CHUNK_TYPE_IDAT = { 73, 68, 65, 84 };
+std::array<uint8_t, 4> CHUNK_TYPE_IEND = { 73, 69, 78, 68 };
+
+struct IHDR {
+    uint32_t width;
+    uint32_t height;
+    uint8_t bitDepth;
+    uint8_t colorType;
+    uint8_t compressionMethod;
+    uint8_t filterMethod;
+    uint8_t interlaceMethod;
+};
+
+IHDR parseIHDR(ByteStream& stream) {
+    Assert(stream.readUInt32() == 13, "Invalid IHDR size");
+
+    std::array<uint8_t, 4> type;
+    stream.read(type.data(), 4);
+    Assert(type == CHUNK_TYPE_IHDR, "Invalid IHDR type");
+
+    IHDR chunk{};
+    chunk.width = stream.readUInt32();
+    chunk.height = stream.readUInt32();
+    chunk.bitDepth = stream.readUInt8();
+    chunk.colorType = stream.readUInt8();
+    chunk.compressionMethod = stream.readUInt8();
+    chunk.filterMethod = stream.readUInt8();
+    chunk.interlaceMethod = stream.readUInt8();
+
+    Assert(chunk.compressionMethod == 0, "Invalid compression method");
+    Assert(chunk.filterMethod == 0, "Invalid filter method");
+    Assert(chunk.interlaceMethod == 0, "Invalid interlace method");
+    Assert(chunk.bitDepth == 8, "Invalid bit depth");
+    Assert(chunk.colorType == 2, "Invalid color type");
+
+    stream.ignore(4); // ignore crc
+
+    return chunk;
+}
+
+void add(uint8_t* a, uint8_t* b) {
+    a[0] = a[0] + b[0];
+    a[1] = a[1] + b[1];
+    a[2] = a[2] + b[2];
+}
+
+PNG parse(std::vector<uint8_t>& buffer) {
+    ByteStream stream(buffer);
+
+    std::array<uint8_t, 8> pngHeader;
+    stream.read(pngHeader.data(), 8);
+    Assert(pngHeader == PNG_HEADER, "invalid png header");
+
+    IHDR header = parseIHDR(stream);
+    std::vector<uint8_t> data{};
+
+    while (true) {
+        uint32_t chunkSize = stream.readUInt32();
+        std::array<uint8_t, 4> chunkType;
+        stream.read(chunkType.data(), 4);
+
+        if (chunkType == CHUNK_TYPE_IDAT) {
+            size_t dataSize = data.size();
+            data.resize(dataSize + chunkSize);
+            stream.read(data.data() + dataSize, chunkSize);
+            stream.ignore(4); // ignore crc
+        }
+        else if (chunkType == CHUNK_TYPE_IEND) {
+            break;
+        }
+        else {
+            stream.ignore(chunkSize + 4ll);
+        }
+    }
+
+    std::vector<uint8_t> inflated = inflate(data);
+
+    for (size_t line = 0; line < header.height; line++) {
+        uint8_t* lineStart = inflated.data() + (header.width * 3ll + 1ll) * line;
+        switch (lineStart[0]) {
+            case 0: // None
+                break;
+            case 1: { // Sub
+                for (size_t x = 1; x < header.width; x++) {
+                    add(lineStart + 1 + x * 3, lineStart + 1 + (x-1) * 3);
+                }
+                break;
+            }   
+            case 2: { // Up
+                if (line == 0) {
+                    break;
+                }
+
+                uint8_t* lineAbove = inflated.data() + (header.width * 3ll + 1ll) * (line - 1);
+                for (size_t x = 0; x < header.width; x++) {
+                    add(lineStart + 1 + x * 3, lineAbove + 1 + x * 3);
+                }
+                break;
+            }
+            default:
+                Assert(false, "unsupported filter");
+        }
+    }
+
+    std::vector<uint8_t> pixels{};
+
+    uint8_t* position = inflated.data();
+    for (size_t y = 0; y < header.height; y++) {
+        position++;
+
+        for (size_t x = 0; x < header.width; x++) {
+            pixels.push_back(*(position++));
+            pixels.push_back(*(position++));
+            pixels.push_back(*(position++));
+        }
+    }
+
+    return PNG{ header.width, header.height, std::move(pixels) };
+}
+
+};
