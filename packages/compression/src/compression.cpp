@@ -131,8 +131,8 @@ size_t decode_length(size_t code, BitStream& stream) {
     }
 }
 
-size_t inflate_code(BitStream& stream, std::unique_ptr<HuffmaNode>& tree) {
-    HuffmaNode* current = tree.get();
+size_t inflate_code(BitStream& stream, HuffmaNode* tree) {
+    HuffmaNode* current = tree;
     while (current->code == 0) {
         current = (stream.ReadBit()) ? current->right : current->left;
     }
@@ -140,7 +140,7 @@ size_t inflate_code(BitStream& stream, std::unique_ptr<HuffmaNode>& tree) {
     return current->code - 1;
 }
 
-size_t inflate_distance(BitStream& stream, std::unique_ptr<HuffmaNode>& tree) {
+size_t inflate_distance(BitStream& stream, HuffmaNode* tree) {
     size_t code = inflate_code(stream, tree);
     switch (code) {
         case 0: return 1;
@@ -186,12 +186,25 @@ std::vector<uint8_t> inflate_block(BitStream& stream) {
     uint8_t bFinal = stream.ReadBit();
     uint8_t bType = stream.ReadBit() | stream.ReadBit() << 1;
 
-    Assert(bType == 1, "invalid header");
-    static std::unique_ptr<HuffmaNode> staticLiteralLengthTree = CreateStaticLiteralLengthTree();
-    static std::unique_ptr<HuffmaNode> staticDistanceTree = CreateStaticDistanceTree();
+    Assert(bFinal == 1, "invalid block header");
+
+    HuffmaNode* literalLengthTree{};
+    HuffmaNode* distanceTree{};
+
+    if (bType == 1) {
+        static std::unique_ptr<HuffmaNode> staticLiteralLengthTree = CreateStaticLiteralLengthTree();
+        static std::unique_ptr<HuffmaNode> staticDistanceTree = CreateStaticDistanceTree();
+
+        literalLengthTree = staticLiteralLengthTree.get();
+        distanceTree = staticDistanceTree.get();
+    }
+    else {
+        Assert(false, "dynamic huffman encoding is not yet supported");
+    }
+   
 
     while (true) {
-        size_t code = inflate_code(stream, staticLiteralLengthTree);
+        size_t code = inflate_code(stream, literalLengthTree);
         if (code <= 255) {
             output.push_back((uint8_t)code);
         }
@@ -200,7 +213,7 @@ std::vector<uint8_t> inflate_block(BitStream& stream) {
         }
         else {
             size_t length = decode_length(code, stream);
-            size_t distance = inflate_distance(stream, staticDistanceTree);
+            size_t distance = inflate_distance(stream, distanceTree);
             for (size_t i = 0; i < length; i++) {
                 output.push_back(output[output.size() - distance]);
             }
