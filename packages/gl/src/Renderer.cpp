@@ -88,7 +88,8 @@ GLuint Renderer::EnsureTexture(std::shared_ptr<Geometry::Texture> texture) {
 	}
 
 	png::PNG png = png::parse(buffer);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, png.width, png.height, 0, GL_RGB, GL_UNSIGNED_BYTE, png.data.data());
+	GLint format = (png.header.colorType == png::COLOR_TYPE_RGB) ? GL_RGB : GL_RGBA;
+	glTexImage2D(GL_TEXTURE_2D, 0, format, png.header.width, png.header.height, 0, format, GL_UNSIGNED_BYTE, png.data.data());
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	this->cache.insert(std::make_pair(texture.get(), textureId));
