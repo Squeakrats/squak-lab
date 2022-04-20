@@ -46,6 +46,15 @@ void add(uint8_t* a, uint8_t* b, size_t pixelSize) {
     }
 }
 
+void avg_inverse(uint8_t* dest, uint8_t* above, uint8_t* left, size_t pixelSize) {
+    for (size_t i = 0; i < pixelSize; i++) {
+        uint16_t aboveValue = static_cast<uint16_t>(above[i]);
+        uint16_t leftValue = static_cast<uint16_t>(left[i]);
+        uint16_t value = static_cast<uint16_t>(dest[i]);
+        dest[i] = value + static_cast<uint8_t>(std::floor(static_cast<double>(leftValue + aboveValue) / 2.0));
+    }
+}
+
 PNG parse(std::vector<uint8_t>& buffer) {
     ByteStream stream(buffer);
 
@@ -81,7 +90,8 @@ PNG parse(std::vector<uint8_t>& buffer) {
 
     for (size_t line = 0; line < header.height; line++) {
         uint8_t* lineStart = inflated.data() + (header.width * pixelSize + 1ll) * line;
-        switch (lineStart[0]) {
+        uint8_t filter = lineStart[0];
+        switch (filter) {
             case 0: // None
                 break;
             case 1: { // Sub
@@ -98,6 +108,17 @@ PNG parse(std::vector<uint8_t>& buffer) {
                 uint8_t* lineAbove = inflated.data() + (header.width * pixelSize + 1ll) * (line - 1);
                 for (size_t x = 0; x < header.width; x++) {
                     add(lineStart + 1 + x * pixelSize, lineAbove + 1 + x * pixelSize, pixelSize);
+                }
+                break;
+            }
+            case 3: { // Up
+                uint8_t* lineAbove = inflated.data() + (header.width * pixelSize + 1ll) * (line - 1);
+                uint8_t zero[] = { 0, 0, 0, 0 };
+
+                for (size_t x = 0; x < header.width; x++) {
+                    uint8_t* above = (line != 0) ? lineAbove + 1 + x * pixelSize : zero;
+                    uint8_t* left = (x != 0) ? lineStart + 1 + (x - 1) * pixelSize : zero;
+                    avg_inverse(lineStart + 1 + x * pixelSize, above, left, pixelSize);
                 }
                 break;
             }
