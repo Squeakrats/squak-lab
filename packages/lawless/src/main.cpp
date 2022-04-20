@@ -18,8 +18,12 @@ int main(int argc, char* argv[]) {
     engine.GetAssetManager().Register(std::make_shared<GLBLoader>());
     engine.SetRenderer(std::make_shared<gl::Renderer>());
 
-    engine.Spawn<PlayerCamera>();
-    engine.Spawn<Player>();
+    auto player = engine.Spawn<Player>();
+    auto camera = engine.Spawn<PlayerCamera>();
+    camera->target = player;
+    
+
+    engine.GetScene()->AddChild(engine.GetAsset<SceneAsset>("map.glb")->scene);
 
     engine.Run();
 

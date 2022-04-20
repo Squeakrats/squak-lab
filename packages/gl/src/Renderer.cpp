@@ -142,8 +142,8 @@ void Renderer::RenderNode(CameraNode& camera, SceneNode& node) {
 		glUniformMatrix4fv(uPerspective, 1, false, camera.perspective.data);
 
 		GLint uView = glGetUniformLocation(this->program, "uView");
-		Matrix4 viewInverse = Matrix4::FastInverse(camera.transform.ToMatrix());
-		glUniformMatrix4fv(uView, 1, false, viewInverse.data);
+		Matrix4 view = camera.GetView();
+		glUniformMatrix4fv(uView, 1, false, view.data);
 
 		GLint uModel = glGetUniformLocation(this->program, "uModel");
 		glUniformMatrix4fv(uModel, 1, false, this->transforms.top().data);

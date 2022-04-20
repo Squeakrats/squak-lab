@@ -69,7 +69,7 @@ Matrix4 Matrix4::Orthographic(float left, float right, float bottom, float top, 
 
 Matrix4 Matrix4::Perspective(float fov, float near, float far) {
 	float theta = fov / 2.0f;
-	float right = std::tan(fov) * near;
+	float right = std::atan(fov) * near;
 	float top = right; // 1:1 aspect ratio
 
 	// solve for x
@@ -180,6 +180,29 @@ Matrix4 Matrix4::RotateZ(float theta) {
 	return Matrix4(a11, a21, a31, a41, a12, a22, a32, a42, a13, a23, a33, a43, a14, a24, a34, a44);
 }
 
+Matrix4 Matrix4::Translate(Vector3 translation) {
+	float a11 = 1.0f;
+	float a21 = 0.0f;
+	float a31 = 0.0f;
+	float a41 = 0.0f;
+
+	float a12 = 0.0f;
+	float a22 = 1.0f;
+	float a32 = 0.0f;
+	float a42 = 0.0f;
+
+	float a13 = 0.0f;
+	float a23 = 0.0f;
+	float a33 = 1.0f;
+	float a43 = 0.0f;
+
+	float a14 = translation.x;
+	float a24 = translation.y;
+	float a34 = translation.z;
+	float a44 = 1.0f;
+
+	return Matrix4(a11, a21, a31, a41, a12, a22, a32, a42, a13, a23, a33, a43, a14, a24, a34, a44);
+}
 
 Matrix4 Matrix4::Create(Vector3 position, Vector3 rotation) {
 	Matrix4 matrix = RotateZ(rotation.z)* RotateY(rotation.y)* RotateX(rotation.x);

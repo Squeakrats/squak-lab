@@ -33,6 +33,7 @@ public:
 	static Matrix4 RotateX(float theta);
 	static Matrix4 RotateY(float theta);
 	static Matrix4 RotateZ(float theta);
+	static Matrix4 Translate(Vector3 translation);
 	static Matrix4 Create(Vector3 position, Vector3 rotation);
 	static Matrix4 FastInverse(const Matrix4& matrix);
 };
