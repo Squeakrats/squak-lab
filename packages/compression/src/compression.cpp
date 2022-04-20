@@ -24,7 +24,7 @@ struct HuffmaNode {
     }
 };
 
-std::unique_ptr<HuffmaNode> CreateHuffmanTree(std::vector<size_t>& lengths, size_t maxLength) {
+std::shared_ptr<HuffmaNode> CreateHuffmanTree(std::vector<size_t>& lengths, size_t maxLength) {
     std::vector<size_t> counts(maxLength + 1);
     for (size_t i = 0; i < lengths.size(); i++) {
         counts[lengths[i]]++;
@@ -44,6 +44,10 @@ std::unique_ptr<HuffmaNode> CreateHuffmanTree(std::vector<size_t>& lengths, size
 
     std::unique_ptr<HuffmaNode> tree = std::make_unique<HuffmaNode>();
     for (size_t symbol = 0; symbol < huffmanCodes.size(); symbol++) {
+        if (lengths[symbol] == 0) {
+            continue;
+        }
+
         size_t huffmanCode = huffmanCodes[symbol];
 
         HuffmaNode* current = tree.get();
@@ -62,7 +66,7 @@ std::unique_ptr<HuffmaNode> CreateHuffmanTree(std::vector<size_t>& lengths, size
     return tree;
 }
 
-std::unique_ptr<HuffmaNode> CreateStaticLiteralLengthTree() {
+std::shared_ptr<HuffmaNode> CreateStaticLiteralLengthTree() {
     std::vector<size_t> lengths(288);
 
     // DEFLATE Compressed Data Format Specification version 1.3 - https://www.ietf.org/rfc/rfc1951.txt 
@@ -83,7 +87,7 @@ std::unique_ptr<HuffmaNode> CreateStaticLiteralLengthTree() {
 }
 
 
-std::unique_ptr<HuffmaNode> CreateStaticDistanceTree() {
+std::shared_ptr<HuffmaNode> CreateStaticDistanceTree() {
     std::vector<size_t> lengths(30, 5);
  
     return CreateHuffmanTree(lengths, 5);
@@ -127,7 +131,7 @@ size_t decode_length(size_t code, BitStream& stream) {
 
         case 285: return 258;
         default:
-            Assert(false, "unhandled code");
+            Panic("unhandled code");
     }
 }
 
@@ -175,36 +179,116 @@ size_t inflate_distance(BitStream& stream, HuffmaNode* tree) {
         case 20: return 1025LL + stream.ReadLiteral(9);
         case 21: return 1537LL + stream.ReadLiteral(9);
 
+        case 22: return 2049LL + stream.ReadLiteral(10);
+        case 23: return 3073LL + stream.ReadLiteral(10);
+
+        case 24: return 4097LL + stream.ReadLiteral(11);
+        case 25: return 6145LL + stream.ReadLiteral(11);
+
+        case 26: return 8193LL + stream.ReadLiteral(12);
+        case 27: return 12289LL + stream.ReadLiteral(12);
+
+        case 28: return 16385LL + stream.ReadLiteral(13);
+        case 29: return 24577LL + stream.ReadLiteral(13);
+
         default:
-            Assert(false, "unhandled code");
+            Panic("unhandled code");
     }
 }
 
-std::vector<uint8_t> inflate_block(BitStream& stream) {
-    std::vector<uint8_t> output{};
+std::pair<std::shared_ptr<HuffmaNode>, std::shared_ptr<HuffmaNode>>  inflate_dynamic_huffman_trees(BitStream& stream) {
+    // https://www.ietf.org/rfc/rfc1951.txt
+    size_t hlit = stream.ReadLiteral(5);
+    size_t hdist = stream.ReadLiteral(5);
+    size_t hclen = stream.ReadLiteral(4);
+    size_t numCodeLengthLengths = hclen + 4ll;
+    size_t numLiteralLengthLengths = hlit + 257ll;
+    size_t numDistanceLengths = hdist + 1ll;
 
+    static const uint8_t codeLengthOrder[] = { 16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15 };
+
+    std::vector<size_t> codeLengthLengths(19);
+    for (size_t i = 0; i < numCodeLengthLengths; i++) {
+        codeLengthLengths[codeLengthOrder[i]] = stream.ReadLiteral(3);
+    }
+
+    std::shared_ptr<HuffmaNode> codeLengthTree = CreateHuffmanTree(codeLengthLengths, 7);
+
+    std::vector<size_t> lengths{};
+    while (lengths.size() < numLiteralLengthLengths + numDistanceLengths) {
+        size_t code = inflate_code(stream, codeLengthTree.get());
+
+        if (code <= 15) {
+            lengths.push_back(code);
+        }
+        else if (code == 16) {
+            size_t repeat = 3 + stream.ReadLiteral(2);
+            size_t previousCode = lengths[lengths.size() - 1];
+            for (size_t j = 0; j < repeat; j++) {
+                lengths.push_back(previousCode);
+            }
+        }
+        else if (code == 17) {
+            size_t repeat = 3 + stream.ReadLiteral(3);
+            for (size_t j = 0; j < repeat; j++) {
+                lengths.push_back(0);
+            }
+        }
+        else if (code == 18) {
+            size_t repeat = 11 + stream.ReadLiteral(7);
+            for (size_t j = 0; j < repeat; j++) {
+                lengths.push_back(0);
+            }
+        }
+        else {
+            Panic("unhandled code");
+        }
+    }
+
+    std::vector<size_t> literalLengthLengths{};
+    std::vector<size_t> distanceLengths{};
+    for (size_t i = 0; i < lengths.size(); i++) {
+        if (i < numLiteralLengthLengths) {
+            literalLengthLengths.push_back(lengths[i]);
+        }
+        else {
+            distanceLengths.push_back(lengths[i]);
+        }
+    }
+
+    // TODO - are these lengths correct
+    return std::make_pair(CreateHuffmanTree(literalLengthLengths, 15), CreateHuffmanTree(distanceLengths, 15));
+}
+
+bool inflate_block(std::vector<uint8_t>& output, BitStream& stream) {
     uint8_t bFinal = stream.ReadBit();
     uint8_t bType = stream.ReadBit() | stream.ReadBit() << 1;
 
-    Assert(bFinal == 1, "invalid block header");
+    std::shared_ptr<HuffmaNode> literalLengthTree{};
+    std::shared_ptr<HuffmaNode> distanceTree{};
 
-    HuffmaNode* literalLengthTree{};
-    HuffmaNode* distanceTree{};
+    switch (bType) {
+        case 1: {
+            static std::shared_ptr<HuffmaNode> staticLiteralLengthTree = CreateStaticLiteralLengthTree();
+            static std::shared_ptr<HuffmaNode> staticDistanceTree = CreateStaticDistanceTree();
 
-    if (bType == 1) {
-        static std::unique_ptr<HuffmaNode> staticLiteralLengthTree = CreateStaticLiteralLengthTree();
-        static std::unique_ptr<HuffmaNode> staticDistanceTree = CreateStaticDistanceTree();
-
-        literalLengthTree = staticLiteralLengthTree.get();
-        distanceTree = staticDistanceTree.get();
+            literalLengthTree = staticLiteralLengthTree;
+            distanceTree = staticDistanceTree;
+            break;
+        }
+        case 2: {
+            auto trees = inflate_dynamic_huffman_trees(stream);
+            literalLengthTree = trees.first;
+            distanceTree = trees.second;
+       
+            break;
+        }
+        default:
+            Panic("Invalid bType");
     }
-    else {
-        Assert(false, "dynamic huffman encoding is not yet supported");
-    }
-   
 
     while (true) {
-        size_t code = inflate_code(stream, literalLengthTree);
+        size_t code = inflate_code(stream, literalLengthTree.get());
         if (code <= 255) {
             output.push_back((uint8_t)code);
         }
@@ -213,14 +297,14 @@ std::vector<uint8_t> inflate_block(BitStream& stream) {
         }
         else {
             size_t length = decode_length(code, stream);
-            size_t distance = inflate_distance(stream, distanceTree);
+            size_t distance = inflate_distance(stream, distanceTree.get());
             for (size_t i = 0; i < length; i++) {
                 output.push_back(output[output.size() - distance]);
             }
         }
     }
 
-    return output;
+    return bFinal == 0;
 }
 
 std::vector<uint8_t> inflate(std::vector<uint8_t>& compressed) {
@@ -230,5 +314,9 @@ std::vector<uint8_t> inflate(std::vector<uint8_t>& compressed) {
 
     BitStream stream(compressed, 16);
 
-    return inflate_block(stream);
+    // // keep inflating until the last block is parsed
+    std::vector<uint8_t> output{};
+    while (inflate_block(output, stream)) {}
+
+    return output;
 }
