@@ -55,6 +55,30 @@ void avg_inverse(uint8_t* dest, uint8_t* above, uint8_t* left, size_t pixelSize)
     }
 }
 
+// https://www.w3.org/TR/PNG-Filters.html
+uint8_t PaethPredictor(uint8_t a, uint8_t b, uint8_t c) {
+    int64_t p = static_cast<int64_t>(a) + static_cast<int64_t>(b) - static_cast<int64_t>(c);
+    int64_t pa = std::abs(p - a);
+    int64_t pb = std::abs(p - b);
+    int64_t pc = std::abs(p - c);
+
+    if (pa <= pb && pa <= pc) {
+        return a;
+    }
+    else if (pb <= pc) { 
+        return b;
+    }
+    else {
+        return c;
+    }
+}
+
+void Paeth_inverse(uint8_t* dest, uint8_t* above, uint8_t* left, uint8_t* upperLeft, size_t pixelSize) {
+    for (size_t i = 0; i < pixelSize; i++) {
+        dest[i] = dest[i] + PaethPredictor(left[i], above[i], upperLeft[i]);
+    }
+}
+
 PNG parse(std::vector<uint8_t>& buffer) {
     ByteStream stream(buffer);
 
@@ -119,6 +143,18 @@ PNG parse(std::vector<uint8_t>& buffer) {
                     uint8_t* above = (line != 0) ? lineAbove + 1 + x * pixelSize : zero;
                     uint8_t* left = (x != 0) ? lineStart + 1 + (x - 1) * pixelSize : zero;
                     avg_inverse(lineStart + 1 + x * pixelSize, above, left, pixelSize);
+                }
+                break;
+            }
+            case 4: { // Paeth
+                uint8_t* lineAbove = inflated.data() + (header.width * pixelSize + 1ll) * (line - 1);
+                uint8_t zero[] = { 0, 0, 0, 0 };
+
+                for (size_t x = 0; x < header.width; x++) {
+                    uint8_t* above = (line != 0) ? lineAbove + 1 + x * pixelSize : zero;
+                    uint8_t* left = (x != 0) ? lineStart + 1 + (x - 1) * pixelSize : zero;
+                    uint8_t* upperLeft = (x != 0 && line != 0) ? lineAbove + 1 + (x - 1) * pixelSize : zero;
+                    Paeth_inverse(lineStart + 1 + x * pixelSize, above, left, upperLeft, pixelSize);
                 }
                 break;
             }
