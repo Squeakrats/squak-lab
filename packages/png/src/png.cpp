@@ -111,6 +111,7 @@ PNG parse(std::vector<uint8_t>& buffer) {
     std::vector<uint8_t> inflated = inflate(data);
 
     size_t pixelSize = (header.colorType == COLOR_TYPE_RGB) ? 3 : 4;
+    Assert(inflated.size() == header.width * header.height * pixelSize + header.height, "unexpected number of bytes");
 
     for (size_t line = 0; line < header.height; line++) {
         uint8_t* lineStart = inflated.data() + (header.width * pixelSize + 1ll) * line;
