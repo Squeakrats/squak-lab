@@ -11,45 +11,33 @@ void AssertSystemIsLittleEndian() {
 }
 
 Geometry::AccessorType ConvertAccessorType(const std::string& type) {
-	if (type == "VEC2") {
-		return Geometry::AccessorType::Vector2;
-	}
-	else if (type == "VEC3") {
-		return Geometry::AccessorType::Vector3;
-	}
-	else if (type == "SCALAR") {
-		return Geometry::AccessorType::Scalar;
-	}
+	static std::map<std::string, Geometry::AccessorType> table = {
+		{ "VEC2",  Geometry::AccessorType::Vector2 },
+		{ "VEC3",  Geometry::AccessorType::Vector3 },
+		{ "SCALAR",  Geometry::AccessorType::Scalar },
+	};
 
-	Panic(std::format("unsupported type {}!", type));
+	return table.at(type);
 }
 
-Geometry::ComponentType ConvertComponentType(const double& type) {
-	if (type == 5123) {
-		return Geometry::ComponentType::UnsignedShort;
-	}
-	else if (type == 5125) {
-		return Geometry::ComponentType::UnsignedInt;
-	}
-	else if (type == 5126) {
-		return Geometry::ComponentType::Float;
-	}
+Geometry::ComponentType ConvertComponentType(uint32_t type) {
+	static std::map<uint32_t, Geometry::ComponentType> table = {
+		{ 5123,  Geometry::ComponentType::UnsignedShort },
+		{ 5125,  Geometry::ComponentType::UnsignedInt },
+		{ 5126,  Geometry::ComponentType::Float },
+	};
 
-	Panic(std::format("unsupported type {}!", type));
+	return table.at(type);
 }
 
 Geometry::AttributeType ConvertAttributeType(const std::string& type) {
-	if (type == "POSITION") {
-		return Geometry::AttributeType::Position;
-	}
-	else if (type == "NORMAL") {
-		return Geometry::AttributeType::Normal;
-	}
-	else if (type == "TEXCOORD_0") {
-		return Geometry::AttributeType::TextureCoordinate_0;
-	}
+	static std::map<std::string, Geometry::AttributeType> table = {
+		{ "POSITION",  Geometry::AttributeType::Position},
+		{ "NORMAL",  Geometry::AttributeType::Normal},
+		{ "TEXCOORD_0",  Geometry::AttributeType::TextureCoordinate_0},
+	};
 
-	Panic(std::format("unsupported type {}!" + type));
+	return table.at(type);
 }
 
 std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
@@ -86,8 +74,8 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 
 		bufferViews.push_back(std::make_shared<Geometry::BufferView>(Geometry::BufferView{
 			buffer,
-			static_cast<size_t>(jsonView["byteOffset"].get<double>()),
-			static_cast<size_t>(jsonView["byteLength"].get<double>())
+			jsonView["byteOffset"].as<size_t>(),
+			jsonView["byteLength"].as<size_t>()
 		}));
 	}
 
@@ -95,9 +83,9 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 	for (json::Value& jsonView : json["accessors"].get<json::Array>()) {
 		accessors.push_back(std::make_shared<Geometry::Accessor>(Geometry::Accessor{
 			ConvertAccessorType(jsonView["type"].get<std::string>()),
-			ConvertComponentType(jsonView["componentType"].get<double>()),
-			static_cast<size_t>(jsonView["count"].get<double>()),
-			bufferViews[static_cast<size_t>(jsonView["bufferView"].get<double>())]
+			ConvertComponentType(jsonView["componentType"].as<size_t>()),
+			jsonView["count"].as<size_t>(),
+			bufferViews[jsonView["bufferView"].as<size_t>()]
 		}));
 	}
 
@@ -105,13 +93,13 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 	for (json::Value& image : json["images"].get<json::Array>()) {
 		images.push_back(std::make_pair(
 			image["mimeType"].get<std::string>(),
-			bufferViews[static_cast<size_t>(image["bufferView"].get<double>())]
+			bufferViews[image["bufferView"].as<size_t>()]
 		));
 	}
 
 	std::vector<std::shared_ptr<Geometry::Texture>> textures{};
 	for (json::Value& texture : json["textures"].get<json::Array>()) {
-		auto& source = images[static_cast<size_t>(texture["source"].get<double>())];
+		auto& source = images[texture["source"].as<size_t>()];
 
 		textures.push_back(std::make_shared<Geometry::Texture>(
 			source.first,
@@ -137,13 +125,12 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 		for (auto& attribute : primitive["attributes"].get<json::Object>().entries) {
 			attributes.insert(std::make_pair(
 				ConvertAttributeType(attribute.first),
-				accessors[static_cast<size_t>(attribute.second.get<double>())]
+				accessors[attribute.second.as<size_t>()]
 			));
 		}
 
-		std::shared_ptr<Geometry::Accessor> indices = accessors[static_cast<size_t>(primitive["indices"].get<double>())];
-
-		std::shared_ptr<Geometry::Material> material = materials[static_cast<size_t>(primitive["material"].get<double>())];
+		std::shared_ptr<Geometry::Accessor> indices = accessors[primitive["indices"].as<size_t>()];
+		std::shared_ptr<Geometry::Material> material = materials[primitive["material"].as<size_t>()];
 
 		meshes.push_back(std::make_shared<Geometry>(std::move(attributes), indices, material));
 	}
@@ -156,7 +143,7 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 		node->name = object["name"].get<std::string>();
 
 		if (object.entries.find("mesh") != object.entries.end()) {
-			node->geometry = meshes[static_cast<size_t>(source["mesh"].get<double>())];
+			node->geometry = meshes[source["mesh"].as<size_t>()];
 		}
 		
 		nodes.push_back(node);
@@ -168,8 +155,7 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 	root->name = scene["name"].get<std::string>();
 
 	for (json::Value& source : scene["nodes"].get<json::Array>()) {
-		size_t node = static_cast<size_t>(source.get<double>());
-		root->children.push_back(nodes[node]);
+		root->children.push_back(nodes[source.as<size_t>()]);
 	}
 
 	return root;

@@ -27,6 +27,9 @@ public:
 	template<typename T>
 	T& get() { return std::get<T>(this->value); };
 
+	template<typename T>
+	T as() { return static_cast<T>(std::get<double>(this->value)); };
+
 	Value& operator[](std::string key) {
 		assert(std::holds_alternative<Object>(this->value));
 
