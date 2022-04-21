@@ -6,6 +6,7 @@
 class Player : public Actor {
 public:
     using Super = Actor;
+    float speed = 0.01f;
 
     Player(const ActorInitializer& initializer) : Actor(initializer) {
         this->root->AddChild(engine.GetAsset<SceneAsset>("suzanne.glb")->scene);
@@ -13,12 +14,13 @@ public:
 
     virtual void Tick(float deltaMs) override {
         Super::Tick(deltaMs);
-        float side = engine.GetAxis("horizontal");
-        float forward = engine.GetAxis("vertical");
-
         auto& transform = this->GetTransform();
-        transform.position.x += side * .1f;
-        transform.position.z -= forward * .1f;
+
+        Vector3 input(engine.GetAxis("Strafe"), 0, engine.GetAxis("Forward"));
+        Vector3 direction = (this->GetTransform().ToMatrix() * Vector4(input, 0.0)).xyz();
+        if (direction.length() > 0) {
+            transform.position += deltaMs * this->speed * direction.normalize();
+        }
     }
 
     static const ActorCreatorEntry CREATORENTRY;
