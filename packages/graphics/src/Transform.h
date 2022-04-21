@@ -9,5 +9,9 @@ public:
 	Transform() : position(), rotation() {};
 	Transform(Vector3 position) : position(position), rotation() {};
 
+	Vector3 GetForward() {
+		return (this->ToMatrix() * Vector4(0.0, 0.0, 1.0, 0.0)).xyz();
+	}
+
 	Matrix4 ToMatrix() { return Matrix4::Create(this->position, this->rotation); }
 };

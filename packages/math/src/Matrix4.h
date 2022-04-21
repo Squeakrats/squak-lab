@@ -1,6 +1,7 @@
 #pragma once
 #include <array>
 #include "Vector3.h"
+#include "Vector4.h"
 
 class Matrix4 {
 public:
@@ -39,3 +40,4 @@ public:
 };
 
 Matrix4 operator*(const Matrix4& lhs, const Matrix4& rhs);
+Vector4 operator*(const Matrix4& lhs, const Vector4& rhs);

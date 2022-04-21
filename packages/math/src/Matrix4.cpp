@@ -234,6 +234,7 @@ Matrix4 Matrix4::FastInverse(const Matrix4& m) {
 
 	return Matrix4(a11, a21, a31, a41, a12, a22, a32, a42, a13, a23, a33, a43, a14, a24, a34, a44);
 }
+
 Matrix4 operator*(const Matrix4& lhs, const Matrix4& rhs) {
 	const float* a = lhs.data;
 	const float* b = rhs.data;
@@ -253,3 +254,15 @@ Matrix4 operator*(const Matrix4& lhs, const Matrix4& rhs) {
 
 	return result;
 }
+
+Vector4 operator*(const Matrix4& lhs, const Vector4& rhs) {
+	const float* a = lhs.data;
+
+	return Vector4(
+		a[0] * rhs.x + a[4] * rhs.y + a[8] * rhs.z + a[12] * rhs.w,
+		a[1] * rhs.x + a[5] * rhs.y + a[9] * rhs.z + a[13] * rhs.w,
+		a[2] * rhs.x + a[6] * rhs.y + a[10] * rhs.z + a[14] * rhs.w,
+		a[3] * rhs.x + a[7] * rhs.y + a[11] * rhs.z + a[15] * rhs.w
+	);
+}
+

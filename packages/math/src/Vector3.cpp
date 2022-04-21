@@ -6,7 +6,7 @@ float Vector3::length() {
 }
 
 Vector3& Vector3::normalize() {
-	*this *= this->length();
+	*this *= 1 / this->length();
 
 	return *this;
 }
