@@ -3,13 +3,13 @@
 #include <string>
 #include <vector>
 #include "Transform.h"
-#include "Geometry.h"
+#include "Mesh.h"
 
 class SceneNode {
 public:
 	std::string name{};
 	Transform transform;
-	std::shared_ptr<Geometry> geometry{};
+	std::shared_ptr<Mesh> mesh{};
 	std::vector<std::shared_ptr<SceneNode>> children{};
 
 	SceneNode() : transform() {}

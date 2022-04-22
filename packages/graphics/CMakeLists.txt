@@ -8,8 +8,8 @@ add_library(graphics
 	src/BufferView.h
 	src/CameraNode.h
 	src/SceneNode.h
-	src/Geometry.h
-	src/Geometry.cpp
+	src/Mesh.h
+	src/Mesh.cpp
 	src/Transform.h
 	src/IRenderer.h
 	src/SceneAsset.h

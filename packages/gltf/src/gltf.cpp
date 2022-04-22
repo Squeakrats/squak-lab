@@ -30,11 +30,11 @@ BufferAccessor::ComponentType ConvertComponentType(uint32_t type) {
 	return table.at(type);
 }
 
-Geometry::AttributeType ConvertAttributeType(const std::string& type) {
-	static std::map<std::string, Geometry::AttributeType> table = {
-		{ "POSITION",  Geometry::AttributeType::Position},
-		{ "NORMAL",  Geometry::AttributeType::Normal},
-		{ "TEXCOORD_0",  Geometry::AttributeType::TextureCoordinate_0},
+Mesh::AttributeType ConvertAttributeType(const std::string& type) {
+	static std::map<std::string, Mesh::AttributeType> table = {
+		{ "POSITION",  Mesh::AttributeType::Position},
+		{ "NORMAL",  Mesh::AttributeType::Normal},
+		{ "TEXCOORD_0",  Mesh::AttributeType::TextureCoordinate_0},
 	};
 
 	return table.at(type);
@@ -114,16 +114,16 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 		materials.push_back(material);
 	}
 
-	std::vector<std::shared_ptr<Geometry>> meshes{};
+	std::vector<std::shared_ptr<Mesh>> meshes{};
 	for (json::Value& mesh : json["meshes"].get<json::Array>()) {
 		json::Array& primitives = mesh["primitives"].get<json::Array>();
 		assert(primitives.size() == 1);
 
 		json::Object& primitive = primitives[0].get<json::Object>();
 
-		Geometry::Attributes attributes{};
+		Mesh::Geometry geometry{};
 		for (auto& attribute : primitive["attributes"].get<json::Object>().entries) {
-			attributes.insert(std::make_pair(
+			geometry.insert(std::make_pair(
 				ConvertAttributeType(attribute.first),
 				accessors[attribute.second.as<size_t>()]
 			));
@@ -132,7 +132,7 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 		std::shared_ptr<BufferAccessor> indices = accessors[primitive["indices"].as<size_t>()];
 		std::shared_ptr<Material> material = materials[primitive["material"].as<size_t>()];
 
-		meshes.push_back(std::make_shared<Geometry>(std::move(attributes), indices, material));
+		meshes.push_back(std::make_shared<Mesh>(std::move(geometry), indices, material));
 	}
 
 	std::vector<std::shared_ptr<SceneNode>> nodes{};
@@ -143,7 +143,7 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 		node->name = object["name"].get<std::string>();
 
 		if (object.entries.find("mesh") != object.entries.end()) {
-			node->geometry = meshes[source["mesh"].as<size_t>()];
+			node->mesh = meshes[source["mesh"].as<size_t>()];
 		}
 		
 		nodes.push_back(node);

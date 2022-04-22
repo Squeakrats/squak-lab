@@ -118,7 +118,7 @@ void Renderer::Render(CameraNode& camera, SceneNode& scene) {
 void Renderer::RenderNode(CameraNode& camera, SceneNode& node) {
 	this->transforms.push(this->transforms.top() * node.transform.ToMatrix());
 
-	if (node.geometry != nullptr) {
+	if (node.mesh != nullptr) {
 		if (!this->program) {
 			this->program = CreateProgram(shaders::vertex, shaders::fragment);
 		}
@@ -128,12 +128,13 @@ void Renderer::RenderNode(CameraNode& camera, SceneNode& node) {
 		glEnableVertexAttribArray(1);
 		glEnableVertexAttribArray(2);
 
-		Geometry& geometry = *node.geometry;
-		Material& material = *node.geometry->material;
+		Mesh& mesh = *node.mesh;
+		Material& material = *mesh.material;
+		Mesh::Geometry& geometry = mesh.geometry;
 
-		this->MapAttribute(0, *geometry.attributes.at(Geometry::AttributeType::Position));
-		this->MapAttribute(1, *geometry.attributes.at(Geometry::AttributeType::Normal));
-		this->MapAttribute(2, *geometry.attributes.at(Geometry::AttributeType::TextureCoordinate_0));
+		this->MapAttribute(0, *geometry.at(Mesh::AttributeType::Position));
+		this->MapAttribute(1, *geometry.at(Mesh::AttributeType::Normal));
+		this->MapAttribute(2, *geometry.at(Mesh::AttributeType::TextureCoordinate_0));
 
 		GLint uTexture = this->EnsureTexture(material.baseColorTexture);
 		glActiveTexture(GL_TEXTURE0);
@@ -149,8 +150,8 @@ void Renderer::RenderNode(CameraNode& camera, SceneNode& node) {
 		GLint uModel = glGetUniformLocation(this->program, "uModel");
 		glUniformMatrix4fv(uModel, 1, false, this->transforms.top().data);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EnsureElementArrayBuffer(geometry.indices->view));
-		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(geometry.indices->view->length / sizeof(uint16_t)), Convert(geometry.indices->componentType), nullptr);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EnsureElementArrayBuffer(mesh.indices->view));
+		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mesh.indices->view->length / sizeof(uint16_t)), Convert(mesh.indices->componentType), nullptr);
 	}
 
 	for (auto child : node.children) {

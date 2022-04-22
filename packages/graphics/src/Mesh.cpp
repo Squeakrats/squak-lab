@@ -1,7 +1,7 @@
-#include "Geometry.h"
+#include "Mesh.h"
 #include <iterator>
 
-Geometry Geometry::CreatePlane(float width, float height) {
+Mesh Mesh::CreatePlane(float width, float height) {
     float hw = width / 2;
     float hh = height / 2;
 
@@ -30,7 +30,7 @@ Geometry Geometry::CreatePlane(float width, float height) {
     std::memcpy(buffer->data() + sizeof(positionBuffer), normalBuffer, sizeof(normalBuffer));
     std::memcpy(buffer->data() + sizeof(positionBuffer) + sizeof(normalBuffer), indexBuffer, sizeof(indexBuffer));
 
-    Attributes attributes = {
+    Geometry geometry = {
         {
             AttributeType::Position,
             std::make_shared<BufferAccessor>(BufferAccessor{
@@ -58,5 +58,5 @@ Geometry Geometry::CreatePlane(float width, float height) {
         std::make_shared<BufferView>(BufferView{ buffer, sizeof(positionBuffer) + sizeof(normalBuffer), sizeof(indexBuffer) })
     });
 
-    return Geometry(std::move(attributes), indices, nullptr);
+    return Mesh(std::move(geometry), indices, nullptr);
 }
