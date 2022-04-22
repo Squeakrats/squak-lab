@@ -5,10 +5,12 @@
 #else
 #include <gl/glew.h>
 #endif
+#include "IRenderer.h"
 
 namespace gl {
 
 GLuint CreateShader(GLenum type, std::string source);
 GLuint CreateProgram(std::string vertexShaderSource, std::string fragmentShaderSource);
+std::shared_ptr<IRenderer> CreateRenderer();
 
 };

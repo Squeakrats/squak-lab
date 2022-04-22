@@ -1,4 +1,4 @@
-#include "gl/Renderer.h"
+#include "gl/glutils.h"
 #include "glfw/glfw3.h"
 #include "gltf.h"
 #include "Engine.h"
@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
     Engine& engine = Engine::Init(assetDir);
 
     engine.GetAssetManager().Register(std::make_shared<GLBLoader>());
-    engine.SetRenderer(std::make_shared<gl::Renderer>());
+    engine.SetRenderer(gl::CreateRenderer());
 
     auto player = engine.Spawn<Player>();
     auto camera = engine.Spawn<PlayerCamera>();

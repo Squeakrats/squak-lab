@@ -1,5 +1,6 @@
 #include "gl/glutils.h"
 #include "utility.h"
+#include "Renderer.h"
 
 namespace gl {
 
@@ -58,6 +59,10 @@ GLuint CreateProgram(std::string vertexShaderSource, std::string fragmentShaderS
 	glDeleteShader(fragmentShader);
 
 	return program;
+}
+
+std::shared_ptr<IRenderer> CreateRenderer() {
+	return std::make_shared<Renderer>();
 }
 
 };
