@@ -24,7 +24,7 @@ Geometry Geometry::CreatePlane(float width, float height) {
         0, 2, 3
     };
 
-    std::shared_ptr<Buffer> buffer = std::make_shared<Buffer>();
+    std::shared_ptr<BufferView::Buffer> buffer = std::make_shared<BufferView::Buffer>();
     buffer->resize(sizeof(positionBuffer) + + sizeof(normalBuffer) + sizeof(indexBuffer));
     std::memcpy(buffer->data(), positionBuffer, sizeof(positionBuffer));
     std::memcpy(buffer->data() + sizeof(positionBuffer), normalBuffer, sizeof(normalBuffer));
@@ -33,27 +33,27 @@ Geometry Geometry::CreatePlane(float width, float height) {
     Attributes attributes = {
         {
             AttributeType::Position,
-            std::make_shared<Accessor>(Accessor{
-                AccessorType::Vector3,
-                ComponentType::Float,
+            std::make_shared<BufferAccessor>(BufferAccessor{
+                BufferAccessor::Type::Vector3,
+                BufferAccessor::ComponentType::Float,
                 4,
                 std::make_shared<BufferView>(BufferView{ buffer, 0, sizeof(positionBuffer) })
             })
         },
         {
             AttributeType::Normal,
-            std::make_shared<Accessor>(Accessor{
-                AccessorType::Vector3,
-                ComponentType::Float,
+            std::make_shared<BufferAccessor>(BufferAccessor{
+                BufferAccessor::Type::Vector3,
+                BufferAccessor::ComponentType::Float,
                 4,
                 std::make_shared<BufferView>(BufferView{ buffer, sizeof(positionBuffer), sizeof(normalBuffer) })
             })
         }
     };
 
-    std::shared_ptr<Accessor> indices = std::make_shared<Accessor>(Accessor{
-        AccessorType::Scalar,
-        ComponentType::UnsignedShort,
+    std::shared_ptr<BufferAccessor> indices = std::make_shared<BufferAccessor>(BufferAccessor{
+        BufferAccessor::Type::Scalar,
+        BufferAccessor::ComponentType::UnsignedShort,
         4,
         std::make_shared<BufferView>(BufferView{ buffer, sizeof(positionBuffer) + sizeof(normalBuffer), sizeof(indexBuffer) })
     });

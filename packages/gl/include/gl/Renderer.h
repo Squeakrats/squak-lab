@@ -15,11 +15,11 @@ private:
 	// TODO - cleanup memory
 	std::map<void*, GLuint> cache{};
 
-	GLuint EnsureArrayBuffer(std::shared_ptr<Geometry::Buffer> buffer);
-	GLuint EnsureElementArrayBuffer(std::shared_ptr<Geometry::BufferView> buffer);
+	GLuint EnsureArrayBuffer(std::shared_ptr<BufferView::Buffer> buffer);
+	GLuint EnsureElementArrayBuffer(std::shared_ptr<BufferView> buffer);
 	GLuint EnsureTexture(std::shared_ptr<Geometry::Texture> texture);
 
-	void MapAttribute(GLuint location, const Geometry::Accessor& accessor);
+	void MapAttribute(GLuint location, const BufferAccessor& accessor);
 
 	void RenderNode(CameraNode& camera, SceneNode& node);
 

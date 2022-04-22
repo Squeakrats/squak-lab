@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.8)
 project(graphics)
 
 add_library(graphics
+	src/BufferAccessor.h
+	src/BufferView.h
 	src/CameraNode.h
 	src/SceneNode.h
 	src/Geometry.h

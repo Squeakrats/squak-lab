@@ -10,21 +10,21 @@ void AssertSystemIsLittleEndian() {
 	assert(*reinterpret_cast<uint8_t*>(&i) == 0x00);
 }
 
-Geometry::AccessorType ConvertAccessorType(const std::string& type) {
-	static std::map<std::string, Geometry::AccessorType> table = {
-		{ "VEC2",  Geometry::AccessorType::Vector2 },
-		{ "VEC3",  Geometry::AccessorType::Vector3 },
-		{ "SCALAR",  Geometry::AccessorType::Scalar },
+BufferAccessor::Type ConvertAccessorType(const std::string& type) {
+	static std::map<std::string, BufferAccessor::Type> table = {
+		{ "VEC2",  BufferAccessor::Type::Vector2 },
+		{ "VEC3",  BufferAccessor::Type::Vector3 },
+		{ "SCALAR",  BufferAccessor::Type::Scalar },
 	};
 
 	return table.at(type);
 }
 
-Geometry::ComponentType ConvertComponentType(uint32_t type) {
-	static std::map<uint32_t, Geometry::ComponentType> table = {
-		{ 5123,  Geometry::ComponentType::UnsignedShort },
-		{ 5125,  Geometry::ComponentType::UnsignedInt },
-		{ 5126,  Geometry::ComponentType::Float },
+BufferAccessor::ComponentType ConvertComponentType(uint32_t type) {
+	static std::map<uint32_t, BufferAccessor::ComponentType> table = {
+		{ 5123,  BufferAccessor::ComponentType::UnsignedShort },
+		{ 5125,  BufferAccessor::ComponentType::UnsignedInt },
+		{ 5126,  BufferAccessor::ComponentType::Float },
 	};
 
 	return table.at(type);
@@ -63,25 +63,25 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 	source.read(reinterpret_cast<char*>(binHeader), sizeof(binHeader));
 	assert(binHeader[1] == gltf::binary::BIN);
 
-	std::shared_ptr<Geometry::Buffer> buffer = std::make_shared<Geometry::Buffer>();
+	std::shared_ptr<BufferView::Buffer> buffer = std::make_shared<BufferView::Buffer>();
 	buffer->resize(binHeader[0]);
 	source.read(reinterpret_cast<char*>(buffer->data()), buffer->size());
 	assert(source.get() == EOF);
 
-	std::vector<std::shared_ptr<Geometry::BufferView>> bufferViews{};
+	std::vector<std::shared_ptr<BufferView>> bufferViews{};
 	for (json::Value& jsonView : json["bufferViews"].get<json::Array>()) {
 		assert(jsonView["buffer"].get<double>() == 0.0);
 
-		bufferViews.push_back(std::make_shared<Geometry::BufferView>(Geometry::BufferView{
+		bufferViews.push_back(std::make_shared<BufferView>(BufferView{
 			buffer,
 			jsonView["byteOffset"].as<size_t>(),
 			jsonView["byteLength"].as<size_t>()
 		}));
 	}
 
-	std::vector<std::shared_ptr<Geometry::Accessor>> accessors{};
+	std::vector<std::shared_ptr<BufferAccessor>> accessors{};
 	for (json::Value& jsonView : json["accessors"].get<json::Array>()) {
-		accessors.push_back(std::make_shared<Geometry::Accessor>(Geometry::Accessor{
+		accessors.push_back(std::make_shared<BufferAccessor>(BufferAccessor{
 			ConvertAccessorType(jsonView["type"].get<std::string>()),
 			ConvertComponentType(jsonView["componentType"].as<size_t>()),
 			jsonView["count"].as<size_t>(),
@@ -89,7 +89,7 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 		}));
 	}
 
-	std::vector<std::pair<std::string, std::shared_ptr<Geometry::BufferView>>> images{};
+	std::vector<std::pair<std::string, std::shared_ptr<BufferView>>> images{};
 	for (json::Value& image : json["images"].get<json::Array>()) {
 		images.push_back(std::make_pair(
 			image["mimeType"].get<std::string>(),
@@ -129,7 +129,7 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 			));
 		}
 
-		std::shared_ptr<Geometry::Accessor> indices = accessors[primitive["indices"].as<size_t>()];
+		std::shared_ptr<BufferAccessor> indices = accessors[primitive["indices"].as<size_t>()];
 		std::shared_ptr<Geometry::Material> material = materials[primitive["material"].as<size_t>()];
 
 		meshes.push_back(std::make_shared<Geometry>(std::move(attributes), indices, material));

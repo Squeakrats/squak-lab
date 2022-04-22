@@ -4,29 +4,30 @@
 #include "Matrix4.h"
 #include "utility.h"
 #include "png.h"
+#include "BufferAccessor.h"
 
 namespace gl {
 
-GLenum Convert(Geometry::ComponentType type) {
+GLenum Convert(BufferAccessor::ComponentType type) {
 	switch (type) {
-		case Geometry::ComponentType::Float:
+		case BufferAccessor::ComponentType::Float:
 			return GL_FLOAT;
-		case Geometry::ComponentType::UnsignedInt:
+		case BufferAccessor::ComponentType::UnsignedInt:
 			return GL_UNSIGNED_INT;
-		case Geometry::ComponentType::UnsignedShort:
+		case BufferAccessor::ComponentType::UnsignedShort:
 			return GL_UNSIGNED_SHORT;
 		default:
 			Panic(std::format("unsupported type {}!", static_cast<int>(type)));
 	}
 }
 
-GLenum Convert(Geometry::AccessorType type) {
+GLenum Convert(BufferAccessor::Type type) {
 	switch (type) {
-		case Geometry::AccessorType::Scalar:
+		case BufferAccessor::Type::Scalar:
 			return 1;
-		case Geometry::AccessorType::Vector2:
+		case BufferAccessor::Type::Vector2:
 			return 2;
-		case Geometry::AccessorType::Vector3:
+		case BufferAccessor::Type::Vector3:
 			return 3;
 		default:
 			Panic(std::format("unsupported type {}!", static_cast<int>(type)));
@@ -34,7 +35,7 @@ GLenum Convert(Geometry::AccessorType type) {
 }
 
 
-GLuint Renderer::EnsureArrayBuffer(std::shared_ptr<Geometry::Buffer> source) {
+GLuint Renderer::EnsureArrayBuffer(std::shared_ptr<BufferView::Buffer> source) {
 	auto find = this->cache.find(source.get());
 	if (find != this->cache.end()) {
 		return find->second;
@@ -50,7 +51,7 @@ GLuint Renderer::EnsureArrayBuffer(std::shared_ptr<Geometry::Buffer> source) {
 	return buffer;
 }
 
-GLuint Renderer::EnsureElementArrayBuffer(std::shared_ptr<Geometry::BufferView> view) {
+GLuint Renderer::EnsureElementArrayBuffer(std::shared_ptr<BufferView> view) {
 	auto find = this->cache.find(view.get());
 	if (find != this->cache.end()) {
 		return find->second;
@@ -97,7 +98,7 @@ GLuint Renderer::EnsureTexture(std::shared_ptr<Geometry::Texture> texture) {
 	return textureId;
 }
 
-void Renderer::MapAttribute(GLuint location, const Geometry::Accessor& accessor) {
+void Renderer::MapAttribute(GLuint location, const BufferAccessor& accessor) {
 	glBindBuffer(GL_ARRAY_BUFFER, this->EnsureArrayBuffer(accessor.view->buffer));
 	glVertexAttribPointer(location, Convert(accessor.type), Convert(accessor.componentType), false, 0, (void*)(accessor.view->offset));
 }
