@@ -17,7 +17,7 @@ private:
 
 	GLuint EnsureArrayBuffer(std::shared_ptr<BufferView::Buffer> buffer);
 	GLuint EnsureElementArrayBuffer(std::shared_ptr<BufferView> buffer);
-	GLuint EnsureTexture(std::shared_ptr<Geometry::Texture> texture);
+	GLuint EnsureTexture(std::shared_ptr<Texture> texture);
 
 	void MapAttribute(GLuint location, const BufferAccessor& accessor);
 

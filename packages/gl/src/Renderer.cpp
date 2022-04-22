@@ -67,7 +67,7 @@ GLuint Renderer::EnsureElementArrayBuffer(std::shared_ptr<BufferView> view) {
 	return buffer;
 }
 
-GLuint Renderer::EnsureTexture(std::shared_ptr<Geometry::Texture> texture) {
+GLuint Renderer::EnsureTexture(std::shared_ptr<Texture> texture) {
 	auto find = this->cache.find(texture.get());
 	if (find != this->cache.end()) {
 		return find->second;
@@ -129,7 +129,7 @@ void Renderer::RenderNode(CameraNode& camera, SceneNode& node) {
 		glEnableVertexAttribArray(2);
 
 		Geometry& geometry = *node.geometry;
-		Geometry::Material& material = *node.geometry->material;
+		Material& material = *node.geometry->material;
 
 		this->MapAttribute(0, *geometry.attributes.at(Geometry::AttributeType::Position));
 		this->MapAttribute(1, *geometry.attributes.at(Geometry::AttributeType::Normal));

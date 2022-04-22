@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include "BufferAccessor.h"
+#include "Material.h"
 
 class Geometry {
 public:
@@ -11,17 +12,6 @@ public:
 		Position,
 		Normal,
 		TextureCoordinate_0
-	};
-
-	struct Texture {
-		std::string mimeType;
-		std::shared_ptr<BufferView> image;
-
-		Texture(std::string mimeType, std::shared_ptr<BufferView> image) : mimeType(mimeType), image(image) {}
-	};
-
-	struct Material {
-		std::shared_ptr<Texture> baseColorTexture{};
 	};
 
 	using Attributes = std::map<AttributeType, std::shared_ptr<BufferAccessor>>;
