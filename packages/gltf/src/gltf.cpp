@@ -114,7 +114,19 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 	if (json.entries.find("materials") != json.entries.end()) {
 		for (json::Value& jsonMaterial : json["materials"].get<json::Array>()) {
 			std::shared_ptr<Material> material = std::make_shared<Material>();
-			material->baseColorTexture = textures[static_cast<size_t>(jsonMaterial["pbrMetallicRoughness"]["baseColorTexture"]["index"].get<double>())];
+
+			auto& pbrMetallicRoughness = jsonMaterial["pbrMetallicRoughness"].get<json::Object>();
+			if (pbrMetallicRoughness.entries.find("baseColorTexture") != pbrMetallicRoughness.entries.end()) {
+				material->baseColorTexture = textures[static_cast<size_t>(pbrMetallicRoughness["baseColorTexture"]["index"].get<double>())];
+			}
+			else {
+				auto& colorFactor = pbrMetallicRoughness["baseColorFactor"].get<json::Array>();
+				material->baseColor.x = colorFactor[0].as<float>();
+				material->baseColor.y = colorFactor[1].as<float>();
+				material->baseColor.z = colorFactor[2].as<float>();
+
+			}
+			
 			materials.push_back(material);
 		}
 	}
