@@ -5,18 +5,22 @@
 #include <stack>
 #include "IRenderer.h"
 #include "RenderingContext.h"
+#include "Program.h"
 
 namespace gl {
 
 class Renderer : public IRenderer {
 private:
 	RenderingContext context{};
-	GLuint program{};
+	std::shared_ptr<Program> program{};
+
 	std::stack<Matrix4> transforms{{ Matrix4::Identity() }};
 
 	void RenderNode(CameraNode& camera, SceneNode& node);
 
 public:
+	Renderer();
+
 	virtual void Render(CameraNode& camera, SceneNode& scene) override;
 };
 

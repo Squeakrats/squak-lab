@@ -5,8 +5,40 @@
 #include "utility.h"
 #include "png.h"
 #include "BufferAccessor.h"
+#include "shaders.h"
 
 namespace gl {
+
+class TexturedMaterialProgram : public Program {
+private:
+	RenderingContext& gl;
+
+public:
+	TexturedMaterialProgram(RenderingContext& gl) : 
+		Program(
+			shaders::vertex, shaders::fragment,
+			{ "aPosition", "aTextureCoordinate" },
+			{ "uPerspective", "uView", "uModel" }
+		),
+		gl(gl)
+	{}
+
+	virtual void Render(Matrix4& perspective, Matrix4& view, Matrix4& model, Mesh& mesh) override {
+		this->Enable();
+		this->gl.VertexAttribPointer(this->attributes[0], *mesh.geometry.at(Mesh::AttributeType::Position));
+		this->gl.VertexAttribPointer(this->attributes[1], *mesh.geometry.at(Mesh::AttributeType::TextureCoordinate_0));
+		this->gl.SetActiveTexture(0, mesh.material->baseColorTexture);
+		glUniformMatrix4fv(this->uniforms[0], 1, false, perspective.data);
+		glUniformMatrix4fv(this->uniforms[1], 1, false, view.data);
+		glUniformMatrix4fv(this->uniforms[2], 1, false, model.data);
+		this->gl.DrawElements(*mesh.indices);
+		this->Disable();
+	}
+};
+
+Renderer::Renderer() {
+	this->program = std::make_shared<TexturedMaterialProgram>(this->context);
+}
 
 void Renderer::Render(CameraNode& camera, SceneNode& scene) {
 	glEnable(GL_DEPTH_TEST);
@@ -24,38 +56,9 @@ void Renderer::RenderNode(CameraNode& camera, SceneNode& node) {
 	this->transforms.push(this->transforms.top() * node.transform.ToMatrix());
 
 	if (node.mesh != nullptr) {
-		if (!this->program) {
-			this->program = CreateProgram(shaders::vertex, shaders::fragment);
-		}
-
-		glUseProgram(this->program);
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
-		glEnableVertexAttribArray(2);
-
-		Mesh& mesh = *node.mesh;
-		Material& material = *mesh.material;
-		Mesh::Geometry& geometry = mesh.geometry;
-
-		this->context.VertexAttribPointer(0, *geometry.at(Mesh::AttributeType::Position));
-		this->context.VertexAttribPointer(1, *geometry.at(Mesh::AttributeType::Normal));
-		this->context.VertexAttribPointer(2, *geometry.at(Mesh::AttributeType::TextureCoordinate_0));
-
-		GLint uTexture = this->context.EnsureTexture(material.baseColorTexture);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, uTexture);
-
-		GLint uPerspective = glGetUniformLocation(this->program, "uPerspective");
-		glUniformMatrix4fv(uPerspective, 1, false, camera.perspective.data);
-
-		GLint uView = glGetUniformLocation(this->program, "uView");
 		Matrix4 view = camera.GetView();
-		glUniformMatrix4fv(uView, 1, false, view.data);
 
-		GLint uModel = glGetUniformLocation(this->program, "uModel");
-		glUniformMatrix4fv(uModel, 1, false, this->transforms.top().data);
-
-		this->context.DrawElements(*mesh.indices);
+		this->program->Render(camera.perspective, view, this->transforms.top(), *node.mesh);
 	}
 
 	for (auto child : node.children) {

@@ -17,6 +17,7 @@ public:
 	GLuint EnsureTexture(std::shared_ptr<Texture> texture);
 
 	void VertexAttribPointer(GLuint location, const BufferAccessor& accessor);
+	void SetActiveTexture(GLenum location, std::shared_ptr<Texture> texture);
 	void DrawElements(const BufferAccessor& accessor);
 };
 

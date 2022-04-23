@@ -6,6 +6,7 @@ add_library(gl
 	src/shaders.h
 	src/shaders.cpp
 	src/glutils.cpp
+	src/Program.h
 	src/Renderer.h
 	src/Renderer.cpp
 	src/RenderingContext.h

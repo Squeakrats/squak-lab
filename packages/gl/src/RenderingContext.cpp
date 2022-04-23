@@ -98,6 +98,11 @@ void RenderingContext::VertexAttribPointer(GLuint location, const BufferAccessor
 	glVertexAttribPointer(location, Convert(accessor.type), Convert(accessor.componentType), false, 0, (void*)(accessor.view->offset));
 }
 
+void RenderingContext::SetActiveTexture(GLuint location, std::shared_ptr<Texture> texture) {
+	glActiveTexture(GL_TEXTURE0 + location);
+	glBindTexture(GL_TEXTURE_2D, this->EnsureTexture(texture));
+}
+
 void RenderingContext::DrawElements(const BufferAccessor& accessor) {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EnsureElementArrayBuffer(accessor.view));
 	glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(accessor.view->length / sizeof(uint16_t)), Convert(accessor.componentType), nullptr);
