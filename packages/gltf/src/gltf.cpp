@@ -90,28 +90,33 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 	}
 
 	std::vector<std::pair<std::string, std::shared_ptr<BufferView>>> images{};
-	for (json::Value& image : json["images"].get<json::Array>()) {
-		images.push_back(std::make_pair(
-			image["mimeType"].get<std::string>(),
-			bufferViews[image["bufferView"].as<size_t>()]
-		));
+	if (json.entries.find("images") != json.entries.end()) {
+		for (json::Value& image : json["images"].get<json::Array>()) {
+			images.push_back(std::make_pair(
+				image["mimeType"].get<std::string>(),
+				bufferViews[image["bufferView"].as<size_t>()]
+			));
+		}
 	}
 
 	std::vector<std::shared_ptr<Texture>> textures{};
-	for (json::Value& texture : json["textures"].get<json::Array>()) {
-		auto& source = images[texture["source"].as<size_t>()];
-
-		textures.push_back(std::make_shared<Texture>(
-			source.first,
-			source.second
-		));
+	if (json.entries.find("textures") != json.entries.end()) {
+		for (json::Value& texture : json["textures"].get<json::Array>()) {
+			auto& source = images[texture["source"].as<size_t>()];
+			textures.push_back(std::make_shared<Texture>(
+				source.first,
+				source.second
+			));
+		}
 	}
 
 	std::vector<std::shared_ptr<Material>> materials{};
-	for (json::Value& jsonMaterial : json["materials"].get<json::Array>()) {
-		std::shared_ptr<Material> material = std::make_shared<Material>();
-		material->baseColorTexture = textures[static_cast<size_t>(jsonMaterial["pbrMetallicRoughness"]["baseColorTexture"]["index"].get<double>())];
-		materials.push_back(material);
+	if (json.entries.find("materials") != json.entries.end()) {
+		for (json::Value& jsonMaterial : json["materials"].get<json::Array>()) {
+			std::shared_ptr<Material> material = std::make_shared<Material>();
+			material->baseColorTexture = textures[static_cast<size_t>(jsonMaterial["pbrMetallicRoughness"]["baseColorTexture"]["index"].get<double>())];
+			materials.push_back(material);
+		}
 	}
 
 	std::vector<std::shared_ptr<Mesh>> meshes{};
@@ -130,8 +135,12 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 		}
 
 		std::shared_ptr<BufferAccessor> indices = accessors[primitive["indices"].as<size_t>()];
-		std::shared_ptr<Material> material = materials[primitive["material"].as<size_t>()];
 
+		std::shared_ptr<Material> material{};
+		if (primitive.entries.find("material") != primitive.entries.end()) {
+			material = materials[primitive["material"].as<size_t>()];
+		}
+		
 		meshes.push_back(std::make_shared<Mesh>(std::move(geometry), indices, material));
 	}
 

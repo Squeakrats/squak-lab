@@ -12,7 +12,8 @@ namespace gl {
 class Renderer : public IRenderer {
 private:
 	RenderingContext context{};
-	std::shared_ptr<Program> program{};
+	std::shared_ptr<Program> texturedProgram{};
+	std::shared_ptr<Program> solidProgram{};
 
 	std::stack<Matrix4> transforms{{ Matrix4::Identity() }};
 
