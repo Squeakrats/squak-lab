@@ -11,10 +11,12 @@ public:
 
     std::shared_ptr<CameraNode> camera = std::make_shared<CameraNode>(Matrix4::Perspective(static_cast<float>(std::numbers::pi) / 8.0f, 1, 100));
     std::shared_ptr<Player> target{};
-    float turnSpeed = 0.005;
+    float turnSpeed = 0.001f;
+    float moveSpeed = 0.01f;
 
     PlayerCamera(const ActorInitializer& initializer) : Actor(initializer) {
         this->root = this->camera;
+        this->root->transform.position.z = 10;
 
         // make the camera active
         engine.SetCamera(this->camera);
@@ -22,18 +24,12 @@ public:
 
     virtual void Tick(float deltaMs) override {
         auto& transform = this->GetTransform();
-        auto& targetTransform = this->target->GetTransform();
+        Vector3 forward = transform.GetForward();
 
-        float turn = engine.GetAxis("Turn");
-        if (turn != 0) {
-            targetTransform.rotation.y += deltaMs * this->turnSpeed * turn;
-        }
+        transform.position += -1 * deltaMs * this->moveSpeed * engine.GetAxis("Forward") * forward;
+        transform.rotation.y += deltaMs * this->turnSpeed * engine.GetAxis("Turn");
+        transform.rotation.x += deltaMs * this->turnSpeed * engine.GetAxis("Up");
 
-        transform.position = targetTransform.position
-            + -10.0 * targetTransform.GetForward()
-            + Vector3(0.0, 3, 0.0);
-
-        this->camera->transform.rotation.y = static_cast<float>(std::numbers::pi) + targetTransform.rotation.y;
     }
 
     static const ActorCreatorEntry CREATORENTRY;
