@@ -9,13 +9,13 @@
 
 namespace gl {
 
-class TexturedMaterialProgram : public Program {
+class TexturedRenderer : public AMeshRenderer {
 private:
 	RenderingContext& gl;
 
 public:
-	TexturedMaterialProgram(RenderingContext& gl) : 
-		Program(
+	TexturedRenderer(RenderingContext& gl) :
+		AMeshRenderer(
 			shaders::textured::vertex, shaders::textured::fragment,
 			{ "aPosition", "aTextureCoordinate" },
 			{ "uPerspective", "uView", "uModel" }
@@ -37,13 +37,13 @@ public:
 };
 
 
-class SolidMaterialProgram : public Program {
+class SolidRenderer : public AMeshRenderer {
 private:
 	RenderingContext& gl;
 
 public:
-	SolidMaterialProgram(RenderingContext& gl) :
-		Program(
+	SolidRenderer(RenderingContext& gl) :
+		AMeshRenderer(
 			shaders::solid::vertex, shaders::solid::fragment,
 			{ "aPosition" },
 			{ "uPerspective", "uView", "uModel", "uColor"}
@@ -69,8 +69,8 @@ public:
 };
 
 Renderer::Renderer(uint32_t width, uint32_t height) {
-	this->texturedProgram = std::make_shared<TexturedMaterialProgram>(this->context);
-	this->solidProgram = std::make_shared<SolidMaterialProgram>(this->context);
+	this->texuredRenderer = std::make_shared<TexturedRenderer>(this->context);
+	this->solidRenderer = std::make_shared<SolidRenderer>(this->context);
 
 	glGenTextures(1, &this->colorTexture);
 	glBindTexture(GL_TEXTURE_2D, this->colorTexture);
@@ -93,8 +93,6 @@ Renderer::Renderer(uint32_t width, uint32_t height) {
 	Assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Invalid framebuffer");
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	this->quadProgram = CreateProgram(shaders::fullscreen::vertex, shaders::fullscreen::fragment);
-
 	float positions[] = {
 		 1.0,  1.0, -1.0,  1.0, -1.0, -1.0,
 		 1.0,  1.0, -1.0, -1.0,  1.0, -1.0
@@ -115,11 +113,11 @@ Renderer::Renderer(uint32_t width, uint32_t height) {
 }
 
 void Renderer::Render(CameraNode& camera, SceneNode& scene) {
+	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
+
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glClearColor(0, 0, 0, 1);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	this->RenderNode(camera, scene);
@@ -129,23 +127,20 @@ void Renderer::Render(CameraNode& camera, SceneNode& scene) {
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	glUseProgram(this->quadProgram);
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
+	this->quadProgram.Enable();
 
 	glBindBuffer(GL_ARRAY_BUFFER, this->quadPositions);
-	glVertexAttribPointer(0, 2, GL_FLOAT, false, 0, nullptr);
+	glVertexAttribPointer(this->quadProgram.attributes[0], 2, GL_FLOAT, false, 0, nullptr);
 
 	glBindBuffer(GL_ARRAY_BUFFER, this->quadTextureCoordinates);
-	glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, nullptr);
+	glVertexAttribPointer(this->quadProgram.attributes[1], 2, GL_FLOAT, false, 0, nullptr);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, this->colorTexture);
 
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
+	this->quadProgram.Disable();
 
 	GLenum error = glGetError();
 	assert(error == 0);
@@ -158,10 +153,10 @@ void Renderer::RenderNode(CameraNode& camera, SceneNode& node) {
 		Matrix4 view = camera.GetView();
 
 		if (node.mesh->material != nullptr && node.mesh->material->baseColorTexture != nullptr) {
-			this->texturedProgram->Render(camera.perspective, view, this->transforms.top(), *node.mesh);
+			this->texuredRenderer->Render(camera.perspective, view, this->transforms.top(), *node.mesh);
 		}
 		else {
-			this->solidProgram->Render(camera.perspective, view, this->transforms.top(), *node.mesh);
+			this->solidRenderer->Render(camera.perspective, view, this->transforms.top(), *node.mesh);
 		}
 	}
 

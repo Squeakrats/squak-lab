@@ -30,8 +30,6 @@ public:
 		}
 	}
 
-	virtual void Render(Matrix4& perspective, Matrix4& view, Matrix4& model, Mesh& mesh) = 0;
-
 	void Enable() {
 		glUseProgram(this->program);
 		for (GLuint i = 0; i < this->attributes.size(); i++) {
