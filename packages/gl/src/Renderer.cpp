@@ -71,27 +71,7 @@ public:
 Renderer::Renderer(uint32_t width, uint32_t height) {
 	this->texuredRenderer = std::make_shared<TexturedRenderer>(this->context);
 	this->solidRenderer = std::make_shared<SolidRenderer>(this->context);
-
-	glGenTextures(1, &this->colorTexture);
-	glBindTexture(GL_TEXTURE_2D, this->colorTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	GLuint depthRenderbuffer;
-	glGenRenderbuffers(1, &depthRenderbuffer);
-	glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
-
-	glGenFramebuffers(1, &this->framebuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, this->colorTexture, 0);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer);
-	GLenum drawbuffers[] = { GL_COLOR_ATTACHMENT0 };
-	glDrawBuffers(1, drawbuffers);
-
-	Assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Invalid framebuffer");
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	this->framebuffer = gl::CreateFramebuffer(width, height, { GL_UNSIGNED_BYTE });
 
 	float quadBufferData[] = {
 		 1.0,  1.0, -1.0,  1.0, -1.0, -1.0,
@@ -107,7 +87,7 @@ Renderer::Renderer(uint32_t width, uint32_t height) {
 }
 
 void Renderer::Render(CameraNode& camera, SceneNode& scene) {
-	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer.framebuffer);
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -126,7 +106,7 @@ void Renderer::Render(CameraNode& camera, SceneNode& scene) {
 	glVertexAttribPointer(this->quadProgram.attributes[0], 2, GL_FLOAT, false, 0, nullptr);
 	glVertexAttribPointer(this->quadProgram.attributes[1], 2, GL_FLOAT, false, 0, (void*)(sizeof(float) * 12));
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, this->colorTexture);
+	glBindTexture(GL_TEXTURE_2D, this->framebuffer.colorAttachments[0]);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	this->quadProgram.Disable();
 

@@ -24,8 +24,7 @@ private:
 	std::shared_ptr<AMeshRenderer> texuredRenderer{};
 	std::shared_ptr<AMeshRenderer> solidRenderer{};
 
-	GLuint framebuffer{};
-	GLuint colorTexture{};
+	gl::Framebuffer framebuffer{};
 	Program quadProgram = Program(
 		shaders::fullscreen::vertex,
 		shaders::fullscreen::fragment,
