@@ -76,7 +76,7 @@ GLenum Convert(BufferAccessor::ComponentType type) {
 	case BufferAccessor::ComponentType::UnsignedShort:
 		return GL_UNSIGNED_SHORT;
 	default:
-		Panic(std::format("unsupported type {}!", static_cast<int>(type)));
+		Panic(std::string("unsupported type ") + std::to_string(static_cast<int>(type)));
 	}
 }
 
@@ -89,7 +89,7 @@ GLenum Convert(BufferAccessor::Type type) {
 	case BufferAccessor::Type::Vector3:
 		return 3;
 	default:
-		Panic(std::format("unsupported type {}!", static_cast<int>(type)));
+		Panic(std::string("unsupported type ") + std::to_string(static_cast<int>(type)));
 	}
 }
 

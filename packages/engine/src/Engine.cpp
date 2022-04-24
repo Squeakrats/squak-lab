@@ -38,7 +38,7 @@ Engine& Engine::Init(std::string assetDir) {
     assert(glewInit() == GLEW_OK);
 #endif
 
-    Log(std::format("OpenGL Version : {}", std::string((char*)glGetString(GL_VERSION))));
+    Log(std::string("OpenGL Version : ") +  std::string((char*)glGetString(GL_VERSION)));
 
     return engine;
 }

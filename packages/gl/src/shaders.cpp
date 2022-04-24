@@ -31,7 +31,7 @@ uniform sampler2D uTexture;
 out vec4 position;
 
 void main() {
-    position = vec4(texture2D(uTexture, vTextureCoordinate).xyz, 1.0);
+    position = vec4(texture(uTexture, vTextureCoordinate.xy).xyz, 1.0);
 }
 )ESC";
 

@@ -5,6 +5,7 @@
 #include "ByteStream.h"
 #include <iostream>
 #include "compression.h"
+#include <cmath>
 
 namespace png {
 
