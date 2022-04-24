@@ -4,17 +4,25 @@
 
 struct BitStream {
     std::vector<uint8_t>& buffer;
-    uint64_t position;
+    uint64_t byteOffset;
+    uint8_t bitOffset;
 
-    BitStream(std::vector<uint8_t>& buffer, uint64_t position) : buffer(buffer), position(position) {}
+    BitStream(std::vector<uint8_t>& buffer, uint64_t position): 
+        buffer(buffer),
+        byteOffset(static_cast<uint64_t>(std::floor(position / 8))),
+        bitOffset(position % 8)
+    {}
 
     uint8_t ReadBit() {
-        uint64_t base = static_cast<uint64_t>(std::floor(position / 8));
-        uint8_t offset = position % 8;
+        uint8_t bit = (buffer[this->byteOffset] & (1 << this->bitOffset)) != 0;
 
-         position++;
+        this->bitOffset++;
+        if (this->bitOffset == 8) {
+            this->byteOffset++;
+            this->bitOffset = 0;
+        }
 
-        return (buffer[base] & (1 << offset)) != 0;
+        return bit;
     }
 
     size_t ReadLiteral(size_t n) {
