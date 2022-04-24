@@ -93,23 +93,17 @@ Renderer::Renderer(uint32_t width, uint32_t height) {
 	Assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Invalid framebuffer");
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	float positions[] = {
+	float quadBufferData[] = {
 		 1.0,  1.0, -1.0,  1.0, -1.0, -1.0,
-		 1.0,  1.0, -1.0, -1.0,  1.0, -1.0
+		 1.0,  1.0, -1.0, -1.0,  1.0, -1.0,
+
+		 1, 1, 0, 1, 0, 0,
+		 1, 1, 0, 0, 1, 0
 	};
 
-	float textureCoordinates[] = {
-		1, 1, 0, 1, 0, 0,
-		1, 1, 0, 0, 1, 0
-	};
-
-	glGenBuffers(1, &this->quadPositions);
-	glBindBuffer(GL_ARRAY_BUFFER, this->quadPositions);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
-
-	glGenBuffers(1, &this->quadTextureCoordinates);
-	glBindBuffer(GL_ARRAY_BUFFER, this->quadTextureCoordinates);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoordinates), textureCoordinates, GL_STATIC_DRAW);
+	glGenBuffers(1, &this->quadBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, this->quadBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadBufferData), quadBufferData, GL_STATIC_DRAW);
 }
 
 void Renderer::Render(CameraNode& camera, SceneNode& scene) {
@@ -128,18 +122,12 @@ void Renderer::Render(CameraNode& camera, SceneNode& scene) {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	this->quadProgram.Enable();
-
-	glBindBuffer(GL_ARRAY_BUFFER, this->quadPositions);
+	glBindBuffer(GL_ARRAY_BUFFER, this->quadBuffer);
 	glVertexAttribPointer(this->quadProgram.attributes[0], 2, GL_FLOAT, false, 0, nullptr);
-
-	glBindBuffer(GL_ARRAY_BUFFER, this->quadTextureCoordinates);
-	glVertexAttribPointer(this->quadProgram.attributes[1], 2, GL_FLOAT, false, 0, nullptr);
-
+	glVertexAttribPointer(this->quadProgram.attributes[1], 2, GL_FLOAT, false, 0, (void*)(sizeof(float) * 12));
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, this->colorTexture);
-
 	glDrawArrays(GL_TRIANGLES, 0, 6);
-
 	this->quadProgram.Disable();
 
 	GLenum error = glGetError();

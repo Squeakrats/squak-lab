@@ -32,8 +32,7 @@ private:
 		{ "aPosition", "aTextureCoordinate"},
 		{}
 	);
-	GLuint quadPositions{};
-	GLuint quadTextureCoordinates{};
+	GLuint quadBuffer{};
 
 	std::stack<Matrix4> transforms{{ Matrix4::Identity() }};
 
