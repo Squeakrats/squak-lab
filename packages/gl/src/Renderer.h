@@ -15,12 +15,18 @@ private:
 	std::shared_ptr<Program> texturedProgram{};
 	std::shared_ptr<Program> solidProgram{};
 
+	GLuint framebuffer{};
+	GLuint colorTexture{};
+	GLuint quadProgram{};
+	GLuint quadPositions{};
+	GLuint quadTextureCoordinates{};
+
 	std::stack<Matrix4> transforms{{ Matrix4::Identity() }};
 
 	void RenderNode(CameraNode& camera, SceneNode& node);
 
 public:
-	Renderer();
+	Renderer(uint32_t width, uint32_t height);
 
 	virtual void Render(CameraNode& camera, SceneNode& scene) override;
 };

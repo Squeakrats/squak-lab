@@ -37,6 +37,7 @@ private:
 	std::shared_ptr<SceneNode> scene{};
 	std::shared_ptr<CameraNode> camera{};
 	std::shared_ptr<IRenderer> renderer{};
+	std::pair<uint32_t, uint32_t> size{};
 	
 	std::map<std::string, std::shared_ptr<Actor>> actors{};
 	uint64_t nextActorId{}; // TODO - use rng
@@ -68,6 +69,8 @@ public:
 
 	std::shared_ptr<IRenderer> GetRenderer() { return this->renderer; };
 	void SetRenderer(std::shared_ptr<IRenderer> renderer) { this->renderer = renderer; };
+
+	std::pair<uint32_t, uint32_t> GetSize() { return this->size; }
 
 	void Tick();
 	void Run();

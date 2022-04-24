@@ -68,18 +68,84 @@ public:
 	}
 };
 
-Renderer::Renderer() {
+Renderer::Renderer(uint32_t width, uint32_t height) {
 	this->texturedProgram = std::make_shared<TexturedMaterialProgram>(this->context);
 	this->solidProgram = std::make_shared<SolidMaterialProgram>(this->context);
+
+	glGenTextures(1, &this->colorTexture);
+	glBindTexture(GL_TEXTURE_2D, this->colorTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	GLuint depthRenderbuffer;
+	glGenRenderbuffers(1, &depthRenderbuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+
+	glGenFramebuffers(1, &this->framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, this->colorTexture, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer);
+	GLenum drawbuffers[] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers(1, drawbuffers);
+
+	Assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Invalid framebuffer");
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	this->quadProgram = CreateProgram(shaders::fullscreen::vertex, shaders::fullscreen::fragment);
+
+	float positions[] = {
+		 1.0,  1.0, -1.0,  1.0, -1.0, -1.0,
+		 1.0,  1.0, -1.0, -1.0,  1.0, -1.0
+	};
+
+	float textureCoordinates[] = {
+		1, 1, 0, 1, 0, 0,
+		1, 1, 0, 0, 1, 0
+	};
+
+	glGenBuffers(1, &this->quadPositions);
+	glBindBuffer(GL_ARRAY_BUFFER, this->quadPositions);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
+
+	glGenBuffers(1, &this->quadTextureCoordinates);
+	glBindBuffer(GL_ARRAY_BUFFER, this->quadTextureCoordinates);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoordinates), textureCoordinates, GL_STATIC_DRAW);
 }
 
 void Renderer::Render(CameraNode& camera, SceneNode& scene) {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glClearColor(0, 0, 0, 1);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
 	this->RenderNode(camera, scene);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glDisable(GL_DEPTH_TEST);
+	glClearColor(1, 1, 1, 1);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	glUseProgram(this->quadProgram);
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, this->quadPositions);
+	glVertexAttribPointer(0, 2, GL_FLOAT, false, 0, nullptr);
+
+	glBindBuffer(GL_ARRAY_BUFFER, this->quadTextureCoordinates);
+	glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, nullptr);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, this->colorTexture);
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
 
 	GLenum error = glGetError();
 	assert(error == 0);

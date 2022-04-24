@@ -12,4 +12,9 @@ extern const char* const vertex;
 extern const char* const fragment;
 };
 
+namespace fullscreen {
+extern const char* const vertex;
+extern const char* const fragment;
+};
+
 };

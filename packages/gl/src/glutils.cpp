@@ -61,8 +61,8 @@ GLuint CreateProgram(std::string vertexShaderSource, std::string fragmentShaderS
 	return program;
 }
 
-std::shared_ptr<IRenderer> CreateRenderer() {
-	return std::make_shared<Renderer>();
+std::shared_ptr<IRenderer> CreateRenderer(uint32_t width, uint32_t height) {
+	return std::make_shared<Renderer>(width, height);
 }
 
 };

@@ -11,6 +11,6 @@ namespace gl {
 
 GLuint CreateShader(GLenum type, std::string source);
 GLuint CreateProgram(std::string vertexShaderSource, std::string fragmentShaderSource);
-std::shared_ptr<IRenderer> CreateRenderer();
+std::shared_ptr<IRenderer> CreateRenderer(uint32_t width, uint32_t height);
 
 };

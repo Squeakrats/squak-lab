@@ -20,17 +20,20 @@ Engine& Engine::Init(std::string assetDir) {
     std::string name = window["name"].get<std::string>();
     json::Array& size = window["size"].get<json::Array>();
 
+    engine.size.first = size[0].as<uint32_t>();
+    engine.size.second = size[1].as<uint32_t>();
+
     for (auto& entry : config["axes"].get<json::Object>().entries) {
         Axis axis{};
         for (auto& binding : entry.second.get<json::Object>().entries) {
-            axis.bindings.insert(std::make_pair(binding.first[0], static_cast<float>(binding.second.get<double>())));
+            axis.bindings.insert(std::make_pair(binding.first[0], binding.second.as<float>()));
         }
 
         engine.RegisterAxis(entry.first, axis);
     }
 
     assert(glfwInit());
-    engine.window = glfwCreateWindow(static_cast<uint32_t>(size[0].get<double>()), static_cast<uint32_t>(size[1].get<double>()), name.c_str(), nullptr, nullptr);
+    engine.window = glfwCreateWindow(engine.size.first, engine.size.second, name.c_str(), nullptr, nullptr);
     glfwMakeContextCurrent(engine.window);
 
 #ifndef EMSCRIPTEN
