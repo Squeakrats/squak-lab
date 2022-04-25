@@ -96,7 +96,7 @@ void Renderer::Render(CameraNode& camera, SceneNode& scene) {
 	glClearColor(0, 0, 0, 1);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	this->RenderNode(camera, scene);
+	this->RenderNode(RenderPass::Opaque, camera, scene);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glDisable(GL_DEPTH_TEST);
@@ -106,19 +106,17 @@ void Renderer::Render(CameraNode& camera, SceneNode& scene) {
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	this->RenderLight(camera, Vector3(0.0, 10.0, 0.0));
-	this->RenderLight(camera, Vector3(0.0, -10.0, 0.0));
+	this->RenderNode(RenderPass::Light, camera, scene);
 
 	GLenum error = glGetError();
 	assert(error == 0);
 }
 
-void Renderer::RenderNode(CameraNode& camera, SceneNode& node) {
+void Renderer::RenderNode(RenderPass pass, CameraNode& camera, SceneNode& node) {
 	this->transforms.push(this->transforms.top() * node.transform.ToMatrix());
 
-	if (node.mesh != nullptr) {
+	if (pass == RenderPass::Opaque && node.mesh != nullptr) {
 		Matrix4 view = camera.GetView();
-
 		if (node.mesh->material != nullptr && node.mesh->material->baseColorTexture != nullptr) {
 			this->texuredRenderer->Render(camera.perspective, view, this->transforms.top(), *node.mesh);
 		}
@@ -126,23 +124,30 @@ void Renderer::RenderNode(CameraNode& camera, SceneNode& node) {
 			this->solidRenderer->Render(camera.perspective, view, this->transforms.top(), *node.mesh);
 		}
 	}
+	else if (pass == RenderPass::Light && node.light != nullptr) {
+		this->RenderLight(camera, *node.light);
+	}
 
 	for (auto child : node.children) {
-		this->RenderNode(camera, *child);
+		this->RenderNode(pass, camera, *child);
 	}
 
 	this->transforms.pop();
 }
 
-void Renderer::RenderLight(CameraNode& camera, Vector3 lightPosition) {
+void Renderer::RenderLight(CameraNode& camera, Light& light) {
+	Vector3 lightPosition = this->transforms.top().GetPosition();
+
 	this->lightProgram.Enable();
 	glBindBuffer(GL_ARRAY_BUFFER, this->quadBuffer);
 	glVertexAttribPointer(this->lightProgram.attributes[0], 2, GL_FLOAT, false, 0, nullptr);
 	glVertexAttribPointer(this->lightProgram.attributes[1], 2, GL_FLOAT, false, 0, (void*)(sizeof(float) * 12));
 	glUniform3f(this->lightProgram.uniforms[0], lightPosition.x, lightPosition.y, lightPosition.z);
-	glUniform1i(this->lightProgram.uniforms[1], 0);
-	glUniform1i(this->lightProgram.uniforms[2], 1);
-	glUniform1i(this->lightProgram.uniforms[3], 2);
+	glUniform3f(this->lightProgram.uniforms[1], light.color.x, light.color.y, light.color.z);
+
+	glUniform1i(this->lightProgram.uniforms[2], 0);
+	glUniform1i(this->lightProgram.uniforms[3], 1);
+	glUniform1i(this->lightProgram.uniforms[4], 2);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, this->framebuffer.colorAttachments[0]);
 	glActiveTexture(GL_TEXTURE1);

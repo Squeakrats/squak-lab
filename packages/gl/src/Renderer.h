@@ -18,6 +18,11 @@ public:
 	virtual void Render(Matrix4& perspective, Matrix4& view, Matrix4& model, Mesh& mesh) = 0;
 };
 
+enum class RenderPass {
+	Opaque,
+	Light
+};
+
 class Renderer : public IRenderer {
 private:
 	RenderingContext context{};
@@ -29,14 +34,14 @@ private:
 		shaders::fullscreen::vertex,
 		shaders::fullscreen::fragment,
 		{ "aPosition", "aTextureCoordinate" },
-		{ "uLightPosition", "uDiffuseTexture", "uPositionTexture", "uNormalTexture" }
+		{ "uLightPosition", "uLightColor", "uDiffuseTexture", "uPositionTexture", "uNormalTexture" }
 	);
 	GLuint quadBuffer{};
 
 	std::stack<Matrix4> transforms{{ Matrix4::Identity() }};
 
-	void RenderNode(CameraNode& camera, SceneNode& node);
-	void RenderLight(CameraNode& camera, Vector3 lightPosition);
+	void RenderNode(RenderPass pass, CameraNode& camera, SceneNode& node);
+	void RenderLight(CameraNode& camera, Light& light);
 
 public:
 	Renderer(uint32_t width, uint32_t height);

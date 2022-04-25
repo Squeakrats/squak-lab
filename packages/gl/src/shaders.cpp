@@ -101,6 +101,7 @@ precision highp float;
 in vec2 vTextureCoordinate;
 
 uniform vec3 uLightPosition;
+uniform vec3 uLightColor;
 
 uniform sampler2D uDiffuseTexture;
 uniform sampler2D uPositionTexture;
@@ -116,7 +117,7 @@ void main() {
     vec3 toLight = normalize(uLightPosition - position);
     float s = max(0.0, dot(toLight, normal));
 
-    oColor = vec4(diffuse * s, 1.0);
+    oColor = vec4(diffuse * uLightColor * s, 1.0);
 }
 )ESC";
 

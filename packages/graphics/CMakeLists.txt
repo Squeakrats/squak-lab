@@ -10,6 +10,7 @@ add_library(graphics
 	src/SceneNode.h
 	src/Mesh.h
 	src/Mesh.cpp
+	src/Light.h
 	src/Transform.h
 	src/IRenderer.h
 	src/SceneAsset.h
