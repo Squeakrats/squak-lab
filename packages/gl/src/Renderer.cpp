@@ -46,7 +46,7 @@ public:
 	SolidRenderer(RenderingContext& gl) :
 		AMeshRenderer(
 			shaders::solid::vertex, shaders::solid::fragment,
-			{ "aPosition" },
+			{ "aPosition", "aNormal"},
 			{ "uPerspective", "uView", "uModel", "uColor"}
 		),
 		gl(gl)
@@ -60,6 +60,7 @@ public:
 
 		this->Enable();
 		this->gl.VertexAttribPointer(this->attributes[0], *mesh.geometry.at(Mesh::AttributeType::Position));
+		this->gl.VertexAttribPointer(this->attributes[1], *mesh.geometry.at(Mesh::AttributeType::Normal));
 		glUniformMatrix4fv(this->uniforms[0], 1, false, perspective.data);
 		glUniformMatrix4fv(this->uniforms[1], 1, false, view.data);
 		glUniformMatrix4fv(this->uniforms[2], 1, false, model.data);

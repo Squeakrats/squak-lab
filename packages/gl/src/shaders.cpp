@@ -19,13 +19,13 @@ out vec3 vNormal;
 out vec2 vTextureCoordinate;
 
 void main() {
-    vec4 position = uView * uModel * vec4(aPosition, 1.0);
+    vec4 position = uModel * vec4(aPosition, 1.0);
     vec4 normal = uModel * vec4(aNormal, 0.0);
 
     vPosition = position.xyz;
     vNormal = normal.xyz;
     vTextureCoordinate = aTextureCoordinate;
-    gl_Position = uPerspective * position;
+    gl_Position = uPerspective * uView * position;
 }
 )ESC";
 
@@ -56,13 +56,23 @@ namespace solid {
 const char* const vertex = R"ESC(#version 300 es
 precision highp float;
 in vec3 aPosition;
+in vec3 aNormal;
 
 uniform mat4 uPerspective;
 uniform mat4 uView;
 uniform mat4 uModel;
 
+out vec3 vPosition;
+out vec3 vNormal;
+
 void main() {
-    gl_Position = uPerspective * uView * uModel * vec4(aPosition, 1.0);
+    vec4 position = uModel * vec4(aPosition, 1.0);
+    vec4 normal = uModel * vec4(aNormal, 0.0);
+
+    vPosition = position.xyz;
+    vNormal = normal.xyz;
+
+    gl_Position = uPerspective * uView * position;
 }
 )ESC";
 
@@ -71,10 +81,17 @@ precision highp float;
 
 uniform vec3 uColor;
 
-out vec4 position;
+in vec3 vPosition;
+in vec3 vNormal;
+
+layout(location = 0) out vec4 oColor;
+layout(location = 1) out vec3 oPosition;
+layout(location = 2) out vec3 oNormal;
 
 void main() {
-    position = vec4(uColor, 1.0);
+    oColor = vec4(uColor, 1.0);
+    oPosition = vPosition;
+    oNormal = vNormal;
 }
 )ESC";
 
