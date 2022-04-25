@@ -14,16 +14,14 @@ std::string assetDir = "..\\..\\..\\..\\assets\\";
 
 int main(int argc, char* argv[]) {
     Engine& engine = Engine::Init(assetDir);
+    auto size = engine.GetSize();
 
     engine.GetAssetManager().Register(std::make_shared<GLBLoader>());
-    engine.SetRenderer(gl::CreateRenderer());
+    engine.SetRenderer(gl::CreateRenderer(size.first, size.second));
 
     auto player = engine.Spawn<Player>();
     auto camera = engine.Spawn<PlayerCamera>();
     camera->target = player;
-    
-
-    engine.GetScene()->AddChild(engine.GetAsset<SceneAsset>("map.glb")->scene);
 
     engine.Run();
 
