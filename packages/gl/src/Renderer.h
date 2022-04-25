@@ -25,7 +25,7 @@ private:
 	std::shared_ptr<AMeshRenderer> solidRenderer{};
 
 	gl::Framebuffer framebuffer{};
-	Program quadProgram = Program(
+	Program lightProgram = Program(
 		shaders::fullscreen::vertex,
 		shaders::fullscreen::fragment,
 		{ "aPosition", "aTextureCoordinate" },
@@ -36,6 +36,7 @@ private:
 	std::stack<Matrix4> transforms{{ Matrix4::Identity() }};
 
 	void RenderNode(CameraNode& camera, SceneNode& node);
+	void RenderLight(CameraNode& camera, Vector3 lightPosition);
 
 public:
 	Renderer(uint32_t width, uint32_t height);

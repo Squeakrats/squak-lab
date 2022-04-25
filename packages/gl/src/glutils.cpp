@@ -61,8 +61,8 @@ GLuint CreateProgram(std::string vertexShaderSource, std::string fragmentShaderS
 	return program;
 }
 
-Framebuffer CreateFramebuffer(uint32_t width, uint32_t height, std::vector<GLenum> colorTypes) {
-	GLsizei nColorAttachments = (GLsizei)colorTypes.size();
+Framebuffer CreateFramebuffer(uint32_t width, uint32_t height, std::vector<GLenum> attachments) {
+	GLsizei nColorAttachments = (GLsizei)attachments.size();
 
 	Framebuffer framebuffer{};
 
@@ -78,7 +78,7 @@ Framebuffer CreateFramebuffer(uint32_t width, uint32_t height, std::vector<GLenu
 	glGenTextures(nColorAttachments, framebuffer.colorAttachments.data());
 	for (GLsizei i = 0; i < nColorAttachments; i++) {
 		glBindTexture(GL_TEXTURE_2D, framebuffer.colorAttachments[i]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, colorTypes[i], nullptr);
+		glTexImage2D(GL_TEXTURE_2D, 0, attachments[i], width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, framebuffer.colorAttachments[i], 0);

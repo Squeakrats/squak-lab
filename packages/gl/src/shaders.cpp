@@ -116,7 +116,7 @@ void main() {
     vec3 toLight = normalize(uLightPosition - position);
     float s = max(0.0, dot(toLight, normal));
 
-    oColor = vec4(diffuse * s + diffuse * vec3(0.1), 1.0);
+    oColor = vec4(diffuse * s, 1.0);
 }
 )ESC";
 

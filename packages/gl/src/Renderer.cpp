@@ -72,7 +72,7 @@ public:
 Renderer::Renderer(uint32_t width, uint32_t height) {
 	this->texuredRenderer = std::make_shared<TexturedRenderer>(this->context);
 	this->solidRenderer = std::make_shared<SolidRenderer>(this->context);
-	this->framebuffer = gl::CreateFramebuffer(width, height, { GL_UNSIGNED_BYTE, GL_FLOAT, GL_FLOAT });
+	this->framebuffer = gl::CreateFramebuffer(width, height, { GL_RGB, GL_RGB32F, GL_RGB32F });
 
 	float quadBufferData[] = {
 		 1.0,  1.0, -1.0,  1.0, -1.0, -1.0,
@@ -91,6 +91,7 @@ void Renderer::Render(CameraNode& camera, SceneNode& scene) {
 	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer.framebuffer);
 
 	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
 	glEnable(GL_CULL_FACE);
 	glClearColor(0, 0, 0, 1);
 
@@ -99,25 +100,14 @@ void Renderer::Render(CameraNode& camera, SceneNode& scene) {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glDisable(GL_DEPTH_TEST);
-	glClearColor(1, 1, 1, 1);
+	glEnable(GL_BLEND);
+	glBlendEquation(GL_FUNC_ADD);
+	glBlendFunc(GL_SRC_COLOR, GL_DST_COLOR);
+	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	this->quadProgram.Enable();
-	glBindBuffer(GL_ARRAY_BUFFER, this->quadBuffer);
-	glVertexAttribPointer(this->quadProgram.attributes[0], 2, GL_FLOAT, false, 0, nullptr);
-	glVertexAttribPointer(this->quadProgram.attributes[1], 2, GL_FLOAT, false, 0, (void*)(sizeof(float) * 12));
-	glUniform3f(this->quadProgram.uniforms[0], 0, 10, 0);
-	glUniform1i(this->quadProgram.uniforms[1], 0);
-	glUniform1i(this->quadProgram.uniforms[2], 1);
-	glUniform1i(this->quadProgram.uniforms[3], 2);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, this->framebuffer.colorAttachments[0]);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, this->framebuffer.colorAttachments[1]);
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, this->framebuffer.colorAttachments[2]);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-	this->quadProgram.Disable();
+	this->RenderLight(camera, Vector3(0.0, 10.0, 0.0));
+	this->RenderLight(camera, Vector3(0.0, -10.0, 0.0));
 
 	GLenum error = glGetError();
 	assert(error == 0);
@@ -142,6 +132,25 @@ void Renderer::RenderNode(CameraNode& camera, SceneNode& node) {
 	}
 
 	this->transforms.pop();
+}
+
+void Renderer::RenderLight(CameraNode& camera, Vector3 lightPosition) {
+	this->lightProgram.Enable();
+	glBindBuffer(GL_ARRAY_BUFFER, this->quadBuffer);
+	glVertexAttribPointer(this->lightProgram.attributes[0], 2, GL_FLOAT, false, 0, nullptr);
+	glVertexAttribPointer(this->lightProgram.attributes[1], 2, GL_FLOAT, false, 0, (void*)(sizeof(float) * 12));
+	glUniform3f(this->lightProgram.uniforms[0], lightPosition.x, lightPosition.y, lightPosition.z);
+	glUniform1i(this->lightProgram.uniforms[1], 0);
+	glUniform1i(this->lightProgram.uniforms[2], 1);
+	glUniform1i(this->lightProgram.uniforms[3], 2);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, this->framebuffer.colorAttachments[0]);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, this->framebuffer.colorAttachments[1]);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, this->framebuffer.colorAttachments[2]);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	this->lightProgram.Disable();
 }
 
 };
