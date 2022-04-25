@@ -28,8 +28,8 @@ private:
 	Program quadProgram = Program(
 		shaders::fullscreen::vertex,
 		shaders::fullscreen::fragment,
-		{ "aPosition", "aTextureCoordinate"},
-		{}
+		{ "aPosition", "aTextureCoordinate" },
+		{ "uLightPosition", "uDiffuseTexture", "uPositionTexture", "uNormalTexture" }
 	);
 	GLuint quadBuffer{};
 
