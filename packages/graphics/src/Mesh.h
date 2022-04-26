@@ -11,7 +11,8 @@ public:
 	enum class AttributeType {
 		Position,
 		Normal,
-		TextureCoordinate_0
+		TextureCoordinate_0,
+		Color_0
 	};
 
 	using Geometry = std::map<AttributeType, std::shared_ptr<BufferAccessor>>;

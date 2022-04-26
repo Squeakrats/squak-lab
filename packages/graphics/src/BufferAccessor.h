@@ -6,7 +6,8 @@ struct BufferAccessor {
 	enum class Type {
 		Scalar,
 		Vector2,
-		Vector3
+		Vector3,
+		Vector4
 	};
 
 	enum class ComponentType {

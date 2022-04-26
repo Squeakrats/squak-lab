@@ -14,6 +14,7 @@ BufferAccessor::Type ConvertAccessorType(const std::string& type) {
 	static std::map<std::string, BufferAccessor::Type> table = {
 		{ "VEC2",  BufferAccessor::Type::Vector2 },
 		{ "VEC3",  BufferAccessor::Type::Vector3 },
+		{ "VEC4",  BufferAccessor::Type::Vector4 },
 		{ "SCALAR",  BufferAccessor::Type::Scalar },
 	};
 
@@ -32,9 +33,10 @@ BufferAccessor::ComponentType ConvertComponentType(uint32_t type) {
 
 Mesh::AttributeType ConvertAttributeType(const std::string& type) {
 	static std::map<std::string, Mesh::AttributeType> table = {
-		{ "POSITION",  Mesh::AttributeType::Position},
-		{ "NORMAL",  Mesh::AttributeType::Normal},
-		{ "TEXCOORD_0",  Mesh::AttributeType::TextureCoordinate_0},
+		{ "POSITION",  Mesh::AttributeType::Position },
+		{ "NORMAL",  Mesh::AttributeType::Normal },
+		{ "TEXCOORD_0",  Mesh::AttributeType::TextureCoordinate_0 },
+		{ "COLOR_0",  Mesh::AttributeType::Color_0 },
 	};
 
 	return table.at(type);
