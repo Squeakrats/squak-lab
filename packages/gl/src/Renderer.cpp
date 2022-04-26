@@ -94,7 +94,7 @@ void Renderer::Render(CameraNode& camera, SceneNode& scene) {
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
 	glEnable(GL_CULL_FACE);
-	glClearColor(0, 0, 0, 1);
+	glClearColor(0, 0, 0, 0);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	this->RenderNode(RenderPass::Opaque, camera, scene);
@@ -103,10 +103,18 @@ void Renderer::Render(CameraNode& camera, SceneNode& scene) {
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendEquation(GL_FUNC_ADD);
-	glBlendFunc(GL_SRC_COLOR, GL_DST_COLOR);
+	glBlendFunc(GL_ONE, GL_ONE);
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, this->framebuffer.colorAttachments[0]);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, this->framebuffer.colorAttachments[1]);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, this->framebuffer.colorAttachments[2]);
+
+	this->RenderAmbientLight();
 	this->RenderNode(RenderPass::Light, camera, scene);
 
 	GLenum error = glGetError();
@@ -136,6 +144,17 @@ void Renderer::RenderNode(RenderPass pass, CameraNode& camera, SceneNode& node) 
 	this->transforms.pop();
 }
 
+void Renderer::RenderAmbientLight() {
+	this->ambientProgram.Enable();
+	glBindBuffer(GL_ARRAY_BUFFER, this->quadBuffer);
+	glVertexAttribPointer(this->ambientProgram.attributes[0], 2, GL_FLOAT, false, 0, nullptr);
+	glVertexAttribPointer(this->ambientProgram.attributes[1], 2, GL_FLOAT, false, 0, (void*)(sizeof(float) * 12));
+	glUniform3f(this->ambientProgram.uniforms[0], 0.2f, 0.2f, 0.2f);
+	glUniform1i(this->ambientProgram.uniforms[1], 0);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	this->ambientProgram.Disable();
+}
+
 void Renderer::RenderLight(CameraNode& camera, Light& light) {
 	Vector3 lightPosition = this->transforms.top().GetPosition();
 
@@ -145,16 +164,10 @@ void Renderer::RenderLight(CameraNode& camera, Light& light) {
 	glVertexAttribPointer(this->lightProgram.attributes[1], 2, GL_FLOAT, false, 0, (void*)(sizeof(float) * 12));
 	glUniform3f(this->lightProgram.uniforms[0], lightPosition.x, lightPosition.y, lightPosition.z);
 	glUniform3f(this->lightProgram.uniforms[1], light.color.x, light.color.y, light.color.z);
-
 	glUniform1i(this->lightProgram.uniforms[2], 0);
 	glUniform1i(this->lightProgram.uniforms[3], 1);
 	glUniform1i(this->lightProgram.uniforms[4], 2);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, this->framebuffer.colorAttachments[0]);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, this->framebuffer.colorAttachments[1]);
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, this->framebuffer.colorAttachments[2]);
+
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	this->lightProgram.Disable();
 }

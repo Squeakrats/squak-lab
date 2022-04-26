@@ -36,12 +36,19 @@ private:
 		{ "aPosition", "aTextureCoordinate" },
 		{ "uLightPosition", "uLightColor", "uDiffuseTexture", "uPositionTexture", "uNormalTexture" }
 	);
+	Program ambientProgram = Program(
+		shaders::ambient::vertex,
+		shaders::ambient::fragment,
+		{ "aPosition", "aTextureCoordinate" },
+		{ "uAmbientLight", "uDiffuseTexture" }
+	);
 	GLuint quadBuffer{};
 
 	std::stack<Matrix4> transforms{{ Matrix4::Identity() }};
 
 	void RenderNode(RenderPass pass, CameraNode& camera, SceneNode& node);
 	void RenderLight(CameraNode& camera, Light& light);
+	void RenderAmbientLight();
 
 public:
 	Renderer(uint32_t width, uint32_t height);

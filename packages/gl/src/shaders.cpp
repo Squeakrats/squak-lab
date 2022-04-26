@@ -140,4 +140,39 @@ void main() {
 
 };
 
+namespace ambient {
+
+const char* const vertex = R"ESC(#version 300 es
+precision highp float;
+in vec3 aPosition;
+in vec2 aTextureCoordinate;
+
+out vec2 vTextureCoordinate;
+
+void main() {
+    vTextureCoordinate = aTextureCoordinate;
+    gl_Position = vec4(aPosition, 1.0);
+}
+)ESC";
+
+const char* const fragment = R"ESC(#version 300 es
+precision highp float;
+
+in vec2 vTextureCoordinate;
+
+uniform vec3 uAmbientLight;
+
+uniform sampler2D uDiffuseTexture;
+
+out vec4 oColor;
+
+void main() {
+    vec3 diffuse = texture(uDiffuseTexture, vTextureCoordinate).xyz;
+    oColor = vec4(diffuse * uAmbientLight, 1.0);
+}
+)ESC";
+
+};
+
+
 };

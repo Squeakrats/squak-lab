@@ -17,4 +17,9 @@ extern const char* const vertex;
 extern const char* const fragment;
 };
 
+namespace ambient {
+extern const char* const vertex;
+extern const char* const fragment;
+};
+
 };
