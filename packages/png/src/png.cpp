@@ -171,6 +171,7 @@ PNG parse(BufferView view) {
     }
 
     std::vector<uint8_t> pixels{};
+    pixels.reserve(header.width * header.height * pixelSize);
 
     uint8_t* position = inflated.data();
     for (size_t y = 0; y < header.height; y++) {
