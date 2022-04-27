@@ -51,13 +51,7 @@ GLuint RenderingContext::EnsureTexture(std::shared_ptr<Texture> texture) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	// TODO - avoid this copy
-	std::vector<uint8_t> buffer{};
-	for (size_t i = 0; i < texture->image->length; i++) {
-		buffer.push_back((*texture->image->buffer)[texture->image->offset + i]);
-	}
-
-	png::PNG png = png::parse(buffer);
+	png::PNG png = png::parse(*texture->image);
 	GLint format = (png.header.colorType == png::COLOR_TYPE_RGB) ? GL_RGB : GL_RGBA;
 	glTexImage2D(GL_TEXTURE_2D, 0, format, png.header.width, png.header.height, 0, format, GL_UNSIGNED_BYTE, png.data.data());
 	glGenerateMipmap(GL_TEXTURE_2D);

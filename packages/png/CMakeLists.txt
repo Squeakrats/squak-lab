@@ -7,4 +7,4 @@ add_library(png
 	src/ByteStream.h
 )
 target_include_directories(png PUBLIC src/)
-target_link_libraries(png compression)
+target_link_libraries(png compression core)

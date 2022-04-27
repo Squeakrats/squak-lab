@@ -80,8 +80,8 @@ void Paeth_inverse(uint8_t* dest, uint8_t* above, uint8_t* left, uint8_t* upperL
     }
 }
 
-PNG parse(std::vector<uint8_t>& buffer) {
-    ByteStream stream(buffer);
+PNG parse(BufferView view) {
+    ByteStream stream(view);
 
     std::array<uint8_t, 8> pngHeader;
     stream.read(pngHeader.data(), 8);

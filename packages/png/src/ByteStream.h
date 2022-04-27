@@ -1,12 +1,13 @@
 #pragma once
 #include <vector>
 
-class ByteStream{
+class ByteStream {
+    BufferView view;
     std::vector<uint8_t>& data;
     size_t pos{};
 
 public:
-    ByteStream(std::vector<uint8_t>& data) : data(data) {}
+    ByteStream(BufferView view) : view(view), data(*view.buffer), pos(view.offset) {}
 
     uint32_t readUInt32() {
         uint32_t value = 

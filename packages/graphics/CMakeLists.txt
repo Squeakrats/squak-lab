@@ -5,7 +5,6 @@ add_library(graphics
 	src/Texture.h
 	src/Material.h
 	src/BufferAccessor.h
-	src/BufferView.h
 	src/CameraNode.h
 	src/SceneNode.h
 	src/Mesh.h

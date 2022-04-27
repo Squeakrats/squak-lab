@@ -1,5 +1,5 @@
 #pragma once
-#include <vector>
+#include "BufferView.h"
 
 namespace png {
 
@@ -21,6 +21,6 @@ struct PNG {
 	std::vector<uint8_t> data;
 };
 
-PNG parse(std::vector<uint8_t>& data);
+PNG parse(BufferView view);
 
 };
