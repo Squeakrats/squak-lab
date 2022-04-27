@@ -3,18 +3,18 @@
 #include <cmath>
 
 struct BitStream {
-    std::vector<uint8_t>& buffer;
+    Buffer& buffer;
     uint64_t byteOffset;
     uint8_t bitOffset;
 
-    BitStream(std::vector<uint8_t>& buffer, uint64_t position): 
+    BitStream(Buffer& buffer, uint64_t position):
         buffer(buffer),
         byteOffset(static_cast<uint64_t>(std::floor(position / 8))),
         bitOffset(position % 8)
     {}
 
     uint8_t ReadBit() {
-        uint8_t bit = (buffer[this->byteOffset] & (1 << this->bitOffset)) != 0;
+        uint8_t bit = (this->buffer.data[this->byteOffset] & (1 << this->bitOffset)) != 0;
 
         this->bitOffset++;
         if (this->bitOffset == 8) {

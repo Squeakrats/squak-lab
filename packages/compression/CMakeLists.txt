@@ -7,7 +7,7 @@ add_library(compression
 	src/compression.cpp
 )
 target_include_directories(compression PUBLIC src/)
-target_link_libraries(compression utility)
+target_link_libraries(compression utility core)
 
 add_executable(CompressionTests src/tests/CompressionTests.cpp)
 target_link_libraries(CompressionTests gtest_main compression)

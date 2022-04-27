@@ -307,8 +307,8 @@ bool inflate_block(std::vector<uint8_t>& output, BitStream& stream) {
     return bFinal == 0;
 }
 
-void inflate(std::vector<uint8_t>& output, std::vector<uint8_t>& compressed) {
-    uint8_t compressionMethodAndFlags = compressed[0];
+void inflate(std::vector<uint8_t>& output, Buffer& compressed) {
+    uint8_t compressionMethodAndFlags = compressed.data[0];
     uint8_t compressionMethod = compressionMethodAndFlags & 0xF;
     Assert(compressionMethod == ZLIB_COMPRESSION_MODE_DEFLATE, "invalid zlib compression method");
 

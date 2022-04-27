@@ -2,6 +2,7 @@
 #include <vector>
 
 class ByteStream {
+public:
     BufferView view;
     uint8_t* data;
     size_t pos{};

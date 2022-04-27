@@ -88,7 +88,8 @@ PNG parse(BufferView view) {
     Assert(pngHeader == PNG_HEADER, "invalid png header");
 
     IHDR header = parseIHDR(stream);
-    std::vector<uint8_t> data{};
+    std::vector<std::pair<uint8_t*, size_t>> compressedChunks{};
+    size_t compressedSize = 0;
 
     while (true) {
         uint32_t chunkSize = stream.readUInt32();
@@ -96,10 +97,9 @@ PNG parse(BufferView view) {
         stream.read(chunkType.data(), 4);
 
         if (chunkType == CHUNK_TYPE_IDAT) {
-            size_t dataSize = data.size();
-            data.resize(dataSize + chunkSize);
-            stream.read(data.data() + dataSize, chunkSize);
-            stream.ignore(4); // ignore crc
+            compressedChunks.push_back(std::make_pair(stream.data + stream.pos, chunkSize));
+            compressedSize += chunkSize;
+            stream.ignore(chunkSize + 4); // ignore crc
         }
         else if (chunkType == CHUNK_TYPE_IEND) {
             break;
@@ -109,13 +109,20 @@ PNG parse(BufferView view) {
         }
     }
 
+    Buffer compressedData(compressedSize);
+    size_t compressedIndex = 0;
+    for (auto& range : compressedChunks) {
+        std::memcpy(compressedData.data + compressedIndex, range.first, range.second);
+        compressedIndex += range.second;
+    }
+
     size_t pixelSize = (header.colorType == COLOR_TYPE_RGB) ? 3 : 4;
-    size_t dataSize = header.width * header.height * pixelSize + header.height;
+    size_t pixelsSize = header.width * header.height * pixelSize + header.height;
 
     std::vector<uint8_t> inflated{};
-    inflated.reserve(dataSize);
+    inflated.reserve(pixelsSize);
 
-    inflate(inflated, data);
+    inflate(inflated, compressedData);
 
     Assert(inflated.size() == inflated.capacity(), "unexpected number of bytes");
 
