@@ -260,7 +260,7 @@ std::pair<std::shared_ptr<HuffmaNode>, std::shared_ptr<HuffmaNode>>  inflate_dyn
     return std::make_pair(CreateHuffmanTree(literalLengthLengths, 15), CreateHuffmanTree(distanceLengths, 15));
 }
 
-bool inflate_block(std::vector<uint8_t>& output, BitStream& stream) {
+bool inflate_block(Buffer& output, size_t& position, BitStream& stream) {
     uint8_t bFinal = stream.ReadBit();
     uint8_t bType = stream.ReadBit() | stream.ReadBit() << 1;
 
@@ -290,7 +290,8 @@ bool inflate_block(std::vector<uint8_t>& output, BitStream& stream) {
     while (true) {
         size_t code = inflate_code(stream, literalLengthTree.get());
         if (code <= 255) {
-            output.push_back((uint8_t)code);
+            Assert(position < output.size, "buffer overflow");
+            output.data[position++] = static_cast<uint8_t>(code);
         }
         else if (code == 256) {
             break;
@@ -298,8 +299,11 @@ bool inflate_block(std::vector<uint8_t>& output, BitStream& stream) {
         else {
             size_t length = decode_length(code, stream);
             size_t distance = inflate_distance(stream, distanceTree.get());
+            Assert(position + length - 1 < output.size, "buffer overflow");
+
             for (size_t i = 0; i < length; i++) {
-                output.push_back(output[output.size() - distance]);
+                output.data[position] = output.data[position - distance];
+                position++;
             }
         }
     }
@@ -307,7 +311,7 @@ bool inflate_block(std::vector<uint8_t>& output, BitStream& stream) {
     return bFinal == 0;
 }
 
-void inflate(std::vector<uint8_t>& output, Buffer& compressed) {
+size_t inflate(Buffer& output, Buffer& compressed) {
     uint8_t compressionMethodAndFlags = compressed.data[0];
     uint8_t compressionMethod = compressionMethodAndFlags & 0xF;
     Assert(compressionMethod == ZLIB_COMPRESSION_MODE_DEFLATE, "invalid zlib compression method");
@@ -316,5 +320,9 @@ void inflate(std::vector<uint8_t>& output, Buffer& compressed) {
 
     // // keep inflating until the last block is parsed
 
-    while (inflate_block(output, stream)) {}
+    size_t position = 0;
+
+    while (inflate_block(output, position, stream)) {}
+
+    return position;
 }

@@ -8,8 +8,10 @@ TEST(CompressionTests, BasicTests) {
     Buffer deflated(sizeof(data));
     std::memcpy(deflated.data, data, sizeof(data));
 
-    std::vector<uint8_t> inflated{};
-    inflate(inflated, deflated);
+    Buffer inflated(30);
+    size_t uncompressedSize = inflate(inflated, deflated);
+    ASSERT_EQ(uncompressedSize, 15);
 
-    ASSERT_EQ(std::string(inflated.begin(), inflated.end()), "aaaaabbbbbaaaaa");
+    inflated.data[uncompressedSize] = 0;
+    ASSERT_EQ(std::string(reinterpret_cast<char*>(inflated.data)), "aaaaabbbbbaaaaa");
 }

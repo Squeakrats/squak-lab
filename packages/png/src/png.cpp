@@ -119,15 +119,14 @@ PNG parse(BufferView view) {
     size_t pixelSize = (header.colorType == COLOR_TYPE_RGB) ? 3 : 4;
     size_t pixelsSize = header.width * header.height * pixelSize + header.height;
 
-    std::vector<uint8_t> inflated{};
-    inflated.reserve(pixelsSize);
+    Buffer inflated(pixelsSize);
 
-    inflate(inflated, compressedData);
+    size_t uncompressedSize = inflate(inflated, compressedData);
 
-    Assert(inflated.size() == inflated.capacity(), "unexpected number of bytes");
+    Assert(uncompressedSize == pixelsSize, "unexpected number of bytes");
 
     for (size_t line = 0; line < header.height; line++) {
-        uint8_t* lineStart = inflated.data() + (header.width * pixelSize + 1ll) * line;
+        uint8_t* lineStart = inflated.data + (header.width * pixelSize + 1ll) * line;
         uint8_t filter = lineStart[0];
         switch (filter) {
             case 0: // None
@@ -143,14 +142,14 @@ PNG parse(BufferView view) {
                     break;
                 }
 
-                uint8_t* lineAbove = inflated.data() + (header.width * pixelSize + 1ll) * (line - 1);
+                uint8_t* lineAbove = inflated.data + (header.width * pixelSize + 1ll) * (line - 1);
                 for (size_t x = 0; x < header.width; x++) {
                     add(lineStart + 1 + x * pixelSize, lineAbove + 1 + x * pixelSize, pixelSize);
                 }
                 break;
             }
             case 3: { // Up
-                uint8_t* lineAbove = inflated.data() + (header.width * pixelSize + 1ll) * (line - 1);
+                uint8_t* lineAbove = inflated.data + (header.width * pixelSize + 1ll) * (line - 1);
                 uint8_t zero[] = { 0, 0, 0, 0 };
 
                 for (size_t x = 0; x < header.width; x++) {
@@ -161,7 +160,7 @@ PNG parse(BufferView view) {
                 break;
             }
             case 4: { // Paeth
-                uint8_t* lineAbove = inflated.data() + (header.width * pixelSize + 1ll) * (line - 1);
+                uint8_t* lineAbove = inflated.data + (header.width * pixelSize + 1ll) * (line - 1);
                 uint8_t zero[] = { 0, 0, 0, 0 };
 
                 for (size_t x = 0; x < header.width; x++) {
@@ -180,7 +179,7 @@ PNG parse(BufferView view) {
     Buffer pixels(header.width * header.height * pixelSize);
     size_t pixelIndex = 0;
 
-    uint8_t* position = inflated.data();
+    uint8_t* position = inflated.data;
     for (size_t y = 0; y < header.height; y++) {
         position++;
         for (size_t x = 0; x < header.width * pixelSize; x++) {

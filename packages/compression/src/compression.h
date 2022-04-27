@@ -2,4 +2,4 @@
 #include <vector>
 #include "Buffer.h"
 
-void inflate(std::vector<uint8_t>& output, Buffer& input);
+size_t inflate(Buffer& output, Buffer& input);
