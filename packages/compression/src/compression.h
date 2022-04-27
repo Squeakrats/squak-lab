@@ -1,4 +1,4 @@
 #pragma once
 #include <vector>
 
-std::vector<uint8_t> inflate(std::vector<uint8_t>& data);
+void inflate(std::vector<uint8_t>& output, std::vector<uint8_t>& input);

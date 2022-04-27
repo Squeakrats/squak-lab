@@ -307,7 +307,7 @@ bool inflate_block(std::vector<uint8_t>& output, BitStream& stream) {
     return bFinal == 0;
 }
 
-std::vector<uint8_t> inflate(std::vector<uint8_t>& compressed) {
+void inflate(std::vector<uint8_t>& output, std::vector<uint8_t>& compressed) {
     uint8_t compressionMethodAndFlags = compressed[0];
     uint8_t compressionMethod = compressionMethodAndFlags & 0xF;
     Assert(compressionMethod == ZLIB_COMPRESSION_MODE_DEFLATE, "invalid zlib compression method");
@@ -315,8 +315,6 @@ std::vector<uint8_t> inflate(std::vector<uint8_t>& compressed) {
     BitStream stream(compressed, 16);
 
     // // keep inflating until the last block is parsed
-    std::vector<uint8_t> output{};
-    while (inflate_block(output, stream)) {}
 
-    return output;
+    while (inflate_block(output, stream)) {}
 }
