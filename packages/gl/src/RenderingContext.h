@@ -12,7 +12,7 @@ class RenderingContext {
 	std::map<void*, GLuint> cache{};
 
 public:
-	GLuint EnsureArrayBuffer(std::shared_ptr<BufferView::Buffer> buffer);
+	GLuint EnsureArrayBuffer(std::shared_ptr<Buffer> buffer);
 	GLuint EnsureElementArrayBuffer(std::shared_ptr<BufferView> buffer);
 	GLuint EnsureTexture(std::shared_ptr<Texture> texture);
 

@@ -24,11 +24,10 @@ Mesh Mesh::CreatePlane(float width, float height) {
         0, 2, 3
     };
 
-    std::shared_ptr<BufferView::Buffer> buffer = std::make_shared<BufferView::Buffer>();
-    buffer->resize(sizeof(positionBuffer) + + sizeof(normalBuffer) + sizeof(indexBuffer));
-    std::memcpy(buffer->data(), positionBuffer, sizeof(positionBuffer));
-    std::memcpy(buffer->data() + sizeof(positionBuffer), normalBuffer, sizeof(normalBuffer));
-    std::memcpy(buffer->data() + sizeof(positionBuffer) + sizeof(normalBuffer), indexBuffer, sizeof(indexBuffer));
+    std::shared_ptr<Buffer> buffer = std::make_shared<Buffer>(sizeof(positionBuffer) + +sizeof(normalBuffer) + sizeof(indexBuffer));
+    std::memcpy(buffer->data, positionBuffer, sizeof(positionBuffer));
+    std::memcpy(buffer->data + sizeof(positionBuffer), normalBuffer, sizeof(normalBuffer));
+    std::memcpy(buffer->data + sizeof(positionBuffer) + sizeof(normalBuffer), indexBuffer, sizeof(indexBuffer));
 
     Geometry geometry = {
         {

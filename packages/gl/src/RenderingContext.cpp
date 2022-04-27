@@ -4,7 +4,7 @@
 
 namespace gl {
 
-GLuint RenderingContext::EnsureArrayBuffer(std::shared_ptr<BufferView::Buffer> source) {
+GLuint RenderingContext::EnsureArrayBuffer(std::shared_ptr<Buffer> source) {
 	auto find = this->cache.find(source.get());
 	if (find != this->cache.end()) {
 		return find->second;
@@ -13,7 +13,7 @@ GLuint RenderingContext::EnsureArrayBuffer(std::shared_ptr<BufferView::Buffer> s
 	GLuint buffer{};
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
-	glBufferData(GL_ARRAY_BUFFER, source->size(), source->data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, source->size, source->data, GL_STATIC_DRAW);
 
 	this->cache.insert(std::make_pair(source.get(), buffer));
 
@@ -29,7 +29,7 @@ GLuint RenderingContext::EnsureElementArrayBuffer(std::shared_ptr<BufferView> vi
 	GLuint buffer{};
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, view->length, view->buffer->data() + view->offset, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, view->length, view->buffer->data + view->offset, GL_STATIC_DRAW);
 
 	this->cache.insert(std::make_pair(view.get(), buffer));
 
@@ -53,7 +53,7 @@ GLuint RenderingContext::EnsureTexture(std::shared_ptr<Texture> texture) {
 
 	png::PNG png = png::parse(*texture->image);
 	GLint format = (png.header.colorType == png::COLOR_TYPE_RGB) ? GL_RGB : GL_RGBA;
-	glTexImage2D(GL_TEXTURE_2D, 0, format, png.header.width, png.header.height, 0, format, GL_UNSIGNED_BYTE, png.data.data());
+	glTexImage2D(GL_TEXTURE_2D, 0, format, png.header.width, png.header.height, 0, format, GL_UNSIGNED_BYTE, png.pixels.data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	this->cache.insert(std::make_pair(texture.get(), textureId));

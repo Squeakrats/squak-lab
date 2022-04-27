@@ -65,9 +65,8 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 	source.read(reinterpret_cast<char*>(binHeader), sizeof(binHeader));
 	assert(binHeader[1] == gltf::binary::BIN);
 
-	std::shared_ptr<BufferView::Buffer> buffer = std::make_shared<BufferView::Buffer>();
-	buffer->resize(binHeader[0]);
-	source.read(reinterpret_cast<char*>(buffer->data()), buffer->size());
+	std::shared_ptr<Buffer> buffer = std::make_shared<Buffer>(binHeader[0]);
+	source.read(reinterpret_cast<char*>(buffer->data), buffer->size);
 	assert(source.get() == EOF);
 
 	std::vector<std::shared_ptr<BufferView>> bufferViews{};

@@ -18,7 +18,7 @@ struct IHDR {
 
 struct PNG {
     IHDR header;
-	std::vector<uint8_t> data;
+	Buffer pixels;
 };
 
 PNG parse(BufferView view);

@@ -3,11 +3,11 @@
 
 class ByteStream {
     BufferView view;
-    std::vector<uint8_t>& data;
+    uint8_t* data;
     size_t pos{};
 
 public:
-    ByteStream(BufferView view) : view(view), data(*view.buffer), pos(view.offset) {}
+    ByteStream(BufferView view) : view(view), data(view.buffer->data), pos(view.offset) {}
 
     uint32_t readUInt32() {
         uint32_t value = 

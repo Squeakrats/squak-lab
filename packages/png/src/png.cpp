@@ -170,14 +170,14 @@ PNG parse(BufferView view) {
         }
     }
 
-    std::vector<uint8_t> pixels{};
-    pixels.reserve(header.width * header.height * pixelSize);
+    Buffer pixels(header.width * header.height * pixelSize);
+    size_t pixelIndex = 0;
 
     uint8_t* position = inflated.data();
     for (size_t y = 0; y < header.height; y++) {
         position++;
         for (size_t x = 0; x < header.width * pixelSize; x++) {
-            pixels.push_back(*(position++));
+            pixels.data[pixelIndex++] = *(position++);
         }
     }
 
