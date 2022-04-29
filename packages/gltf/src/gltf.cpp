@@ -120,12 +120,13 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 			if (pbrMetallicRoughness.entries.find("baseColorTexture") != pbrMetallicRoughness.entries.end()) {
 				material->baseColorTexture = textures[static_cast<size_t>(pbrMetallicRoughness["baseColorTexture"]["index"].get<double>())];
 			}
-			else {
+			else if (pbrMetallicRoughness.entries.find("baseColorFactor") != pbrMetallicRoughness.entries.end()) {
 				auto& colorFactor = pbrMetallicRoughness["baseColorFactor"].get<json::Array>();
 				material->baseColor.x = colorFactor[0].as<float>();
 				material->baseColor.y = colorFactor[1].as<float>();
 				material->baseColor.z = colorFactor[2].as<float>();
-
+			} else {
+				material->baseColor = Vector3(1, 0, 0);
 			}
 			
 			materials.push_back(material);
