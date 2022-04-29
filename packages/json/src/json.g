@@ -12,7 +12,7 @@
     <True> ::= <true>;
     <False> ::= <false>;
     <StringLiteral> ::= <\"[^\"]*\">;
-    <NumberLiteral> ::= <[-.0123456789]+>;
+    <NumberLiteral> ::= <[-e.0123456789]+>;
     <> ::= <[\t\n\r ]>;
 ]
 
