@@ -31,17 +31,6 @@ BufferAccessor::ComponentType ConvertComponentType(uint32_t type) {
 	return table.at(type);
 }
 
-Mesh::AttributeType ConvertAttributeType(const std::string& type) {
-	static std::map<std::string, Mesh::AttributeType> table = {
-		{ "POSITION",  Mesh::AttributeType::Position },
-		{ "NORMAL",  Mesh::AttributeType::Normal },
-		{ "TEXCOORD_0",  Mesh::AttributeType::TextureCoordinate_0 },
-		{ "COLOR_0",  Mesh::AttributeType::Color_0 },
-	};
-
-	return table.at(type);
-}
-
 std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 	// TODO - Remove assertion of little endian system
 	AssertSystemIsLittleEndian();
@@ -135,27 +124,37 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 
 	std::vector<std::shared_ptr<Mesh>> meshes{};
 	for (json::Value& mesh : json["meshes"].get<json::Array>()) {
-		json::Array& primitives = mesh["primitives"].get<json::Array>();
-		assert(primitives.size() == 1);
+		std::vector<Mesh::Geometry> geometries{};
+		for (json::Value& primitiveValue : mesh["primitives"].get<json::Array>()) {
+			json::Object& primitive = primitiveValue.get<json::Object>();
 
-		json::Object& primitive = primitives[0].get<json::Object>();
+			Mesh::Geometry geometry{};
 
-		Mesh::Geometry geometry{};
-		for (auto& attribute : primitive["attributes"].get<json::Object>().entries) {
-			geometry.insert(std::make_pair(
-				ConvertAttributeType(attribute.first),
-				accessors[attribute.second.as<size_t>()]
-			));
+			geometry.indices = accessors[primitive["indices"].as<size_t>()];
+
+			if (primitive.entries.find("material") != primitive.entries.end()) {
+				geometry.material = materials[primitive["material"].as<size_t>()];
+			}
+
+			for (auto& attribute : primitive["attributes"].get<json::Object>().entries) {
+				if (attribute.first == "POSITION") {
+					geometry.positions = accessors[attribute.second.as<size_t>()];
+				}
+				else if (attribute.first == "NORMAL") {
+					geometry.normals = accessors[attribute.second.as<size_t>()];
+				}
+				else if (attribute.first == "TEXCOORD_0") {
+					geometry.textureCoordinatess = accessors[attribute.second.as<size_t>()];
+				}
+				else if (attribute.first == "COLOR_0") {
+					geometry.colors = accessors[attribute.second.as<size_t>()];
+				}
+			}
+
+			geometries.push_back(std::move(geometry));
 		}
 
-		std::shared_ptr<BufferAccessor> indices = accessors[primitive["indices"].as<size_t>()];
-
-		std::shared_ptr<Material> material{};
-		if (primitive.entries.find("material") != primitive.entries.end()) {
-			material = materials[primitive["material"].as<size_t>()];
-		}
-		
-		meshes.push_back(std::make_shared<Mesh>(std::move(geometry), indices, material));
+		meshes.push_back(std::make_shared<Mesh>(std::move(geometries)));
 	}
 
 	std::vector<std::shared_ptr<SceneNode>> nodes{};

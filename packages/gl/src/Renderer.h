@@ -10,12 +10,12 @@
 
 namespace gl {
 
-class AMeshRenderer : public Program {
+class AGeometryRenderer : public Program {
 public:
-	AMeshRenderer(std::string vertexSource, std::string fragmentSource, std::vector<std::string> attributes, std::vector<std::string> uniforms)
+	AGeometryRenderer(std::string vertexSource, std::string fragmentSource, std::vector<std::string> attributes, std::vector<std::string> uniforms)
 		: Program(vertexSource, fragmentSource, attributes, uniforms) {}
 
-	virtual void Render(Matrix4& perspective, Matrix4& view, Matrix4& model, Mesh& mesh) = 0;
+	virtual void Render(Matrix4& perspective, Matrix4& view, Matrix4& model, Mesh::Geometry& geometry) = 0;
 };
 
 enum class RenderPass {
@@ -26,8 +26,8 @@ enum class RenderPass {
 class Renderer : public IRenderer {
 private:
 	RenderingContext context{};
-	std::shared_ptr<AMeshRenderer> texuredRenderer{};
-	std::shared_ptr<AMeshRenderer> solidRenderer{};
+	std::shared_ptr<AGeometryRenderer> texuredRenderer{};
+	std::shared_ptr<AGeometryRenderer> solidRenderer{};
 
 	gl::Framebuffer framebuffer{};
 	Program lightProgram = Program(

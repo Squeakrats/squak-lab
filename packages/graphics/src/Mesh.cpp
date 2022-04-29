@@ -29,33 +29,28 @@ Mesh Mesh::CreatePlane(float width, float height) {
     std::memcpy(buffer->data + sizeof(positionBuffer), normalBuffer, sizeof(normalBuffer));
     std::memcpy(buffer->data + sizeof(positionBuffer) + sizeof(normalBuffer), indexBuffer, sizeof(indexBuffer));
 
-    Geometry geometry = {
-        {
-            AttributeType::Position,
-            std::make_shared<BufferAccessor>(BufferAccessor{
-                BufferAccessor::Type::Vector3,
-                BufferAccessor::ComponentType::Float,
-                4,
-                std::make_shared<BufferView>(BufferView{ buffer, 0, sizeof(positionBuffer) })
-            })
-        },
-        {
-            AttributeType::Normal,
-            std::make_shared<BufferAccessor>(BufferAccessor{
-                BufferAccessor::Type::Vector3,
-                BufferAccessor::ComponentType::Float,
-                4,
-                std::make_shared<BufferView>(BufferView{ buffer, sizeof(positionBuffer), sizeof(normalBuffer) })
-            })
-        }
-    };
+    Geometry geometry{};
 
-    std::shared_ptr<BufferAccessor> indices = std::make_shared<BufferAccessor>(BufferAccessor{
+    geometry.positions = std::make_shared<BufferAccessor>(
+        BufferAccessor::Type::Vector3,
+        BufferAccessor::ComponentType::Float,
+        4,
+        std::make_shared<BufferView>(BufferView{ buffer, 0, sizeof(positionBuffer) })
+    );
+
+    geometry.normals = std::make_shared<BufferAccessor>(
+        BufferAccessor::Type::Vector3,
+        BufferAccessor::ComponentType::Float,
+        4,
+        std::make_shared<BufferView>(BufferView{ buffer, sizeof(positionBuffer), sizeof(normalBuffer) })
+    );
+
+    geometry.indices = std::make_shared<BufferAccessor>(
         BufferAccessor::Type::Scalar,
         BufferAccessor::ComponentType::UnsignedShort,
         4,
         std::make_shared<BufferView>(BufferView{ buffer, sizeof(positionBuffer) + sizeof(normalBuffer), sizeof(indexBuffer) })
-    });
+    );
 
-    return Mesh(std::move(geometry), indices, nullptr);
+    return Mesh({ std::move(geometry) });
 }

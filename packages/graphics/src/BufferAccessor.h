@@ -20,4 +20,7 @@ struct BufferAccessor {
 	ComponentType componentType;
 	size_t count;
 	std::shared_ptr<BufferView> view;
+
+	BufferAccessor(Type type, ComponentType componentType, size_t count, std::shared_ptr<BufferView> view)
+		: type(type), componentType(componentType), count(count), view(view) {}
 };

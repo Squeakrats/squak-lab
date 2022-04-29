@@ -8,21 +8,19 @@
 
 class Mesh {
 public:
-	enum class AttributeType {
-		Position,
-		Normal,
-		TextureCoordinate_0,
-		Color_0
+	struct Geometry {
+		std::shared_ptr<BufferAccessor> positions{};
+		std::shared_ptr<BufferAccessor> normals{};
+		std::shared_ptr<BufferAccessor> textureCoordinatess{};
+		std::shared_ptr<BufferAccessor> colors{};
+		std::shared_ptr<BufferAccessor> indices{};
+		std::shared_ptr<Material> material{};
 	};
 
-	using Geometry = std::map<AttributeType, std::shared_ptr<BufferAccessor>>;
+	std::vector<Geometry> geometries{};
 
-	Geometry geometry;
-	std::shared_ptr<BufferAccessor> indices;
-	std::shared_ptr<Material> material;
-
-	Mesh(Geometry&& geometry, std::shared_ptr<BufferAccessor> indices, std::shared_ptr<Material> material)
-		: geometry(geometry), indices(indices), material(material) {};
+	Mesh(std::vector<Geometry>&& geometries)
+		: geometries(geometries) {}
 
 	static Mesh CreatePlane(float width, float height);
 };

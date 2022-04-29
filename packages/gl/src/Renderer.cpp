@@ -9,13 +9,13 @@
 
 namespace gl {
 
-class TexturedRenderer : public AMeshRenderer {
+class TexturedRenderer : public AGeometryRenderer {
 private:
 	RenderingContext& gl;
 
 public:
 	TexturedRenderer(RenderingContext& gl) :
-		AMeshRenderer(
+		AGeometryRenderer(
 			shaders::textured::vertex, shaders::textured::fragment,
 			{ "aPosition", "aNormal", "aTextureCoordinate" },
 			{ "uPerspective", "uView", "uModel" }
@@ -23,28 +23,28 @@ public:
 		gl(gl)
 	{}
 
-	virtual void Render(Matrix4& perspective, Matrix4& view, Matrix4& model, Mesh& mesh) override {
+	virtual void Render(Matrix4& perspective, Matrix4& view, Matrix4& model, Mesh::Geometry& geometry) override {
 		this->Enable();
-		this->gl.VertexAttribPointer(this->attributes[0], *mesh.geometry.at(Mesh::AttributeType::Position));
-		this->gl.VertexAttribPointer(this->attributes[1], *mesh.geometry.at(Mesh::AttributeType::Normal));
-		this->gl.VertexAttribPointer(this->attributes[2], *mesh.geometry.at(Mesh::AttributeType::TextureCoordinate_0));
-		this->gl.SetActiveTexture(0, mesh.material->baseColorTexture);
+		this->gl.VertexAttribPointer(this->attributes[0], *geometry.positions);
+		this->gl.VertexAttribPointer(this->attributes[1], *geometry.normals);
+		this->gl.VertexAttribPointer(this->attributes[2], *geometry.textureCoordinatess);
+		this->gl.SetActiveTexture(0, geometry.material->baseColorTexture);
 		glUniformMatrix4fv(this->uniforms[0], 1, false, perspective.data);
 		glUniformMatrix4fv(this->uniforms[1], 1, false, view.data);
 		glUniformMatrix4fv(this->uniforms[2], 1, false, model.data);
-		this->gl.DrawElements(*mesh.indices);
+		this->gl.DrawElements(*geometry.indices);
 		this->Disable();
 	}
 };
 
 
-class SolidRenderer : public AMeshRenderer {
+class SolidRenderer : public AGeometryRenderer {
 private:
 	RenderingContext& gl;
 
 public:
 	SolidRenderer(RenderingContext& gl) :
-		AMeshRenderer(
+		AGeometryRenderer(
 			shaders::solid::vertex, shaders::solid::fragment,
 			{ "aPosition", "aNormal"},
 			{ "uPerspective", "uView", "uModel", "uColor"}
@@ -52,20 +52,20 @@ public:
 		gl(gl)
 	{}
 
-	virtual void Render(Matrix4& perspective, Matrix4& view, Matrix4& model, Mesh& mesh) override {
+	virtual void Render(Matrix4& perspective, Matrix4& view, Matrix4& model, Mesh::Geometry& geometry) override {
 		Vector3 baseColor(1, 0, 0);
-		if (mesh.material != nullptr) {
-			baseColor = mesh.material->baseColor;
+		if (geometry.material != nullptr) {
+			baseColor = geometry.material->baseColor;
 		}
 
 		this->Enable();
-		this->gl.VertexAttribPointer(this->attributes[0], *mesh.geometry.at(Mesh::AttributeType::Position));
-		this->gl.VertexAttribPointer(this->attributes[1], *mesh.geometry.at(Mesh::AttributeType::Normal));
+		this->gl.VertexAttribPointer(this->attributes[0], *geometry.positions);
+		this->gl.VertexAttribPointer(this->attributes[1], *geometry.normals);
 		glUniformMatrix4fv(this->uniforms[0], 1, false, perspective.data);
 		glUniformMatrix4fv(this->uniforms[1], 1, false, view.data);
 		glUniformMatrix4fv(this->uniforms[2], 1, false, model.data);
 		glUniform3f(this->uniforms[3], baseColor.x, baseColor.y, baseColor.z);
-		this->gl.DrawElements(*mesh.indices);
+		this->gl.DrawElements(*geometry.indices);
 		this->Disable();
 	}
 };
@@ -126,11 +126,13 @@ void Renderer::RenderNode(RenderPass pass, CameraNode& camera, SceneNode& node) 
 
 	if (pass == RenderPass::Opaque && node.mesh != nullptr) {
 		Matrix4 view = camera.GetView();
-		if (node.mesh->material != nullptr && node.mesh->material->baseColorTexture != nullptr) {
-			this->texuredRenderer->Render(camera.perspective, view, this->transforms.top(), *node.mesh);
-		}
-		else {
-			this->solidRenderer->Render(camera.perspective, view, this->transforms.top(), *node.mesh);
+		for (Mesh::Geometry& geometry : node.mesh->geometries) {
+			if (geometry.material != nullptr && geometry.material->baseColorTexture != nullptr) {
+				this->texuredRenderer->Render(camera.perspective, view, this->transforms.top(), geometry);
+			}
+			else {
+				this->solidRenderer->Render(camera.perspective, view, this->transforms.top(), geometry);
+			}
 		}
 	}
 	else if (pass == RenderPass::Light && node.light != nullptr) {
