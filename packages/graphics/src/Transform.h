@@ -13,5 +13,9 @@ public:
 		return (this->ToMatrix() * Vector4(0.0, 0.0, 1.0, 0.0)).xyz();
 	}
 
+	Vector3 GetRight() {
+		return (this->ToMatrix() * Vector4(1.0, 0.0, 0.0, 0.0)).xyz();
+	}
+
 	Matrix4 ToMatrix() { return Matrix4::Create(this->position, this->rotation); }
 };
