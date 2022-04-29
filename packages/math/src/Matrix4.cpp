@@ -205,7 +205,7 @@ Matrix4 Matrix4::Translate(Vector3 translation) {
 }
 
 Matrix4 Matrix4::Create(Vector3 position, Vector3 rotation) {
-	Matrix4 matrix = RotateZ(rotation.z)* RotateY(rotation.y)* RotateX(rotation.x);
+	Matrix4 matrix = RotateX(rotation.x) * RotateY(rotation.y) * RotateZ(rotation.z);
 	matrix.SetPosition(position);
 
 	return matrix;

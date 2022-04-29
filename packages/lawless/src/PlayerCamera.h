@@ -24,9 +24,7 @@ public:
 
     virtual void Tick(float deltaMs) override {
         auto& transform = this->GetTransform();
-        Vector3 forward = transform.GetForward();
-
-        transform.position += -1 * deltaMs * this->moveSpeed * engine.GetAxis("Forward") * forward;
+        transform.position += -1 * deltaMs * this->moveSpeed * engine.GetAxis("Forward") * transform.GetForward();
         transform.rotation.y += deltaMs * this->turnSpeed * engine.GetAxis("Turn");
         transform.rotation.x += deltaMs * this->turnSpeed * engine.GetAxis("Up");
 
