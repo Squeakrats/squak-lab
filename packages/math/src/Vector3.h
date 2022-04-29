@@ -9,6 +9,8 @@ public:
 
 	float length();
 	Vector3& normalize();
+	
+	static Vector3 cross(const Vector3& lhs, const Vector3& rhs);
 };
 
 inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs) {
