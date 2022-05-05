@@ -31,6 +31,122 @@ BufferAccessor::ComponentType ConvertComponentType(uint32_t type) {
 	return table.at(type);
 }
 
+std::shared_ptr<BufferView> ConvertBufferView(json::Object& source, std::shared_ptr<Buffer> buffer) {
+	assert(source["buffer"].get<double>() == 0.0);
+
+	return std::make_shared<BufferView>(
+		buffer,
+		source["byteOffset"].as<size_t>(),
+		source["byteLength"].as<size_t>()
+	);
+}
+
+std::shared_ptr<BufferAccessor> ConvertBufferAccessor(json::Object& source, std::vector<std::shared_ptr<BufferView>>& bufferViews) {
+	return std::make_shared<BufferAccessor>(
+		ConvertAccessorType(source["type"].get<std::string>()),
+		ConvertComponentType(source["componentType"].as<uint32_t>()),
+		source["count"].as<size_t>(),
+		bufferViews[source["bufferView"].as<size_t>()]
+	);
+}
+
+std::pair<std::string, std::shared_ptr<BufferView>> ConvertImage(json::Object& source, std::vector<std::shared_ptr<BufferView>>& bufferViews) {
+	return std::make_pair(
+		source["mimeType"].get<std::string>(),
+		bufferViews[source["bufferView"].as<size_t>()]
+	);
+}
+
+std::shared_ptr<Texture> ConvertTexture(json::Object& source, std::vector<std::pair<std::string, std::shared_ptr<BufferView>>>& images) {
+	auto& image = images[source["source"].as<size_t>()];
+
+	return std::make_shared<Texture>(
+		image.first,
+		image.second
+	);
+}
+
+std::shared_ptr<Material> ConvertMaterial(json::Object& source, std::vector<std::shared_ptr<Texture>>& textures) {
+	std::shared_ptr<Material> material = std::make_shared<Material>();
+
+	auto& pbrMetallicRoughness = source["pbrMetallicRoughness"].get<json::Object>();
+	if (pbrMetallicRoughness.has("baseColorTexture")) {
+		material->baseColorTexture = textures[pbrMetallicRoughness["baseColorTexture"]["index"].as<size_t>()];
+	}
+	else if (pbrMetallicRoughness.has("baseColorFactor")) {
+		auto& colorFactor = pbrMetallicRoughness["baseColorFactor"].get<json::Array>();
+		material->baseColor.x = colorFactor[0].as<float>();
+		material->baseColor.y = colorFactor[1].as<float>();
+		material->baseColor.z = colorFactor[2].as<float>();
+	}
+	else {
+		material->baseColor = Vector3(1, 0, 0);
+	}
+
+	return material;
+}
+
+Mesh::Geometry ConvertPrimitive(json::Object& source, std::vector<std::shared_ptr<BufferAccessor>>& accessors, std::vector<std::shared_ptr<Material>>& materials) {
+	Mesh::Geometry geometry{};
+
+	geometry.indices = accessors[source["indices"].as<size_t>()];
+
+	if (source.has("material")) {
+		geometry.material = materials[source["material"].as<size_t>()];
+	}
+
+	for (auto& attribute : source["attributes"].get<json::Object>().entries) {
+		if (attribute.first == "POSITION") {
+			geometry.positions = accessors[attribute.second.as<size_t>()];
+		}
+		else if (attribute.first == "NORMAL") {
+			geometry.normals = accessors[attribute.second.as<size_t>()];
+		}
+		else if (attribute.first == "TEXCOORD_0") {
+			geometry.textureCoordinatess = accessors[attribute.second.as<size_t>()];
+		}
+		else if (attribute.first == "COLOR_0") {
+			geometry.colors = accessors[attribute.second.as<size_t>()];
+		}
+	}
+
+	return geometry;
+}
+
+std::shared_ptr<Mesh> ConvertMesh(json::Object& source, std::vector<std::shared_ptr<BufferAccessor>>& accessors, std::vector<std::shared_ptr<Material>>& materials) {
+	std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>();
+	for (json::Value& primitive : source["primitives"].get<json::Array>()) {
+		mesh->geometries.push_back(ConvertPrimitive(primitive.get<json::Object>(), accessors, materials));
+	}
+
+	return mesh;
+}
+
+std::shared_ptr<SceneNode> ConvertNode(json::Object& source, std::vector<std::shared_ptr<Mesh>>& meshes) {
+	std::shared_ptr<SceneNode> node = std::make_shared<SceneNode>();
+
+	node->name = source["name"].get<std::string>();
+
+	if (source.has("mesh")) {
+		node->mesh = meshes[source["mesh"].as<size_t>()];
+	}
+
+	return node;
+}
+
+std::shared_ptr<SceneNode> ConvertScene(json::Object& source, std::vector<std::shared_ptr<SceneNode>>& nodes) {
+	std::shared_ptr<SceneNode> scene = std::make_shared<SceneNode>();
+
+	scene->name = source["name"].get<std::string>();
+
+	for (json::Value& node : source["nodes"].get<json::Array>()) {
+		scene->children.push_back(nodes[node.as<size_t>()]);
+	}
+
+	return scene;
+}
+
+
 std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 	// TODO - Remove assertion of little endian system
 	AssertSystemIsLittleEndian();
@@ -59,128 +175,47 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 	assert(source.get() == EOF);
 
 	std::vector<std::shared_ptr<BufferView>> bufferViews{};
-	for (json::Value& jsonView : json["bufferViews"].get<json::Array>()) {
-		assert(jsonView["buffer"].get<double>() == 0.0);
-
-		bufferViews.push_back(std::make_shared<BufferView>(BufferView{
-			buffer,
-			jsonView["byteOffset"].as<size_t>(),
-			jsonView["byteLength"].as<size_t>()
-		}));
+	for (json::Value& bufferView : json["bufferViews"].get<json::Array>()) {
+		bufferViews.push_back(ConvertBufferView(bufferView.get<json::Object>(), buffer));
 	}
 
 	std::vector<std::shared_ptr<BufferAccessor>> accessors{};
-	for (json::Value& jsonView : json["accessors"].get<json::Array>()) {
-		accessors.push_back(std::make_shared<BufferAccessor>(BufferAccessor{
-			ConvertAccessorType(jsonView["type"].get<std::string>()),
-			ConvertComponentType(jsonView["componentType"].as<uint32_t>()),
-			jsonView["count"].as<size_t>(),
-			bufferViews[jsonView["bufferView"].as<size_t>()]
-		}));
+	for (json::Value& accessor : json["accessors"].get<json::Array>()) {
+		accessors.push_back(ConvertBufferAccessor(accessor.get<json::Object>(), bufferViews));
 	}
 
 	std::vector<std::pair<std::string, std::shared_ptr<BufferView>>> images{};
-	if (json.entries.find("images") != json.entries.end()) {
+	if (json.has("images")) {
 		for (json::Value& image : json["images"].get<json::Array>()) {
-			images.push_back(std::make_pair(
-				image["mimeType"].get<std::string>(),
-				bufferViews[image["bufferView"].as<size_t>()]
-			));
+			images.push_back(ConvertImage(image.get<json::Object>(), bufferViews));
 		}
 	}
 
 	std::vector<std::shared_ptr<Texture>> textures{};
-	if (json.entries.find("textures") != json.entries.end()) {
+	if (json.has("textures")) {
 		for (json::Value& texture : json["textures"].get<json::Array>()) {
-			auto& source = images[texture["source"].as<size_t>()];
-			textures.push_back(std::make_shared<Texture>(
-				source.first,
-				source.second
-			));
+			textures.push_back(ConvertTexture(texture.get<json::Object>(), images));
 		}
 	}
 
 	std::vector<std::shared_ptr<Material>> materials{};
-	if (json.entries.find("materials") != json.entries.end()) {
-		for (json::Value& jsonMaterial : json["materials"].get<json::Array>()) {
-			std::shared_ptr<Material> material = std::make_shared<Material>();
-
-			auto& pbrMetallicRoughness = jsonMaterial["pbrMetallicRoughness"].get<json::Object>();
-			if (pbrMetallicRoughness.entries.find("baseColorTexture") != pbrMetallicRoughness.entries.end()) {
-				material->baseColorTexture = textures[static_cast<size_t>(pbrMetallicRoughness["baseColorTexture"]["index"].get<double>())];
-			}
-			else if (pbrMetallicRoughness.entries.find("baseColorFactor") != pbrMetallicRoughness.entries.end()) {
-				auto& colorFactor = pbrMetallicRoughness["baseColorFactor"].get<json::Array>();
-				material->baseColor.x = colorFactor[0].as<float>();
-				material->baseColor.y = colorFactor[1].as<float>();
-				material->baseColor.z = colorFactor[2].as<float>();
-			} else {
-				material->baseColor = Vector3(1, 0, 0);
-			}
-			
-			materials.push_back(material);
+	if (json.has("materials")) {
+		for (json::Value& material : json["materials"].get<json::Array>()) {
+			materials.push_back(ConvertMaterial(material.get<json::Object>(), textures));
 		}
 	}
 
 	std::vector<std::shared_ptr<Mesh>> meshes{};
 	for (json::Value& mesh : json["meshes"].get<json::Array>()) {
-		std::vector<Mesh::Geometry> geometries{};
-		for (json::Value& primitiveValue : mesh["primitives"].get<json::Array>()) {
-			json::Object& primitive = primitiveValue.get<json::Object>();
-
-			Mesh::Geometry geometry{};
-
-			geometry.indices = accessors[primitive["indices"].as<size_t>()];
-
-			if (primitive.entries.find("material") != primitive.entries.end()) {
-				geometry.material = materials[primitive["material"].as<size_t>()];
-			}
-
-			for (auto& attribute : primitive["attributes"].get<json::Object>().entries) {
-				if (attribute.first == "POSITION") {
-					geometry.positions = accessors[attribute.second.as<size_t>()];
-				}
-				else if (attribute.first == "NORMAL") {
-					geometry.normals = accessors[attribute.second.as<size_t>()];
-				}
-				else if (attribute.first == "TEXCOORD_0") {
-					geometry.textureCoordinatess = accessors[attribute.second.as<size_t>()];
-				}
-				else if (attribute.first == "COLOR_0") {
-					geometry.colors = accessors[attribute.second.as<size_t>()];
-				}
-			}
-
-			geometries.push_back(std::move(geometry));
-		}
-
-		meshes.push_back(std::make_shared<Mesh>(std::move(geometries)));
+		meshes.push_back(ConvertMesh(mesh.get<json::Object>(), accessors, materials));
 	}
 
 	std::vector<std::shared_ptr<SceneNode>> nodes{};
 	for (json::Value& source : json["nodes"].get<json::Array>()) {
-		json::Object& object = source.get<json::Object>();
-
-		std::shared_ptr<SceneNode> node = std::make_shared<SceneNode>();
-		node->name = object["name"].get<std::string>();
-
-		if (object.entries.find("mesh") != object.entries.end()) {
-			node->mesh = meshes[source["mesh"].as<size_t>()];
-		}
-		
-		nodes.push_back(node);
+		nodes.push_back(ConvertNode(source.get<json::Object>(), meshes));
 	}
 
-	json::Value& scene = json["scenes"][0];
-
-	std::shared_ptr<SceneNode> root = std::make_shared<SceneNode>();
-	root->name = scene["name"].get<std::string>();
-
-	for (json::Value& source : scene["nodes"].get<json::Array>()) {
-		root->children.push_back(nodes[source.as<size_t>()]);
-	}
-
-	return root;
+	return ConvertScene(json["scenes"][0].get<json::Object>(), nodes);
 }
 
 std::shared_ptr<SceneNode> Load(std::string path) {

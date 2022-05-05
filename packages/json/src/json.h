@@ -18,6 +18,8 @@ public:
 	Value& operator[](std::string key){
 		return this->entries.at(key);
 	}
+
+	bool has(std::string key);
 };
 
 class Value {
@@ -31,14 +33,10 @@ public:
 	T as() { return static_cast<T>(std::get<double>(this->value)); };
 
 	Value& operator[](std::string key) {
-		assert(std::holds_alternative<Object>(this->value));
-
 		return std::get<Object>(this->value)[key];
 	}
 
 	Value& operator[](size_t index) {
-		assert(std::holds_alternative<Array>(this->value));
-
 		return std::get<Array>(this->value)[index];
 	}
 };

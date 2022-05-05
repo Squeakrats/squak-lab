@@ -19,6 +19,7 @@ public:
 
 	std::vector<Geometry> geometries{};
 
+	Mesh() {}
 	Mesh(std::vector<Geometry>&& geometries)
 		: geometries(geometries) {}
 

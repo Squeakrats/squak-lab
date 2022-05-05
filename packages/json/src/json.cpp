@@ -4,6 +4,10 @@
 
 namespace json {
 
+bool Object::has(std::string key) {
+	return this->entries.find(key) != this->entries.end();
+}
+
 Object Create(ast::Object& ast);
 Array Create(ast::Array& ast);
 
