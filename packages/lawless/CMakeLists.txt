@@ -3,9 +3,7 @@ project(lawless)
 
 add_executable(lawless 
     src/Player.h
-    src/Player.cpp
     src/PlayerCamera.h
-    src/PlayerCamera.cpp
     src/main.cpp
 )
 target_link_libraries(lawless gl gltf core engine)

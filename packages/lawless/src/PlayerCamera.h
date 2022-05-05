@@ -33,3 +33,5 @@ public:
 
     static const ActorCreatorEntry CREATORENTRY;
 };
+
+const ActorCreatorEntry PlayerCamera::CREATORENTRY = Engine::RegisterClass("PlayerCamera", [](const ActorInitializer& initializer) { return std::make_shared<PlayerCamera>(initializer); });
