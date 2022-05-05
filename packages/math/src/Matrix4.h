@@ -36,7 +36,6 @@ public:
 	static Matrix4 RotateZ(float theta);
 	static Matrix4 Translate(Vector3 translation);
 	static Matrix4 Create(Vector3 position, Vector3 rotation);
-	static Matrix4 FastInverse(const Matrix4& matrix);
 };
 
 Matrix4 operator*(const Matrix4& lhs, const Matrix4& rhs);
