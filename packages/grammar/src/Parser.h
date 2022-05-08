@@ -3,6 +3,7 @@
 #include <variant>
 #include "TokenStream.h"
 #include "Tokenizer.h"
+#include "utility.h"
 
 /*
 <grammer> ::= <code> <tokens> <productions>
@@ -62,7 +63,7 @@ public:
 
 private:
 	Token Use(TokenType type) {
-		assert(this->token.first == type);
+		Assert(this->token.first == type, "unhandled token");
 
 		Token token = this->token;
 		this->token = this->source.Next();

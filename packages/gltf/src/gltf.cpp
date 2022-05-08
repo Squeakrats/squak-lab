@@ -7,7 +7,7 @@ namespace gltf {
 
 void AssertSystemIsLittleEndian() {
 	uint32_t i = 0xFFFFFF00;
-	assert(*reinterpret_cast<uint8_t*>(&i) == 0x00);
+	Assert(*reinterpret_cast<uint8_t*>(&i) == 0x00, "big endian is unsupported");
 }
 
 BufferAccessor::Type ConvertAccessorType(const std::string& type) {
@@ -32,7 +32,7 @@ BufferAccessor::ComponentType ConvertComponentType(uint32_t type) {
 }
 
 std::shared_ptr<BufferView> ConvertBufferView(json::Object& source, std::shared_ptr<Buffer> buffer) {
-	assert(source["buffer"].get<double>() == 0.0);
+	Assert(source["buffer"].get<double>() == 0.0, "only one glb buffer is supported");
 
 	return std::make_shared<BufferView>(
 		buffer,
@@ -153,12 +153,12 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 
 	uint32_t gltfHeader[3] = { 0 };
 	source.read(reinterpret_cast<char*>(gltfHeader), sizeof(gltfHeader));
-	assert(gltfHeader[0] == gltf::binary::GLTF);
-	assert(gltfHeader[1] == 2);
+	Assert(gltfHeader[0] == gltf::binary::GLTF, "invalid gltf magic");
+	Assert(gltfHeader[1] == 2, "invalid gltf version");
 
 	uint32_t jsonHeader[2] = { 0 };
 	source.read(reinterpret_cast<char*>(jsonHeader), sizeof(jsonHeader));
-	assert(jsonHeader[1] == gltf::binary::JSON);
+	Assert(jsonHeader[1] == gltf::binary::JSON, "invalid chunk type");
 
 	std::string jsonData{};
 	jsonData.resize(jsonHeader[0]);
@@ -168,11 +168,11 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
 
 	uint32_t binHeader[2] = { 0 };
 	source.read(reinterpret_cast<char*>(binHeader), sizeof(binHeader));
-	assert(binHeader[1] == gltf::binary::BIN);
+	Assert(binHeader[1] == gltf::binary::BIN, "invalid chunk type");
 
 	std::shared_ptr<Buffer> buffer = std::make_shared<Buffer>(binHeader[0]);
 	source.read(reinterpret_cast<char*>(buffer->data), buffer->size);
-	assert(source.get() == EOF);
+	Assert(source.get() == EOF, "unhandled data in buffer");
 
 	std::vector<std::shared_ptr<BufferView>> bufferViews{};
 	for (json::Value& bufferView : json["bufferViews"].get<json::Array>()) {

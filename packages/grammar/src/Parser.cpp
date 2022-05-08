@@ -15,7 +15,7 @@ AST::Grammar Parser::Parse()
 		this->Use(TokenType::LeftBracket);
 		while (this->token.first == TokenType::Symbol) {
 			std::string token = this->Use(TokenType::Symbol).second;
-			this->Use(TokenType::Replaces).first;
+			this->Use(TokenType::Replaces);
 			std::string expression = this->Use(TokenType::Symbol).second;
 			this->Use(TokenType::SemiColon);
 
@@ -26,7 +26,7 @@ AST::Grammar Parser::Parse()
 	}
 
 	grammar.productions = this->ParseProductions();
-	assert(this->token.first == TokenType::EndOfFile);
+	Assert(this->token.first == TokenType::EndOfFile, "unhandled data in buffer");
 
 	return grammar;
 }

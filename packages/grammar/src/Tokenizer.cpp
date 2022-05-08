@@ -1,4 +1,5 @@
 #include "Tokenizer.h"
+#include "utility.h"
 
 Token Tokenize(std::stringstream& source) {
 	if (source.eof()) {
@@ -16,19 +17,19 @@ Token Tokenize(std::stringstream& source) {
 
 			std::stringbuf symbol{};
 			source.get(symbol, '>');
-			assert(source.get() == '>');
+			Assert(source.get() == '>', "unhandled token");
 
 			return Token{ TokenType::Symbol, symbol.str() };
 		}
 		case '{': {
 			std::stringbuf code{};
 			source.get(code, '}');
-			assert(source.get() == '}');
+			Assert(source.get() == '}', "unhandled token");
 
 			return Token{ TokenType::Code, code.str() };
 		}
 		case ':': {
-			assert(source.get() == ':' && source.get() == '=');
+			Assert(source.get() == ':' && source.get() == '=', "unhandled token");
 
 			return Token{ TokenType::Replaces, "::=" };
 		}
@@ -48,7 +49,7 @@ Token Tokenize(std::stringstream& source) {
 		case EOF:
 			return Token{ TokenType::EndOfFile, "" };
 		default:
-			assert(false);
+			Panic("unexpected token");
 		}
 	}
 }

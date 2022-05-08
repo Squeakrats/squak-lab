@@ -118,7 +118,7 @@ void Renderer::Render(CameraNode& camera, SceneNode& scene) {
 	this->RenderNode(RenderPass::Light, camera, scene);
 
 	GLenum error = glGetError();
-	assert(error == 0);
+	Assert(error == 0, "unhandled gl error");
 }
 
 void Renderer::RenderNode(RenderPass pass, CameraNode& camera, SceneNode& node) {

@@ -11,10 +11,7 @@ uint32_t NFA::AddState() {
 }
 
 NFA::NFAState& NFA::GetState(uint32_t id) {
-	auto state = this->states.find(id);
-	assert(state != this->states.end());
-
-	return state->second;
+	return this->states.at(id);
 }
 
 void NFA::AddTransition(uint32_t current, uint32_t next, char transition) {

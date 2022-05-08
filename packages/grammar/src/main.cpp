@@ -30,7 +30,7 @@ std::string ReadFile(std::string path) {
 	return result;
 #else
 	std::ifstream file(path);
-	assert(file.is_open());
+	Assert(file.is_open(), "invalid file");
 
 	std::stringstream stream{};
 	stream << file.rdbuf();
@@ -44,7 +44,7 @@ void EmitFile(std::string path, std::string contents) {
 	writeFileSync(path.c_str(), contents.c_str());
 #else
 	std::ofstream file(path);
-	assert(file.is_open());
+	Assert(file.is_open(), "invalid file");
 
 	file << contents;
 	file.close();

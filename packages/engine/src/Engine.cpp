@@ -32,13 +32,13 @@ Engine& Engine::Init(std::string assetDir) {
         engine.RegisterAxis(entry.first, axis);
     }
 
-    assert(glfwInit());
+    Assert(glfwInit(), "Failed to initialize glfw");
     engine.window = glfwCreateWindow(engine.size.first, engine.size.second, name.c_str(), nullptr, nullptr);
     glfwMakeContextCurrent(engine.window);
 
 #ifndef EMSCRIPTEN
     glewExperimental = true;
-    assert(glewInit() == GLEW_OK);
+    Assert(glewInit() == GLEW_OK, "Failed to initialize glew");
 #endif
 
     Log(std::string("OpenGL Version : ") +  std::string((char*)glGetString(GL_VERSION)));

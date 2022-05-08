@@ -11,4 +11,4 @@ add_executable(grammar
     src/Tokenizer.cpp
     src/Tokenizer.h
 )
-target_link_libraries(grammar compiler)
+target_link_libraries(grammar compiler utility)
