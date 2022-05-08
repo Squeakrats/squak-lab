@@ -12,6 +12,8 @@ namespace gl {
 
 class AGeometryRenderer : public Program {
 public:
+	virtual ~AGeometryRenderer() {}
+
 	AGeometryRenderer(std::string vertexSource, std::string fragmentSource, std::vector<std::string> attributes, std::vector<std::string> uniforms)
 		: Program(vertexSource, fragmentSource, attributes, uniforms) {}
 

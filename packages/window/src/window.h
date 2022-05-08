@@ -5,6 +5,8 @@
 namespace window {
 
 struct IWindow {
+	virtual ~IWindow() {};
+
 	virtual void Poll() = 0;
 	virtual void Flush() = 0;
 	virtual bool ShouldClose() = 0;

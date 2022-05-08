@@ -69,7 +69,7 @@ Matrix4 Matrix4::Orthographic(float left, float right, float bottom, float top, 
 
 Matrix4 Matrix4::Perspective(float fov, float near, float far) {
 	float theta = fov / 2.0f;
-	float right = std::atan(fov) * near;
+	float right = std::atan(theta) * near;
 	float top = right; // 1:1 aspect ratio
 
 	// solve for x

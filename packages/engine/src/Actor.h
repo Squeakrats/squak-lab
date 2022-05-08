@@ -9,12 +9,11 @@ class Engine;
 
 class Actor {
 protected:
+	std::string id;
 	std::shared_ptr<SceneNode> root;
 	Engine& engine;
 
 public:
-	std::string id;
-
 	Actor(const ActorInitializer& initializer);
 	virtual ~Actor() {};
 

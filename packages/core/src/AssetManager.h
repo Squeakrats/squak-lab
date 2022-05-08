@@ -9,6 +9,8 @@ struct IAsset {
 };
 
 struct IAssetLoader {
+	virtual ~IAssetLoader() {}
+
 	virtual std::string GetType() = 0;
 	virtual std::shared_ptr<IAsset> Load(std::string asset) = 0;
 };

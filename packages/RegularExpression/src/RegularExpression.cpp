@@ -23,7 +23,7 @@ NFA Create(AST::Value& value) {
 
 		std::shared_ptr<AST::CharacterClassList> current = value.characterClass->list;
 		while (current != nullptr) {
-			characters[current->character[0]] = true;
+			characters[static_cast<uint8_t>(current->character[0])] = true;
 			current = current->rhs;
 		}
 
