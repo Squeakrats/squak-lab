@@ -1,4 +1,4 @@
-#include <assert.h>
+#include "utility.h"
 #include "Parser.generated.h"
 
 namespace RegularExpression {
@@ -28,7 +28,7 @@ Token Tokenize(std::stringstream& source) {
 					case ']':
 						return Token{ TokenType::Character, std::string(1, current) };
 					default:
-						throw std::exception();
+						Panic("unhandled special character");
 				}	
 			}
 			case EOF:

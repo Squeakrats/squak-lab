@@ -3,9 +3,9 @@
 
 class Buffer {
 public:
-    uint8_t* data;
     size_t size;
-
+    uint8_t* data;
+ 
     Buffer(size_t size) : size(size), data(reinterpret_cast<uint8_t*>(malloc(size))) {}
     Buffer(Buffer&& source) {
         this->size = source.size;

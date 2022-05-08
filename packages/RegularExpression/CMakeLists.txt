@@ -27,7 +27,7 @@ target_include_directories(RegularExpression
 	PRIVATE
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
 )
-target_link_libraries(RegularExpression compiler)
+target_link_libraries(RegularExpression compiler utility)
 
 add_executable(RegularExpressionTests src/tests/RegularExpressionTests.cpp)
 target_link_libraries(RegularExpressionTests gtest_main RegularExpression)

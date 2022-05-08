@@ -1,6 +1,6 @@
 #include "json.h"
 #include "Parser.generated.h"
-#include <assert.h>
+#include "utility.h"
 
 namespace json {
 
@@ -30,8 +30,7 @@ Value Create(ast::Value& ast) {
 		return Value{ Create(*std::get<std::shared_ptr<ast::Array>>(ast.value)) };
 	}
 
-	// unhandled json value
-	throw std::exception();
+	Panic("unhandled json value");
 }
 
 Object Create(ast::Object& ast) {

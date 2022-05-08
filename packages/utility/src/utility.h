@@ -6,5 +6,5 @@
 void Log(std::string&& message);
 void Log(const char* message);
 
-#define Assert(condition, message) if (!(condition)) { Log(message); assert(false); throw std::exception(); }
+#define Assert(condition, message) if (!(condition)) { Log(message); assert(false); std::abort(); }
 #define Panic(message) Assert(false, message)
