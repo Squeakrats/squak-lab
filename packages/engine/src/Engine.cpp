@@ -2,6 +2,9 @@
 #include "utility.h"
 #include <chrono>
 #include "JSONLoader.h"
+#ifdef EMSCRIPTEN
+#include <emscripten.h>
+#endif
 
 Engine Engine::engine = Engine{};
 
@@ -23,6 +26,8 @@ Engine& Engine::Init(std::string assetDir) {
     engine.size.first = size[0].as<uint32_t>();
     engine.size.second = size[1].as<uint32_t>();
 
+    engine.window = window::Create("Lawless", engine.size.first, engine.size.second);
+
     for (auto& entry : config["axes"].get<json::Object>().entries) {
         Axis axis{};
         for (auto& binding : entry.second.get<json::Object>().entries) {
@@ -31,17 +36,6 @@ Engine& Engine::Init(std::string assetDir) {
 
         engine.RegisterAxis(entry.first, axis);
     }
-
-    Assert(glfwInit(), "Failed to initialize glfw");
-    engine.window = glfwCreateWindow(engine.size.first, engine.size.second, name.c_str(), nullptr, nullptr);
-    glfwMakeContextCurrent(engine.window);
-
-#ifndef EMSCRIPTEN
-    glewExperimental = true;
-    Assert(glewInit() == GLEW_OK, "Failed to initialize glew");
-#endif
-
-    Log(std::string("OpenGL Version : ") +  std::string((char*)glGetString(GL_VERSION)));
 
     return engine;
 }
@@ -61,10 +55,12 @@ void Engine::Run() {
 #endif
 
 void Engine::Tick() {
+    window->Poll();
+
     static auto lastTick = std::chrono::system_clock::now();
     auto now = std::chrono::system_clock::now();
     float deltaMs = static_cast<float>(std::chrono::duration_cast<std::chrono::milliseconds>(now - lastTick).count());
-    
+ 
     if (deltaMs < 17) {
         return;
     }
@@ -81,8 +77,7 @@ void Engine::Tick() {
         this->renderer->Render(*this->camera, *this->scene);
     }
 
-    glfwSwapBuffers(this->window);
-    glfwPollEvents();
+    this->window->Flush();
 }
 
 std::shared_ptr<Actor> Engine::SpawnCore(std::string type, Transform transform) {

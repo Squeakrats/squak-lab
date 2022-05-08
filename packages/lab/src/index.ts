@@ -1,13 +1,7 @@
-interface Window {
-    Module: { canvas: HTMLCanvasElement };
-}
-
 function main() {
-    window.Module = {
-        canvas : document.createElement("canvas")
-    };
-
-    document.body.appendChild(window.Module.canvas);
+    const canvas: HTMLCanvasElement = document.createElement("canvas");
+    canvas.id = "canvas";
+    document.body.appendChild(canvas);
 
     const script: HTMLScriptElement = document.createElement("script");
     script.src = "/packages/lawless/lawless.js"

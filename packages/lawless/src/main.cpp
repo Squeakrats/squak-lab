@@ -1,5 +1,4 @@
 #include "gl/glutils.h"
-#include "glfw/glfw3.h"
 #include "gltf.h"
 #include "Engine.h"
 #include "Player.h"

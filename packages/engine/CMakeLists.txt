@@ -12,4 +12,4 @@ add_library(engine
 	src/JSONLoader.cpp
 )
 target_include_directories(engine PUBLIC src/)
-target_link_libraries(engine graphics core utility json gltf)
+target_link_libraries(engine graphics core utility json gltf window)

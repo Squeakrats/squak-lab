@@ -1,13 +1,7 @@
 #pragma once
 #include <memory>
 #include <string>
-#ifndef EMSCRIPTEN
-#include <gl/glew.h>
-#else
-#include <emscripten.h>
-#include <GLES3/gl3.h>
-#endif
-#include "GLFW/glfw3.h"
+#include "window.h"
 #include "SceneNode.h"
 #include "IRenderer.h"
 #include <functional>
@@ -32,7 +26,7 @@ struct Axis {
 
 class Engine {
 private:
-	GLFWwindow* window{};
+	std::shared_ptr<window::IWindow> window{};
 	AssetManager assetManager{};
 	std::shared_ptr<SceneNode> scene{};
 	std::shared_ptr<CameraNode> camera{};
@@ -74,7 +68,7 @@ public:
 
 	void Tick();
 	void Run();
-	bool isRunning() { return !glfwWindowShouldClose(this->window); }
+	bool isRunning() { return !window->ShouldClose(); }
 
 	template<typename T, std::enable_if<std::is_base_of<Actor, T>::value>* = nullptr>
 	std::shared_ptr<T> Spawn(Transform transform = Transform()) {
@@ -91,7 +85,7 @@ public:
 	}
 
 	int GetKey(int key){
-		return glfwGetKey(this->window, key);
+		return this->window->GetKey(key);
 	}
 
 	void RegisterAxis(std::string name, Axis axis) {
@@ -101,7 +95,7 @@ public:
 	float GetAxis(std::string name) {
 		Axis& axis = this->axes.at(name);
 		for (auto binding : axis.bindings) {
-			if (glfwGetKey(this->window, binding.first)) {
+			if (this->window->GetKey(binding.first)) {
 				return binding.second;
 			}
 		}
