@@ -10,4 +10,6 @@ target_link_libraries(lawless gl gltf core engine)
 
 if (EMSCRIPTEN)
     set_target_properties(lawless PROPERTIES LINK_FLAGS "-s MIN_WEBGL_VERSION=2 --embed-file ..\\..\\..\\..\\assets@/ -s TOTAL_MEMORY=51118080")
+else()
+    target_link_libraries(lawless opengl32)
 endif()
