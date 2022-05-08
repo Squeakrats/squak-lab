@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #ifdef EMSCRIPTEN
+#include <emscripten/html5_webgl.h>
 #include <GLES3/gl3.h>
 #else
 #include <gl/glew.h>

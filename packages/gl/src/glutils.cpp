@@ -71,17 +71,17 @@ Framebuffer CreateFramebuffer(uint32_t width, uint32_t height, std::vector<GLenu
 
 	glGenRenderbuffers(1, &framebuffer.depthAttachment);
 	glBindRenderbuffer(GL_RENDERBUFFER, framebuffer.depthAttachment);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32F, width, height);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, framebuffer.depthAttachment);
 
 	framebuffer.colorAttachments.resize(nColorAttachments);
 	glGenTextures(nColorAttachments, framebuffer.colorAttachments.data());
 	for (GLsizei i = 0; i < nColorAttachments; i++) {
 		glBindTexture(GL_TEXTURE_2D, framebuffer.colorAttachments[i]);
-		glTexImage2D(GL_TEXTURE_2D, 0, attachments[i], width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+		glTexStorage2D(GL_TEXTURE_2D, 1, attachments[i], width, height);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, framebuffer.colorAttachments[i], 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, framebuffer.colorAttachments[i], 0);
 	}
 
 	std::vector<GLenum> drawBuffers(nColorAttachments);

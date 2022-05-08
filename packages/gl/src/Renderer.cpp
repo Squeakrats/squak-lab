@@ -71,9 +71,13 @@ public:
 };
 
 Renderer::Renderer(uint32_t width, uint32_t height) {
+#ifdef EMSCRIPTEN
+	emscripten_webgl_enable_extension(emscripten_webgl_get_current_context(), "EXT_color_buffer_float");
+#endif
+
 	this->texuredRenderer = std::make_shared<TexturedRenderer>(this->context);
 	this->solidRenderer = std::make_shared<SolidRenderer>(this->context);
-	this->framebuffer = gl::CreateFramebuffer(width, height, { GL_RGB, GL_RGB32F, GL_RGB32F });
+	this->framebuffer = gl::CreateFramebuffer(width, height, { GL_RGB8, GL_RGBA32F, GL_RGBA32F });
 
 	float quadBufferData[] = {
 		 1.0,  1.0, -1.0,  1.0, -1.0, -1.0,
