@@ -2,10 +2,27 @@
 #include <windows.h>
 #include <wingdi.h>
 #include <winuser.h>
-#include <gl/glew.h>
+#define GLAD_GL_IMPLEMENTATION
+#include <glad/gl.h>
 #include "utility.h"
 
 namespace window {
+
+HMODULE glModule{};
+
+GLADapiproc FindProcAddress(const char* name) {
+    if (glModule == nullptr) {
+        glModule = GetModuleHandle("opengl32.dll");
+    }
+
+    Assert(glModule != nullptr, "unable to locate opengl32");
+    GLADapiproc address = (GLADapiproc)GetProcAddress(glModule, name);
+    if (address != nullptr) {
+        return address;
+    }
+
+    return (GLADapiproc)wglGetProcAddress(name);
+}
 
 class Window : public IWindow {
 private:
@@ -91,8 +108,7 @@ std::shared_ptr<IWindow> Create(std::string name, uint32_t width, uint32_t heigh
     HGLRC glContext = wglCreateContext(deviceContext);
     Assert(wglMakeCurrent(deviceContext, glContext), "Failed to activate OpenGL context");
 
-    glewExperimental = true;
-    Assert(glewInit() == GLEW_OK, "Failed to initialize glew");
+    gladLoadGL(FindProcAddress);
 
     glViewport(0, 0, width, height);
 

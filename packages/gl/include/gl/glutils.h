@@ -4,7 +4,7 @@
 #include <emscripten/html5_webgl.h>
 #include <GLES3/gl3.h>
 #else
-#include <gl/glew.h>
+#include <glad/gl.h>
 #endif
 #include "IRenderer.h"
 
