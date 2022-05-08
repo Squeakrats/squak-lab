@@ -1,1 +1,1 @@
-emmake make -C build/wasm --no-print-directory
+emmake make -C build/wasm -j 4 --no-print-directory
