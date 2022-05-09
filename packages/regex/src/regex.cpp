@@ -1,8 +1,8 @@
-#include "RegularExpression.h"
+#include "regex.h"
 #include "Parser.generated.h"
 #include "utility.h"
 
-namespace RegularExpression {
+namespace regex {
 
 NFA Create(char character) {
   NFA nfa;
@@ -103,7 +103,7 @@ NFA Create(AST::RegularExpression& ast) {
 NFA Create(std::string expression) {
   TokenStream<Token> stream(expression, Tokenize);
   ParserContext context{ stream.Next(), stream };
-  NFA nfa = Create(*ParseRegularExpression(context));
+  NFA nfa = Create(*Parseregex(context));
 
   return nfa;
 }

@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
-#include  "../RegularExpression.h"
+#include  "../regex.h"
 
-using namespace RegularExpression;
+using namespace regex;
 
-TEST(RegularExpression, PlusOperator) {
-	DFA dfa = DFA::FromNFA(RegularExpression::Create("a+"));
+TEST(regex, PlusOperator) {
+	DFA dfa = DFA::FromNFA(regex::Create("a+"));
 
 	EXPECT_EQ(dfa.Match("a"), true);
 	EXPECT_EQ(dfa.Match("aa"), true);
@@ -13,8 +13,8 @@ TEST(RegularExpression, PlusOperator) {
 	EXPECT_EQ(dfa.Match(""), false);
 }
 
-TEST(RegularExpression, StarOperator) {
-	DFA dfa = DFA::FromNFA(RegularExpression::Create("ba*"));
+TEST(regex, StarOperator) {
+	DFA dfa = DFA::FromNFA(regex::Create("ba*"));
 
 	EXPECT_EQ(dfa.Match("b"), true);
 	EXPECT_EQ(dfa.Match("ba"), true);
@@ -23,8 +23,8 @@ TEST(RegularExpression, StarOperator) {
 	EXPECT_EQ(dfa.Match(""), false);
 }
 
-TEST(RegularExpression, OptionalOperator) {
-	DFA dfa = DFA::FromNFA(RegularExpression::Create("a?c"));
+TEST(regex, OptionalOperator) {
+	DFA dfa = DFA::FromNFA(regex::Create("a?c"));
 
 	EXPECT_EQ(dfa.Match("ac"), true);
 	EXPECT_EQ(dfa.Match("c"), true);
@@ -32,8 +32,8 @@ TEST(RegularExpression, OptionalOperator) {
 	EXPECT_EQ(dfa.Match("ad"), false);
 }
 
-TEST(RegularExpression, CharacterClass) {
-	DFA dfa = DFA::FromNFA(RegularExpression::Create("[abc]"));
+TEST(regex, CharacterClass) {
+	DFA dfa = DFA::FromNFA(regex::Create("[abc]"));
 
 	EXPECT_EQ(dfa.Match("a"), true);
 	EXPECT_EQ(dfa.Match("b"), true);
@@ -41,8 +41,8 @@ TEST(RegularExpression, CharacterClass) {
 	EXPECT_EQ(dfa.Match("d"), false);
 }
 
-TEST(RegularExpression, Number) {
-	DFA dfa = DFA::FromNFA(RegularExpression::Create("[0123456789]+.?[0123456789]+"));
+TEST(regex, Number) {
+	DFA dfa = DFA::FromNFA(regex::Create("[0123456789]+.?[0123456789]+"));
 
 	EXPECT_EQ(dfa.Match("0123"), true);
 	EXPECT_EQ(dfa.Match("434"), true);
@@ -51,8 +51,8 @@ TEST(RegularExpression, Number) {
 	EXPECT_EQ(dfa.Match("32.a"), false);
 }
 
-TEST(RegularExpression, Negate) {
-	DFA dfa = DFA::FromNFA(RegularExpression::Create("[^abc]"));
+TEST(regex, Negate) {
+	DFA dfa = DFA::FromNFA(regex::Create("[^abc]"));
 
 	EXPECT_EQ(dfa.Match("d"), true);
 	EXPECT_EQ(dfa.Match("e"), true);
@@ -62,8 +62,8 @@ TEST(RegularExpression, Negate) {
 	EXPECT_EQ(dfa.Match("c"), false);
 }
 
-TEST(RegularExpression, Merge) {
-	DFA dfa = DFA::FromNFA(RegularExpression::Create(std::vector<std::string>{
+TEST(regex, Merge) {
+	DFA dfa = DFA::FromNFA(regex::Create(std::vector<std::string>{
 		"true",
 		"false"
 	}));

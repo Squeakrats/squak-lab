@@ -1,7 +1,7 @@
 #include "Parser.generated.h"
 #include "utility.h"
 
-namespace RegularExpression {
+namespace regex {
 
 Token Tokenize(std::stringstream& source) {
   if (source.eof()) {

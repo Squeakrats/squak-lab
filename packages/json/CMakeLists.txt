@@ -26,7 +26,7 @@ target_include_directories(json
 	PRIVATE 
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
 )
-target_link_libraries(json compiler RegularExpression)
+target_link_libraries(json compiler regex)
 
 add_executable(JsonTests src/tests/JsonTests.cpp)
 target_link_libraries(JsonTests gtest_main json)

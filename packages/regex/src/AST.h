@@ -2,7 +2,7 @@
 #include <memory>
 #include <string>
 
-namespace RegularExpression::AST {
+namespace regex::AST {
 
 struct RegularExpression;
 struct Sequence;

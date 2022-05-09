@@ -2,7 +2,7 @@
 #include "AST.h"
 }
 
-<RegularExpression> {std::shared_ptr<AST::RegularExpression>} ::= <OptionalSequence> <EndOfFile> { return std::make_shared<AST::RegularExpression>(P0); }; 
+<regex> {std::shared_ptr<AST::RegularExpression>} ::= <OptionalSequence> <EndOfFile> { return std::make_shared<AST::RegularExpression>(P0); }; 
 
 <OptionalSequence> {std::shared_ptr<AST::Sequence>} ::= <Expression> <OptionalSequence> { return std::make_shared<AST::Sequence>(P0, P1); }; 
 

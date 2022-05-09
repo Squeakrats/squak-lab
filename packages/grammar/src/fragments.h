@@ -40,7 +40,7 @@ namespace {} {
 };
 )ESC";
 
-const char* TokenizerIncludes = R"ESC(#include "RegularExpression.h"
+const char* TokenizerIncludes = R"ESC(#include "regex.h"
 #include <optional>)ESC";
 
 const char* Tokenize = R"ESC(
@@ -48,7 +48,7 @@ Token Tokenize(std::stringstream& stream) {
 	static std::vector<std::optional<TokenType>> tokens = {
 {}};
 
-	static DFA dfa = DFA::FromNFA(RegularExpression::Create(std::vector<std::string>({
+	static DFA dfa = DFA::FromNFA(regex::Create(std::vector<std::string>({
 {}})));
 
 	while(true) {
