@@ -4,6 +4,9 @@ project(squak-lab)
 include_directories(${CMAKE_SOURCE_DIR}/lib/include)
 
 set(CMAKE_CXX_STANDARD 23)
+if (NOT EMSCRIPTEN)
+  set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*;header-filter=.;")
+endif()
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Follow google test framework setup instructions
