@@ -1,7 +1,7 @@
 #include "shaders.h"
 
 namespace gl::shaders {
-    
+
 namespace textured {
 
 const char* const vertex = R"ESC(#version 300 es
@@ -173,6 +173,5 @@ void main() {
 )ESC";
 
 };
-
 
 };

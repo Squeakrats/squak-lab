@@ -1,9 +1,9 @@
 #pragma once
-#include "SceneNode.h"
 #include "CameraNode.h"
+#include "SceneNode.h"
 
 struct IRenderer {
-    virtual ~IRenderer() {}
+  virtual ~IRenderer() {}
 
-    virtual void Render(CameraNode& camera, SceneNode& scene) = 0;
+  virtual void Render(CameraNode& camera, SceneNode& scene) = 0;
 };

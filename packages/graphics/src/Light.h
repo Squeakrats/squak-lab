@@ -3,5 +3,5 @@
 
 class Light {
 public:
-	Vector3 color;
+  Vector3 color;
 };

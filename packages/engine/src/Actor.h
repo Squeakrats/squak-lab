@@ -1,6 +1,6 @@
 #pragma once
-#include <string>
 #include <memory>
+#include <string>
 
 class SceneNode;
 class ActorInitializer;
@@ -9,16 +9,16 @@ class Engine;
 
 class Actor {
 protected:
-	std::string id;
-	std::shared_ptr<SceneNode> root;
-	Engine& engine;
+  std::string id;
+  std::shared_ptr<SceneNode> root;
+  Engine& engine;
 
 public:
-	Actor(const ActorInitializer& initializer);
-	virtual ~Actor() {};
+  Actor(const ActorInitializer& initializer);
+  virtual ~Actor(){};
 
-	std::shared_ptr<SceneNode> GetRoot() { return root; }
-	Transform& GetTransform();
+  std::shared_ptr<SceneNode> GetRoot() { return root; }
+  Transform& GetTransform();
 
-	virtual void Tick(float deltaMs);
+  virtual void Tick(float deltaMs);
 };

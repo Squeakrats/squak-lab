@@ -1,5 +1,5 @@
 #pragma once
-#include <vector>
 #include "Buffer.h"
+#include <vector>
 
 size_t inflate(Buffer& output, Buffer& input);

@@ -5,20 +5,24 @@
 
 class Player : public Actor {
 public:
-    using Super = Actor;
-    float speed = 0.0001f;
+  using Super = Actor;
+  float speed = 0.0001f;
 
-    Player(const ActorInitializer& initializer) : Actor(initializer) {
-        this->root->AddChild(engine.GetAsset<SceneAsset>("suzanne.glb")->scene);
-    }
+  Player(const ActorInitializer& initializer)
+    : Actor(initializer) {
+    this->root->AddChild(engine.GetAsset<SceneAsset>("suzanne.glb")->scene);
+  }
 
-    virtual void Tick(float deltaMs) override {
-        Super::Tick(deltaMs);
-        auto& transform = this->GetTransform();
-        transform.rotation.y += deltaMs * speed;
-    }
+  virtual void Tick(float deltaMs) override {
+    Super::Tick(deltaMs);
+    auto& transform = this->GetTransform();
+    transform.rotation.y += deltaMs * speed;
+  }
 
-    static const ActorCreatorEntry CREATORENTRY;
+  static const ActorCreatorEntry CREATORENTRY;
 };
 
-const ActorCreatorEntry Player::CREATORENTRY = Engine::RegisterClass("Player", [](const ActorInitializer& initializer) { return std::make_shared<Player>(initializer); });
+const ActorCreatorEntry Player::CREATORENTRY =
+  Engine::RegisterClass("Player", [](const ActorInitializer& initializer) {
+    return std::make_shared<Player>(initializer);
+  });

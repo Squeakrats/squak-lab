@@ -1,6 +1,6 @@
 #pragma once
-#include <vector>
 #include "DFA.h"
+#include <vector>
 
 namespace RegularExpression {
 

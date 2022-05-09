@@ -1,16 +1,16 @@
-#pragma once 
-#include <sstream>
+#pragma once
 #include <assert.h>
+#include <sstream>
 
 enum class TokenType {
-	Symbol,
-	Replaces,
-	SemiColon,
-	Code,
-	LeftBracket,
-	RightBracket,
-	Alternate,
-	EndOfFile
+  Symbol,
+  Replaces,
+  SemiColon,
+  Code,
+  LeftBracket,
+  RightBracket,
+  Alternate,
+  EndOfFile
 };
 
 using Token = std::pair<TokenType, std::string>;

@@ -1,6 +1,6 @@
 #pragma once
-#include <string>
 #include <memory>
+#include <string>
 
 namespace RegularExpression::AST {
 
@@ -13,60 +13,74 @@ struct CharacterClassList;
 struct Not;
 
 struct RegularExpression {
-	std::shared_ptr<Sequence> sequence;
+  std::shared_ptr<Sequence> sequence;
 
-	RegularExpression(std::shared_ptr<Sequence> sequence) : sequence(sequence) {};
+  RegularExpression(std::shared_ptr<Sequence> sequence)
+    : sequence(sequence){};
 };
 
 struct Sequence {
-	std::shared_ptr<Expression> lhs;
-	std::shared_ptr<Sequence> rhs;
+  std::shared_ptr<Expression> lhs;
+  std::shared_ptr<Sequence> rhs;
 
-	Sequence(std::shared_ptr<Expression> lhs, std::shared_ptr<Sequence> rhs) : lhs(lhs), rhs(rhs) {};
+  Sequence(std::shared_ptr<Expression> lhs, std::shared_ptr<Sequence> rhs)
+    : lhs(lhs)
+    , rhs(rhs){};
 };
 
 struct Expression {
-	std::shared_ptr<Value> value;
-	std::shared_ptr<Quantifier> quantifier;
+  std::shared_ptr<Value> value;
+  std::shared_ptr<Quantifier> quantifier;
 
-	Expression(std::shared_ptr<Value> value, std::shared_ptr<Quantifier> quantifier) : value(value), quantifier(quantifier) {};
+  Expression(std::shared_ptr<Value> value,
+             std::shared_ptr<Quantifier> quantifier)
+    : value(value)
+    , quantifier(quantifier){};
 };
 
 struct Character {
-	std::string value;
+  std::string value;
 
-	Character(std::string value) : value(value) {};
+  Character(std::string value)
+    : value(value){};
 };
 
-
 struct CharacterClass {
-	bool negated;
-	std::shared_ptr<CharacterClassList> list;
+  bool negated;
+  std::shared_ptr<CharacterClassList> list;
 
-	CharacterClass(bool negated, std::shared_ptr<CharacterClassList> list) : negated(negated), list(list) {};
+  CharacterClass(bool negated, std::shared_ptr<CharacterClassList> list)
+    : negated(negated)
+    , list(list){};
 };
 
 struct CharacterClassList {
-	std::string character;
-	std::shared_ptr<CharacterClassList> rhs;
+  std::string character;
+  std::shared_ptr<CharacterClassList> rhs;
 
-	CharacterClassList(std::string character, std::shared_ptr<CharacterClassList> rhs) : character(character), rhs(rhs) {};
+  CharacterClassList(std::string character,
+                     std::shared_ptr<CharacterClassList> rhs)
+    : character(character)
+    , rhs(rhs){};
 };
 
 struct Value {
-	std::shared_ptr<Character> character;
-	std::shared_ptr<CharacterClass> characterClass;
+  std::shared_ptr<Character> character;
+  std::shared_ptr<CharacterClass> characterClass;
 
-	Value(std::shared_ptr<Character> character) : character(character) {};
-	Value(std::shared_ptr<CharacterClass> characterClass) : characterClass(characterClass) {};
+  Value(std::shared_ptr<Character> character)
+    : character(character){};
+  Value(std::shared_ptr<CharacterClass> characterClass)
+    : characterClass(characterClass){};
 };
 
 struct Not {};
 
 struct Quantifier {
-	std::string quantifier;
+  std::string quantifier;
 
-	Quantifier(std::string quantifier) : quantifier(quantifier) {};
+  Quantifier(std::string quantifier)
+    : quantifier(quantifier){};
 };
 
 }

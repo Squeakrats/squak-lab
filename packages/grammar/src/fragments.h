@@ -28,9 +28,9 @@ public:
 )ESC";
 
 const char* Parser = R"ESC(// This file was auto-generated
+#include "Parser.generated.h"
 #include <assert.h>
 #include <utility>
-#include "Parser.generated.h"
 {}
 
 namespace {} {
@@ -77,21 +77,21 @@ const char* ParserImplementation = R"ESC(
 )ESC";
 
 std::string format(std::string source, std::vector<std::string> replacements) {
-	std::stringstream formatted{};
-	size_t size = 0;
-	size_t replace = 0;
+  std::stringstream formatted{};
+  size_t size = 0;
+  size_t replace = 0;
 
-	for (size_t i = 0; i < source.size() - 1; i++) {
-		if (source[i] == '{' && source[i + 1] == '}') {
-			formatted << source.substr(size, i - size);
-			formatted << replacements[replace++];
-			i = size = i + 2;
-		}
-	}
+  for (size_t i = 0; i < source.size() - 1; i++) {
+    if (source[i] == '{' && source[i + 1] == '}') {
+      formatted << source.substr(size, i - size);
+      formatted << replacements[replace++];
+      i = size = i + 2;
+    }
+  }
 
-	formatted << source.substr(size, source.size() - size);
+  formatted << source.substr(size, source.size() - size);
 
-	return formatted.str();
+  return formatted.str();
 }
 
 };

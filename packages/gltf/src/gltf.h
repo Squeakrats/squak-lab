@@ -1,7 +1,7 @@
 #pragma once
-#include "json.h"
-#include "SceneNode.h"
 #include "AssetManager.h"
+#include "SceneNode.h"
+#include "json.h"
 
 namespace gltf {
 

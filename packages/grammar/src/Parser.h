@@ -1,25 +1,25 @@
 #pragma once
-#include <vector>
-#include <variant>
 #include "TokenStream.h"
 #include "Tokenizer.h"
 #include "utility.h"
+#include <variant>
+#include <vector>
 
 /*
 <grammer> ::= <code> <tokens> <productions>
 
 <productions> ::= <production> <productions>
-				|
+                                |
 
 <production> ::= <symbol> <code> <derives> <expression> <semicolon>
 
 <expression> ::= <sequence> <code> <alternateexp>
 
 <alternateexp> ::= <alternate> <expression>
-			  |
+                          |
 
 <sequence>	::= <symbol> <sequence>
-			 |
+                         |
 */
 
 namespace AST {
@@ -27,53 +27,54 @@ namespace AST {
 using Symbol = std::string;
 
 struct Sequence {
-	std::vector<Symbol> symbols{};
-	std::string code{};
+  std::vector<Symbol> symbols{};
+  std::string code{};
 };
 
 using Expression = std::vector<Sequence>;
 
 struct Production {
-	Symbol symbol{};
-	std::string type{};
-	Expression expression{};
+  Symbol symbol{};
+  std::string type{};
+  Expression expression{};
 };
 
 struct Grammar {
-	std::string code{};
-	std::vector<std::pair<std::string, std::string>> tokens{};
-	std::vector<Production> productions{};
+  std::string code{};
+  std::vector<std::pair<std::string, std::string>> tokens{};
+  std::vector<Production> productions{};
 };
 
 };
 
 class Parser {
 private:
-	TokenStream<Token> source;
-	Token token{};
+  TokenStream<Token> source;
+  Token token{};
 
 public:
-	Parser(std::string source) : source(source, Tokenize) {}
+  Parser(std::string source)
+    : source(source, Tokenize) {}
 
-	static AST::Grammar Parse(std::string source) {
-		Parser parser(source);
+  static AST::Grammar Parse(std::string source) {
+    Parser parser(source);
 
-		return parser.Parse();
-	}
+    return parser.Parse();
+  }
 
 private:
-	Token Use(TokenType type) {
-		Assert(this->token.first == type, "unhandled token");
+  Token Use(TokenType type) {
+    Assert(this->token.first == type, "unhandled token");
 
-		Token token = this->token;
-		this->token = this->source.Next();
+    Token token = this->token;
+    this->token = this->source.Next();
 
-		return token;
-	}
+    return token;
+  }
 
-	AST::Grammar Parse();
-	std::vector<AST::Production> ParseProductions();
-	AST::Production ParseProduction();
-	AST::Expression ParseExpression();
-	AST::Sequence ParseSequence();
+  AST::Grammar Parse();
+  std::vector<AST::Production> ParseProductions();
+  AST::Production ParseProduction();
+  AST::Expression ParseExpression();
+  AST::Sequence ParseSequence();
 };
