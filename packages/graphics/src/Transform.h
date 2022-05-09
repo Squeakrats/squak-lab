@@ -21,5 +21,8 @@ public:
     return (this->ToMatrix() * Vector4(1.0, 0.0, 0.0, 0.0)).xyz();
   }
 
-  Matrix4 ToMatrix() { return Matrix4::Create(this->position, this->rotation); }
+  Matrix4 ToMatrix() {
+    return Matrix4::RotateX(rotation.x) * Matrix4::RotateY(rotation.y) *
+           Matrix4::RotateZ(rotation.z) * Matrix4::Translate(position);
+  }
 };

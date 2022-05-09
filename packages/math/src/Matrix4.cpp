@@ -309,13 +309,6 @@ Matrix4 Matrix4::Translate(Vector3 translation) {
                  a44);
 }
 
-Matrix4 Matrix4::Create(Vector3 position, Vector3 rotation) {
-  Matrix4 matrix = RotateX(rotation.x) * RotateY(rotation.y) *
-                   RotateZ(rotation.z) * Translate(position);
-
-  return matrix;
-}
-
 Matrix4 operator*(const Matrix4& lhs, const Matrix4& rhs) {
   const float* a = lhs.data;
   const float* b = rhs.data;
