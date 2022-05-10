@@ -14,22 +14,20 @@ NFA Create(char character) {
 }
 
 NFA Create(AST::Value& value) {
-  if (value.character != nullptr) {
-    return Create(value.character->value[0]);
+  if (std::holds_alternative<char>(value)) {
+    return Create(std::get<char>(value));
   }
 
-  if (value.characterClass != nullptr &&
-      value.characterClass->list != nullptr) {
+  if (std::holds_alternative<AST::CharacterClass>(value)) {
+    AST::CharacterClass& characterClass = std::get<AST::CharacterClass>(value);
+
     bool characters[256] = { 0 };
 
-    std::shared_ptr<AST::CharacterClassList> current =
-      value.characterClass->list;
-    while (current != nullptr) {
-      characters[static_cast<uint8_t>(current->character[0])] = true;
-      current = current->rhs;
+    for (char character : characterClass.list) {
+      characters[static_cast<uint8_t>(character)] = true;
     }
 
-    if (value.characterClass->negated) {
+    if (characterClass.negated) {
       for (int i = 0; i < 256; i++) {
         characters[i] = !characters[i];
       }
@@ -52,14 +50,16 @@ NFA Create(AST::Value& value) {
 }
 
 NFA Create(AST::Expression& ast) {
-  NFA nfa = Create(*ast.value.get());
+  NFA nfa = Create(ast.value);
 
-  if (ast.quantifier == nullptr) {
+  if (ast.quantifier == std::nullopt) {
     return nfa;
   }
 
-  if (ast.quantifier->quantifier == "+") {
-    NFA repeat = Create(*ast.value.get());
+  char quantifier = *ast.quantifier;
+
+  if (quantifier == '+') {
+    NFA repeat = Create(ast.value);
 
     nfa.Union(std::move(repeat));
     nfa.AddTransition(nfa.acceptingState, repeat.initialState);
@@ -67,14 +67,14 @@ NFA Create(AST::Expression& ast) {
     return nfa;
   }
 
-  if (ast.quantifier->quantifier == "*") {
+  if (quantifier == '*') {
     nfa.AddTransition(nfa.initialState, nfa.acceptingState);
     nfa.AddTransition(nfa.acceptingState, nfa.initialState);
 
     return nfa;
   }
 
-  if (ast.quantifier->quantifier == "?") {
+  if (quantifier == '?') {
     nfa.AddTransition(nfa.initialState, nfa.acceptingState);
 
     return nfa;
@@ -88,13 +88,8 @@ NFA Create(AST::RegularExpression& ast) {
   nfa.initialState = nfa.AddState();
   nfa.acceptingState = nfa.initialState;
 
-  std::shared_ptr<AST::Sequence> current = ast.sequence;
-  while (current != nullptr) {
-    if (current->lhs != nullptr) {
-      nfa.Append(Create(*current->lhs));
-    }
-
-    current = current->rhs;
+  for (auto& expression : ast.sequence) {
+    nfa.Append(Create(expression));
   }
 
   return nfa;
@@ -103,7 +98,8 @@ NFA Create(AST::RegularExpression& ast) {
 NFA Create(std::string expression) {
   TokenStream<Token> stream(expression, Tokenize);
   ParserContext context{ stream.Next(), stream };
-  NFA nfa = Create(*Parseregex(context));
+  AST::RegularExpression ast = Parseregex(context);
+  NFA nfa = Create(ast);
 
   return nfa;
 }
@@ -121,6 +117,13 @@ NFA Create(std::vector<std::string> expressions) {
   }
 
   return result;
+}
+
+AST::Sequence AST::CreateSequence(Expression a, Sequence b) {
+  std::vector<Expression> sequence{ a };
+  sequence.insert(sequence.end(), b.begin(), b.end());
+
+  return sequence;
 }
 
 };
