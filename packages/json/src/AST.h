@@ -6,7 +6,6 @@
 namespace json::ast {
 
 struct Object;
-struct ObjectEntry;
 struct Array;
 using Value = std::variant<std::shared_ptr<ast::Object>,
                            std::shared_ptr<ast::Array>,
@@ -22,9 +21,6 @@ struct ObjectEntry {
 struct Object {
   std::list<ObjectEntry> entries{};
 
-  Object(std::list<ObjectEntry> entries)
-    : entries(entries){};
-
   static std::list<ast::ObjectEntry> Create(ast::ObjectEntry a,
                                             std::list<ast::ObjectEntry> b) {
     std::list<ast::ObjectEntry> value = std::list<ast::ObjectEntry>({ a });
@@ -37,13 +33,8 @@ struct Object {
 struct Array {
   std::list<ast::Value> elements;
 
-  Array()
-    : elements(){};
-  Array(std::list<ast::Value> elements)
-    : elements(elements){};
-
   static Array Create(ast::Value a, ast::Array b) {
-    ast::Array value = ast::Array({ a });
+    ast::Array value = ast::Array({{ a }});
     value.elements.insert(
       value.elements.end(), b.elements.begin(), b.elements.end());
 

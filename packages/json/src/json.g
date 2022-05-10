@@ -18,7 +18,7 @@
 
 <json> {std::shared_ptr<ast::Object>} ::= <Object> <EndOfFile> { return P0; };
 
-<Object> {std::shared_ptr<ast::Object>} ::= <LeftBrace> <ObjectEntries> <RightBrace> { return std::make_shared<ast::Object>(P1); };
+<Object> {std::shared_ptr<ast::Object>} ::= <LeftBrace> <ObjectEntries> <RightBrace> { return std::make_shared<ast::Object>(ast::Object{ P1 }); };
 <ObjectEntries> {std::list<ast::ObjectEntry>} ::= <ObjectEntry> <ObjectEntriesPrime> { return ast::Object::Create(P0, P1); }
                                                         | { return std::list<ast::ObjectEntry>(); };
 
@@ -29,9 +29,9 @@
 
 <Array> {std::shared_ptr<ast::Array>} ::= <LeftBracket> <ArrayEntries> <RightBracket> { return std::make_shared<ast::Array>(P1); };
 <ArrayEntries> {ast::Array} ::= <Value> <ArrayEntriesPrime> { return ast::Array::Create(P0, P1); }
-                                                    | { return ast::Array(); };
+                                                    | { return ast::Array{}; };
 <ArrayEntriesPrime> {ast::Array} ::= <Comma> <Value> <ArrayEntriesPrime> { return ast::Array::Create(P1, P2); }
-                                                         | { return ast::Array(); };
+                                                         | { return ast::Array{}; };
                                                         
 <Value> {ast::Value} ::= <True> { return true; }
                   | <False> { return false; }
