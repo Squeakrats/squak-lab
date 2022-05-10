@@ -6,70 +6,49 @@
 namespace json::ast {
 
 struct Object;
-struct ObjectEntries;
 struct ObjectEntry;
-
 struct Array;
-struct ArrayEntry;
-
-struct Value;
-
-struct Object {
-  std::shared_ptr<ObjectEntries> entries{};
-
-  Object(std::shared_ptr<ObjectEntries> entries)
-    : entries(entries){};
-};
-
-struct ObjectEntries {
-  std::shared_ptr<ObjectEntry> entry;
-  std::shared_ptr<ObjectEntries> rhs;
-
-  ObjectEntries(std::shared_ptr<ObjectEntry> entry,
-                std::shared_ptr<ObjectEntries> rhs)
-    : entry(entry)
-    , rhs(rhs){};
-};
+using Value = std::variant<std::shared_ptr<ast::Object>,
+                           std::shared_ptr<ast::Array>,
+                           double,
+                           bool,
+                           std::string>;
 
 struct ObjectEntry {
   std::string key{};
-  std::shared_ptr<Value> value{};
-
-  ObjectEntry(std::string key, std::shared_ptr<Value> value)
-    : key(key)
-    , value(value){};
+  Value value{};
 };
 
-struct Value {
-  std::variant<std::shared_ptr<ast::Object>,
-               std::shared_ptr<ast::Array>,
-               double,
-               bool,
-               std::string>
-    value;
+struct Object {
+  std::list<ObjectEntry> entries{};
 
-  Value(std::variant<std::shared_ptr<ast::Object>,
-                     std::shared_ptr<ast::Array>,
-                     double,
-                     bool,
-                     std::string> value)
-    : value(value){};
+  Object(std::list<ObjectEntry> entries)
+    : entries(entries){};
+
+  static std::list<ast::ObjectEntry> Create(ast::ObjectEntry a,
+                                            std::list<ast::ObjectEntry> b) {
+    std::list<ast::ObjectEntry> value = std::list<ast::ObjectEntry>({ a });
+    value.insert(value.end(), b.begin(), b.end());
+
+    return value;
+  }
 };
 
 struct Array {
-  std::shared_ptr<ArrayEntry> entry{};
+  std::list<ast::Value> elements;
 
-  Array(std::shared_ptr<ArrayEntry> entry)
-    : entry(entry){};
-};
+  Array()
+    : elements(){};
+  Array(std::list<ast::Value> elements)
+    : elements(elements){};
 
-struct ArrayEntry {
-  std::shared_ptr<Value> value;
-  std::shared_ptr<ArrayEntry> rhs{};
+  static Array Create(ast::Value a, ast::Array b) {
+    ast::Array value = ast::Array({ a });
+    value.elements.insert(
+      value.elements.end(), b.elements.begin(), b.elements.end());
 
-  ArrayEntry(std::shared_ptr<Value> value, std::shared_ptr<ArrayEntry> rhs)
-    : value(value)
-    , rhs(rhs){};
+    return value;
+  }
 };
 
 };

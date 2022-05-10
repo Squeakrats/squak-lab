@@ -12,18 +12,18 @@ Object Create(ast::Object& ast);
 Array Create(ast::Array& ast);
 
 Value Create(ast::Value& ast) {
-  if (std::holds_alternative<std::string>(ast.value)) {
-    std::string value = std::get<std::string>(ast.value);
+  if (std::holds_alternative<std::string>(ast)) {
+    std::string val = std::get<std::string>(ast);
 
-    return Value{ value.substr(1, value.size() - 2) };
-  } else if (std::holds_alternative<bool>(ast.value)) {
-    return Value{ std::get<bool>(ast.value) };
-  } else if (std::holds_alternative<double>(ast.value)) {
-    return Value{ std::get<double>(ast.value) };
-  } else if (std::holds_alternative<std::shared_ptr<ast::Object>>(ast.value)) {
-    return Value{ Create(*std::get<std::shared_ptr<ast::Object>>(ast.value)) };
-  } else if (std::holds_alternative<std::shared_ptr<ast::Array>>(ast.value)) {
-    return Value{ Create(*std::get<std::shared_ptr<ast::Array>>(ast.value)) };
+    return Value{ val.substr(1, val.size() - 2) };
+  } else if (std::holds_alternative<bool>(ast)) {
+    return Value{ std::get<bool>(ast) };
+  } else if (std::holds_alternative<double>(ast)) {
+    return Value{ std::get<double>(ast) };
+  } else if (std::holds_alternative<std::shared_ptr<ast::Object>>(ast)) {
+    return Value{ Create(*std::get<std::shared_ptr<ast::Object>>(ast)) };
+  } else if (std::holds_alternative<std::shared_ptr<ast::Array>>(ast)) {
+    return Value{ Create(*std::get<std::shared_ptr<ast::Array>>(ast)) };
   }
 
   Panic("unhandled json value");
@@ -32,12 +32,9 @@ Value Create(ast::Value& ast) {
 Object Create(ast::Object& ast) {
   Object object{};
 
-  std::shared_ptr<ast::ObjectEntries> current = ast.entries;
-  while (current != nullptr) {
-    std::string key =
-      current->entry->key.substr(1, current->entry->key.size() - 2);
-    object.entries.insert(std::make_pair(key, Create(*current->entry->value)));
-    current = current->rhs;
+  for (ast::ObjectEntry& entry : ast.entries) {
+    std::string key = entry.key.substr(1, entry.key.size() - 2);
+    object.entries.insert(std::make_pair(key, Create(entry.value)));
   }
 
   return object;
@@ -46,10 +43,8 @@ Object Create(ast::Object& ast) {
 Array Create(ast::Array& ast) {
   Array array{};
 
-  std::shared_ptr<ast::ArrayEntry> current = ast.entry;
-  while (current != nullptr) {
-    array.push_back(Create(*current->value));
-    current = current->rhs;
+  for (ast::Value& element : ast.elements) {
+    array.push_back(Create(element));
   }
 
   return array;
