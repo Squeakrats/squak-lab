@@ -130,7 +130,7 @@ std::string GenParser(Grammar& grammar) {
     if (epsilon != std::nullopt) {
       defaultCase += production.expression.at(*epsilon).code;
     } else {
-      defaultCase += "return nullptr;";
+      defaultCase += "std::abort();";
     }
 
     parsers << fragments::format(

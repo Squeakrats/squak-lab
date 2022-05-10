@@ -17,7 +17,8 @@
 <OptionalNot> {bool} ::= <Not> { return true; }
                        | { return false; };
 
-<CharacterClassList> {std::shared_ptr<AST::CharacterClassList>} ::= <Character> <CharacterClassList> { return std::make_shared<AST::CharacterClassList>(P0.second, P1); };
+<CharacterClassList> {std::shared_ptr<AST::CharacterClassList>} ::= <Character> <CharacterClassList> { return std::make_shared<AST::CharacterClassList>(P0.second, P1); }
+                                                                  | { return nullptr; };
 
 <OptionalQuantifier> {std::shared_ptr<AST::Quantifier>} ::= <Quantifier> { return std::make_shared<AST::Quantifier>(P0.second); }
                                                   | { return nullptr; };
