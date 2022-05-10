@@ -3,6 +3,7 @@
 #include <format>
 #include <string>
 
+void InitLogger(std::string&& logFile);
 void Log(std::string&& message);
 void Log(const char* message);
 

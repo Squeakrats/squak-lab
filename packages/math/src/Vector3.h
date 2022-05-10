@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 class Vector3 {
 public:
@@ -51,4 +52,9 @@ inline Vector3& operator+=(Vector3& lhs, const Vector3& rhs) {
 
 inline bool operator==(const Vector3& lhs, const Vector3& rhs) {
   return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
+}
+
+inline std::string to_string(const Vector3 a) {
+  return std::string("(") + std::to_string(a.x) + ", " +
+         std::to_string(a.y) + ", " + std::to_string(a.z) + ")";
 }

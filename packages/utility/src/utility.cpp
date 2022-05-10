@@ -1,10 +1,17 @@
 #include "utility.h"
-#include <iostream>
+#include <fstream>
+
+std::unique_ptr<std::ostream> logger;
+
+void InitLogger(std::string&& logFile) {
+  logger = std::make_unique<std::ofstream>(
+    logFile, std::ofstream::out | std::ofstream::trunc);
+}
 
 void Log(std::string&& message) {
-  std::cout << message << std::endl;
+  *logger << message << std::endl;
 }
 
 void Log(const char* message) {
-  std::cout << message << std::endl;
+  *logger << message << std::endl;
 }

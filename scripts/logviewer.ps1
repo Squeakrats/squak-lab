@@ -1,0 +1,1 @@
+Get-Content .\assets\log.txt -Tail 20 -Wait
