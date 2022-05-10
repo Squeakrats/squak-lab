@@ -22,9 +22,23 @@ Token Tokenize(std::stringstream& source) {
         return Token{ TokenType::Symbol, symbol.str() };
       }
       case '{': {
-        std::stringbuf code{};
-        source.get(code, '}');
-        Assert(source.get() == '}', "unhandled token");
+        std::stringstream code{};
+        
+        size_t unbalanced = 1;
+        while (unbalanced > 0) {
+          Assert(!source.eof(), "unexpected eof");
+
+          char current = source.get();
+          if (current == '{') {
+            unbalanced++;
+          } else if (current == '}') {
+            unbalanced--;
+          }
+
+          if (unbalanced > 0) {
+            code << current;
+          }
+        }
 
         return Token{ TokenType::Code, code.str() };
       }
