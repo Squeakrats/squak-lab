@@ -31,7 +31,14 @@ std::map<size_t, std::set<std::string>> Grammar::Rules(std::string symbol) {
 
   auto production = this->productions.at(symbol);
   for (size_t i = 0; i < production.expression.size(); i++) {
-    for (auto terminal : this->First(symbol, i)) {
+    auto first = this->First(symbol, i);
+    if (first.size() == 0) {
+      Assert(table.find("") == table.end(), "duplicate epsilon expressions");
+      table.insert(std::make_pair("", i));
+      continue;
+    }
+
+    for (auto terminal : first) {
       if (table.find(terminal) != table.end()) {
         Panic("duplicate terminal");
       }
@@ -46,7 +53,9 @@ std::map<size_t, std::set<std::string>> Grammar::Rules(std::string symbol) {
       rules.insert(std::make_pair(rule.second, std::set<std::string>()));
     }
 
-    rules.at(rule.second).insert(rule.first);
+    if (rule.first.size() > 0) {
+      rules.at(rule.second).insert(rule.first);
+    }
   }
 
   return rules;

@@ -2,6 +2,7 @@
 #include "fragments.h"
 #include <fstream>
 #include <iostream>
+#include <optional>
 #ifdef EMSCRIPTEN
 #include <emscripten.h>
 
@@ -98,7 +99,13 @@ std::string GenParser(Grammar& grammar) {
     auto rules = grammar.Rules(production.symbol);
 
     std::stringstream body{};
+    std::optional<size_t> epsilon{};
     for (auto rule : rules) {
+      if (rule.second.size() == 0) {
+        epsilon = rule.first;
+        continue;
+      }
+
       for (auto symbol : rule.second) {
         body << "\t\tcase TokenType::" << symbol << ":\n";
       }
@@ -119,9 +126,16 @@ std::string GenParser(Grammar& grammar) {
       body << "\t\t}\n";
     }
 
+    std::string defaultCase = "\t\t\t";
+    if (epsilon != std::nullopt) {
+      defaultCase += production.expression.at(*epsilon).code;
+    } else {
+      defaultCase += "return nullptr;";
+    }
+
     parsers << fragments::format(
       fragments::ParserImplementation,
-      { production.type, production.symbol, body.str() });
+      { production.type, production.symbol, body.str(), defaultCase });
   }
 
   return fragments::format(
@@ -133,9 +147,11 @@ std::string GenParser(Grammar& grammar) {
 }
 
 int main(int argc, char* argv[]) {
-  Grammar grammar = Grammar::Create(ReadFile(argv[1]));
+  std::string source = argv[1];
+  std::string outDir = argv[2];
 
-  std::string outDir(argv[2]);
+  Grammar grammar = Grammar::Create(ReadFile(source));
+
   EmitFile(outDir + "Parser.generated.h", GenHeader(grammar));
   EmitFile(outDir + "Parser.generated.cpp", GenParser(grammar));
 

@@ -70,7 +70,7 @@ const char* ParserImplementation = R"ESC(
 	switch(context.token.first) {
 {}
 		default:
-			return nullptr;
+{}
 	}
 }
 
