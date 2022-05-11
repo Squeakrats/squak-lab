@@ -5,18 +5,29 @@
 [
   <> ::= <[\t\n\r ]+>;
   <XMLDesc> ::= <<\\?xml version=\"1.0\" encoding=\"UTF-8\"\\?\x3E>;
-  <LT> ::= <<>;
+  <OPENTAGSTART> ::= <<[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]+[\t\n\r ]*>;
+  <CLOSETAGSTART> ::= <</[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]+[\t\n\r ]*>;
   <GT> ::= <\x3E>;
-  <closetagstart> ::= <</>;
-  <tagname> ::= <[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]+>;
-  <text> ::= <[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123457890().,-/:\t\n\r ]+>;
+  <EQ> ::= <=>;
+  <NAME> ::= <[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]+>;
+  <STRING> ::= <\"[^\"]*\">;
+  <TEXT> ::= <[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123457890().,-/:;\t\n\r ]+>;
+  <COMMENT> ::= <<!--[^\n]*--\x3E>;
 ]
 
-<xml> {ast::Element} ::= <XMLDesc> <element> <EndOfFile> { return ast::Element{}; };
+<xml> {ast::Document} ::= <XMLDesc> <element> <EndOfFile> { return ast::Document{P1}; };
 
-<opentag> {int} ::= <LT> <tagname> <GT> { return 0; };
-<closetag> {int} ::= <closetagstart> <tagname> <GT> { return 0; };
-<element> {ast::Element} ::= <opentag> <innerElement> <closetag> { return ast::Element{}; };
-<innerElement> {int} ::= <element> { return 0; }
-                       | <text> { return 0; }
-                       | { return 0; };
+<opentag> {ast::OpenTag} ::= <OPENTAGSTART> <attributes> <GT> { return ast::OpenTag{P0.second, P1}; };
+<attributes> {std::list<ast::Attribute>} ::= <attribute> <attributes> { return ast::CreateAttribute(P0, P1); }
+                                           | { return std::list<ast::Attribute>{}; };
+
+<attribute> {ast::Attribute} ::= <NAME> <EQ> <STRING> { return ast::Attribute{P0.second, P2.second}; };
+
+<element> {std::shared_ptr<ast::Element>} ::= <opentag> <elements> <CLOSETAGSTART> <GT> { return std::make_shared<ast::Element>(P0, P1); };
+<elements> {std::list<std::shared_ptr<ast::Node>>} ::= <element> <elements> { return ast::CreateNode(P0, P1); }
+                   | <COMMENT> <elements> { return std::list<std::shared_ptr<ast::Node>>{}; }
+                   | <text> <elements> { return ast::CreateNode(std::make_shared<ast::TextNode>(P0), P1); }
+                   | { return std::list<std::shared_ptr<ast::Node>>{}; };
+
+<text> {std::string} ::= <NAME> { return P0.second; }
+               | <TEXT> { return P0.second; };
