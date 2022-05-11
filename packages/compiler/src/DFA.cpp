@@ -67,9 +67,10 @@ DFA DFA::FromNFA(NFA nfa) {
     uint32_t tag = 0;
     for (uint32_t stateId : state.first) {
       uint32_t stateTag = nfa.GetState(stateId).tag;
-      if (stateTag != 0) {
+      if (tag == 0) {
         tag = stateTag;
-        break;
+      } else if (stateTag != 0) {
+        tag = std::min(tag, stateTag);
       }
     }
 
