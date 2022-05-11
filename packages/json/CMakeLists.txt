@@ -17,6 +17,7 @@ add_library(json
 	src/AST.h
 	src/json.h
 	src/json.cpp
+	src/json.g
 	${CMAKE_CURRENT_BINARY_DIR}/generated/Parser.generated.h
 	${CMAKE_CURRENT_BINARY_DIR}/generated/Parser.generated.cpp
 )
