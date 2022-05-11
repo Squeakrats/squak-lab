@@ -26,6 +26,7 @@ Token Tokenize(std::stringstream& source) {
           case '[':
           case ']':
           case '?':
+          case '\\':
             return Token{ TokenType::Character, std::string(1, current) };
           default:
             Panic("unhandled special character");
