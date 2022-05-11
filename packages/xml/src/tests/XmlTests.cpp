@@ -6,6 +6,6 @@ using namespace xml;
 TEST(XML, Parse) {
   XMLElement document = Parse(R"(
 		<?xml version="1.0" encoding="UTF-8"?>
+		<comment></comment>
 	)");
-
 }
