@@ -17,6 +17,7 @@ add_library(regex
 	src/AST.h
 	src/regex.h
 	src/regex.cpp
+	src/regex.g
 	src/Tokenizer.cpp
 	${CMAKE_CURRENT_BINARY_DIR}/generated/Parser.generated.h
 	${CMAKE_CURRENT_BINARY_DIR}/generated/Parser.generated.cpp
