@@ -11,7 +11,7 @@
   <EQ> ::= <=>;
   <NAME> ::= <[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]+>;
   <STRING> ::= <\"[^\"]*\">;
-  <TEXT> ::= <[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123457890().,-/:;\t\n\r ]+>;
+  <TEXT> ::= <[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890().,&#_-/:;\t\n\r ]+>;
   <COMMENT> ::= <<!--[^\n]*--\x3E>;
 ]
 
