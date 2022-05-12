@@ -52,3 +52,12 @@ TEST(XML, Attribute) {
 
   ASSERT_EQ(document.root->attributes["name"], "khrplatform");
 }
+TEST(XML, Attributes) {
+  Document document = Parse(R"(
+	<?xml version="1.0" encoding="UTF-8"?>
+     <type a="b" c="d" />
+	)");
+
+  ASSERT_EQ(document.root->attributes["a"], "b");
+  ASSERT_EQ(document.root->attributes["c"], "d");
+}
