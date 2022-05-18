@@ -48,8 +48,8 @@ Token Tokenize(std::stringstream& stream) {
 	static std::vector<std::optional<TokenType>> tokens = {
 {}};
 
-	static DFA dfa = DFA::FromNFA(regex::Create(std::vector<std::string>({
-{}})));
+	static DFA dfa = regex::Create(std::vector<std::string>({
+{}}));
 
 	while(true) {
 		auto longest = dfa.Longest(stream);

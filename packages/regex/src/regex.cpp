@@ -95,7 +95,7 @@ NFA Create(AST::RegularExpression& ast) {
   return nfa;
 }
 
-NFA Create(std::string expression) {
+NFA CreateNFA(std::string expression) {
   TokenStream<Token> stream(expression, Tokenize);
   ParserContext context{ stream.Next(), stream };
   AST::RegularExpression ast = Parseregex(context);
@@ -104,19 +104,23 @@ NFA Create(std::string expression) {
   return nfa;
 }
 
-NFA Create(std::vector<std::string> expressions) {
+DFA Create(std::string expression) {
+  return DFA::FromNFA(CreateNFA(expression));
+}
+
+DFA Create(std::vector<std::string> expressions) {
   NFA result{};
   result.initialState = result.AddState();
   result.acceptingState = result.AddState();
 
   for (uint32_t i = 0; i < expressions.size(); i++) {
-    NFA nfa = Create(expressions[i]);
+    NFA nfa = CreateNFA(expressions[i]);
     nfa.GetState(nfa.acceptingState).tag = i + 1;
 
     result.Union(std::move(nfa));
   }
 
-  return result;
+  return DFA::FromNFA(result);
 }
 
 AST::Sequence AST::CreateSequence(Expression a, Sequence b) {

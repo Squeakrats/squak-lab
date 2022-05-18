@@ -1,10 +1,8 @@
 #include "../regex.h"
 #include <gtest/gtest.h>
 
-using namespace regex;
-
 TEST(regex, PlusOperator) {
-  DFA dfa = DFA::FromNFA(regex::Create("a+"));
+  DFA dfa = regex::Create("a+");
 
   EXPECT_EQ(dfa.Match("a"), true);
   EXPECT_EQ(dfa.Match("aa"), true);
@@ -14,7 +12,7 @@ TEST(regex, PlusOperator) {
 }
 
 TEST(regex, StarOperator) {
-  DFA dfa = DFA::FromNFA(regex::Create("ba*"));
+  DFA dfa = regex::Create("ba*");
 
   EXPECT_EQ(dfa.Match("b"), true);
   EXPECT_EQ(dfa.Match("ba"), true);
@@ -24,7 +22,7 @@ TEST(regex, StarOperator) {
 }
 
 TEST(regex, OptionalOperator) {
-  DFA dfa = DFA::FromNFA(regex::Create("a?c"));
+  DFA dfa = regex::Create("a?c");
 
   EXPECT_EQ(dfa.Match("ac"), true);
   EXPECT_EQ(dfa.Match("c"), true);
@@ -33,7 +31,7 @@ TEST(regex, OptionalOperator) {
 }
 
 TEST(regex, CharacterClass) {
-  DFA dfa = DFA::FromNFA(regex::Create("[abc]"));
+  DFA dfa = regex::Create("[abc]");
 
   EXPECT_EQ(dfa.Match("a"), true);
   EXPECT_EQ(dfa.Match("b"), true);
@@ -42,7 +40,7 @@ TEST(regex, CharacterClass) {
 }
 
 TEST(regex, Number) {
-  DFA dfa = DFA::FromNFA(regex::Create("[0123456789]+.?[0123456789]+"));
+  DFA dfa = regex::Create("[0123456789]+.?[0123456789]+");
 
   EXPECT_EQ(dfa.Match("0123"), true);
   EXPECT_EQ(dfa.Match("434"), true);
@@ -52,7 +50,7 @@ TEST(regex, Number) {
 }
 
 TEST(regex, Negate) {
-  DFA dfa = DFA::FromNFA(regex::Create("[^abc]"));
+  DFA dfa = regex::Create("[^abc]");
 
   EXPECT_EQ(dfa.Match("d"), true);
   EXPECT_EQ(dfa.Match("e"), true);
@@ -63,8 +61,7 @@ TEST(regex, Negate) {
 }
 
 TEST(regex, Merge) {
-  DFA dfa =
-    DFA::FromNFA(regex::Create(std::vector<std::string>{ "true", "false" }));
+  DFA dfa = regex::Create(std::vector<std::string>{ "true", "false" });
 
   std::stringstream source("truefalse");
   EXPECT_EQ(dfa.Longest(source).second, 1);
@@ -72,8 +69,7 @@ TEST(regex, Merge) {
 }
 
 TEST(regex, Longest) {
-  DFA dfa = DFA::FromNFA(
-    regex::Create(std::vector<std::string>{ "helloWorld", "hello" }));
+  DFA dfa = regex::Create(std::vector<std::string>{ "helloWorld", "hello" });
 
   std::stringstream source("helloWorldhelloWo");
 

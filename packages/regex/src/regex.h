@@ -4,7 +4,7 @@
 
 namespace regex {
 
-NFA Create(std::string expression);
-NFA Create(std::vector<std::string> expressions);
+DFA Create(std::string expression);
+DFA Create(std::vector<std::string> expressions);
 
 };
