@@ -2,6 +2,8 @@
 #include <memory>
 #include <string>
 #include <variant>
+#include <list>
+#include <vector>
 
 namespace json::ast {
 

@@ -1,9 +1,9 @@
 #pragma once
-#include "TokenStream.h"
 #include "Tokenizer.h"
 #include "utility.h"
 #include <variant>
 #include <vector>
+#include <functional>
 
 /*
 <grammer> ::= <code> <tokens> <productions>
@@ -49,12 +49,12 @@ struct Grammar {
 
 class Parser {
 private:
-  TokenStream<Token> source;
+  std::stringstream source;
   Token token{};
 
 public:
   Parser(std::string source)
-    : source(source, Tokenize) {}
+    : source(source) {}
 
   static AST::Grammar Parse(std::string source) {
     Parser parser(source);
@@ -67,7 +67,7 @@ private:
     Assert(this->token.first == type, "unhandled token");
 
     Token token = this->token;
-    this->token = this->source.Next();
+    this->token = Tokenize(this->source);
 
     return token;
   }

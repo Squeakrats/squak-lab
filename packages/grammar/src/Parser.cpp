@@ -5,7 +5,7 @@
 #include <vector>
 
 AST::Grammar Parser::Parse() {
-  this->token = this->source.Next();
+  this->token = Tokenize(this->source);
 
   AST::Grammar grammar{};
   grammar.code = this->Use(TokenType::Code).second;

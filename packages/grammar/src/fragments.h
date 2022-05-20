@@ -5,7 +5,8 @@ namespace fragments {
 
 const char* Header = R"ESC(// This file was auto-generated
 #pragma once
-#include "TokenStream.h"
+#include <sstream>
+#include <functional>
 {}
 namespace {} {
 
@@ -18,9 +19,14 @@ Token Tokenize(std::stringstream& source);
 
 class ParserContext {
 public:
+	std::stringstream stream;
+	std::function<Token(std::stringstream& stream)> tokenize;
 	Token token;
-	TokenStream<Token>& stream;
-	Token Use() { auto old = this->token; this->token = this->stream.Next(); return old; }
+
+	ParserContext(std::string source, std::function<Token(std::stringstream& stream)> tokenize)
+		: stream(source), tokenize(tokenize), token(tokenize(this->stream)) { }
+
+	Token Use() { auto old = this->token; this->token = this->tokenize(this->stream); return old; }
 };
 
 {}

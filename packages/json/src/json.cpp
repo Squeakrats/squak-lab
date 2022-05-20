@@ -51,8 +51,7 @@ Array Create(ast::Array& ast) {
 }
 
 Object Parse(std::string source) {
-  TokenStream<Token> stream(source, Tokenize);
-  ParserContext context{ stream.Next(), stream };
+  ParserContext context{source, Tokenize};
 
   return Create(*Parsejson(context));
 }
