@@ -2,23 +2,22 @@
 #include "AST.h"
 }
 
-<regex> {AST::RegularExpression} ::= <Sequence> <EndOfFile> { return AST::RegularExpression{P0}; };
+<regex> {ast::RegularExpressionNode*} ::= <Sequence> <EndOfFile> { return P0; };
 
-<Sequence> {AST::Sequence} ::= <Expression> <Sequence> { return AST::CreateSequence(P0, P1); }
-                                              | { return std::vector<AST::Expression>(); };
+<Sequence> {ast::RegularExpressionNode*} ::= <Expression> <Sequence> { return ast::RegularExpressionNode::Add(P0, P1); }
+                                     | { return new ast::RegularExpressionNode(); };
 
-<Expression> {AST::Expression} ::= <Value> <OptionalQuantifier> { return AST::Expression{P0, P1}; }; 
+<Expression> {ast::ExpressionNode*} ::= <Value> <OptionalQuantifier> { return ast::ExpressionNode::Create(P0, P1); }; 
 
-<Value> {AST::Value} ::= <Character> { return P0.second[0]; }
-                        | <CharacterClass> { return P0; };
+<Value> {ast::ValueNode*} ::= <Character>      { return new ast::ValueNode(P0.second[0]); }
+                            | <CharacterClass> { return ast::ValueNode::Create(P0); };
 
-<CharacterClass> {AST::CharacterClass} ::= <LeftBracket> <OptionalNot> <CharacterClassList> <RightBracket> { return AST::CharacterClass{P1, P2}; };
+<CharacterClass> {ast::CharacterClassNode*} ::= <LeftBracket> <CharacterClassPrime> <RightBracket> { return P1; };
+<CharacterClassPrime> {ast::CharacterClassNode*}::= <Not> <CharacterClassList> { return ast::CharacterClassNode::Negate(P1); }
+                                                  | <CharacterClassList>       { return P0; };
 
-<OptionalNot> {bool} ::= <Not> { return true; }
-                       | { return false; };
+<CharacterClassList> {ast::CharacterClassNode*} ::= <Character> <CharacterClassList> { return ast::CharacterClassNode::Add(P0.second[0], P1); }
+                                                        | { return new ast::CharacterClassNode(); };
 
-<CharacterClassList> {std::string} ::= <Character> <CharacterClassList> { return P0.second[0] + P1; }
-                                                                  | { return ""; };
-
-<OptionalQuantifier> {std::optional<char>} ::= <Quantifier> { return P0.second[0]; }
-                                                  | { return std::nullopt; };
+<OptionalQuantifier> {ast::QuantifierNode*} ::= <Quantifier> { return new ast::QuantifierNode(P0.second); }
+                                                  | { return nullptr; };

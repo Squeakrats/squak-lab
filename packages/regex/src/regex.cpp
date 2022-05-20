@@ -13,21 +13,24 @@ NFA Create(char character) {
   return nfa;
 }
 
-NFA Create(AST::Value& value) {
+NFA Create(ast::ValueNode& valueNode) {
+  auto& value = valueNode.value;
+
   if (std::holds_alternative<char>(value)) {
     return Create(std::get<char>(value));
   }
 
-  if (std::holds_alternative<AST::CharacterClass>(value)) {
-    AST::CharacterClass& characterClass = std::get<AST::CharacterClass>(value);
+  if (std::holds_alternative<std::unique_ptr<ast::CharacterClassNode>>(value)) {
+    ast::CharacterClassNode& characterClassNode =
+      *std::get<std::unique_ptr<ast::CharacterClassNode>>(value);
 
     bool characters[256] = { 0 };
 
-    for (char character : characterClass.list) {
+    for (char character : characterClassNode.list) {
       characters[static_cast<uint8_t>(character)] = true;
     }
 
-    if (characterClass.negated) {
+    if (characterClassNode.negated) {
       for (int i = 0; i < 256; i++) {
         characters[i] = !characters[i];
       }
@@ -49,17 +52,17 @@ NFA Create(AST::Value& value) {
   Panic("unhandled value");
 }
 
-NFA Create(AST::Expression& ast) {
-  NFA nfa = Create(ast.value);
+NFA Create(ast::ExpressionNode& ast) {
+  NFA nfa = Create(*ast.value);
 
-  if (ast.quantifier == std::nullopt) {
+  if (ast.quantifier == nullptr) {
     return nfa;
   }
 
-  char quantifier = *ast.quantifier;
+  char quantifier = ast.quantifier->quantifier[0];
 
   if (quantifier == '+') {
-    NFA repeat = Create(ast.value);
+    NFA repeat = Create(*ast.value);
 
     nfa.Union(std::move(repeat));
     nfa.AddTransition(nfa.acceptingState, repeat.initialState);
@@ -83,13 +86,13 @@ NFA Create(AST::Expression& ast) {
   Panic("unhandled quantifier");
 }
 
-NFA Create(AST::RegularExpression& ast) {
+NFA Create(ast::RegularExpressionNode& ast) {
   NFA nfa;
   nfa.initialState = nfa.AddState();
   nfa.acceptingState = nfa.initialState;
 
-  for (auto& expression : ast.sequence) {
-    nfa.Append(Create(expression));
+  for (auto& expression : ast.expressions) {
+    nfa.Append(Create(*expression));
   }
 
   return nfa;
@@ -98,8 +101,10 @@ NFA Create(AST::RegularExpression& ast) {
 NFA CreateNFA(std::string expression) {
   TokenStream<Token> stream(expression, Tokenize);
   ParserContext context{ stream.Next(), stream };
-  AST::RegularExpression ast = Parseregex(context);
-  NFA nfa = Create(ast);
+  ast::RegularExpressionNode* ast =
+    static_cast<ast::RegularExpressionNode*>(Parseregex(context));
+  NFA nfa = Create(*ast);
+  delete ast;
 
   return nfa;
 }
@@ -121,13 +126,6 @@ DFA Create(std::vector<std::string> expressions) {
   }
 
   return DFA::FromNFA(result);
-}
-
-AST::Sequence AST::CreateSequence(Expression a, Sequence b) {
-  std::vector<Expression> sequence{ a };
-  sequence.insert(sequence.end(), b.begin(), b.end());
-
-  return sequence;
 }
 
 };
