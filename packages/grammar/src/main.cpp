@@ -68,6 +68,7 @@ std::string GenHeader(Grammar& grammar) {
                            { grammar.ast.code,
                              grammar.ast.productions[0].symbol,
                              tokens.str(),
+                             "",
                              declarations.str() });
 }
 
@@ -91,7 +92,7 @@ std::string GenParser(Grammar& grammar) {
     }
 
     tokenize = fragments::format(fragments::Tokenize,
-                                 { tokens.str(), expressions.str() });
+                                 { "Default", tokens.str(), expressions.str() });
   }
 
   std::stringstream parsers{};

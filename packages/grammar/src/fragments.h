@@ -7,6 +7,7 @@ const char* Header = R"ESC(// This file was auto-generated
 #pragma once
 #include <sstream>
 #include <functional>
+#include <map>
 {}
 namespace {} {
 
@@ -15,16 +16,24 @@ enum class TokenType {
 
 using Token = std::pair<TokenType, std::string>;
 
-Token Tokenize(std::stringstream& source);
+enum class ParserState {
+	Default,
+{}};
+
+using Tokenizer = std::function<Token(std::stringstream& stream)>;
+using Tokenizers = std::map<ParserState, Tokenizer>;
+
+Tokenizers GetTokenizers();
 
 class ParserContext {
 public:
 	std::stringstream stream;
-	std::function<Token(std::stringstream& stream)> tokenize;
+	Tokenizers tokenizers;
+	Tokenizer tokenize;
 	Token token;
 
-	ParserContext(std::string source, std::function<Token(std::stringstream& stream)> tokenize)
-		: stream(source), tokenize(tokenize), token(tokenize(this->stream)) { }
+	ParserContext(std::string source, Tokenizers tokenizers)
+		: stream(source), tokenizers(tokenizers), tokenize(tokenizers.at(ParserState::Default)), token(this->tokenize(this->stream)) { }
 
 	Token Use() { auto old = this->token; this->token = this->tokenize(this->stream); return old; }
 };
@@ -50,7 +59,7 @@ const char* TokenizerIncludes = R"ESC(#include "regex.h"
 #include <optional>)ESC";
 
 const char* Tokenize = R"ESC(
-Token Tokenize(std::stringstream& stream) {
+Token Tokenize{}(std::stringstream& stream) {
 	static std::vector<std::optional<TokenType>> tokens = {
 {}};
 
@@ -68,6 +77,12 @@ Token Tokenize(std::stringstream& stream) {
 			return std::make_pair(TokenType::EndOfFile, "");
 		}
 	}
+}
+
+Tokenizers GetTokenizers() {
+	static Tokenizers tokenizers{ { ParserState::Default, TokenizeDefault } };
+
+	return tokenizers;
 }
 )ESC";
 

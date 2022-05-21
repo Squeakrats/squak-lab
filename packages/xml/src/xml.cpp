@@ -60,7 +60,7 @@ Document Create(ast::Document& ast) {
 }
 
 Document Parse(std::string source) {
-  ParserContext context{source, Tokenize};
+  ParserContext context{source, GetTokenizers()};
   ast::Document ast = Parsexml(context);
 
   return Create(ast);
