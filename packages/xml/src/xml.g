@@ -3,6 +3,7 @@
 }
 
 [
+<Default> [
   <> ::= <[\t\n\r ]+>;
   <XMLDesc> ::= <<\\?xml version=\"1.0\" encoding=\"UTF-8\"\\?\x3E>;
   <OPENTAGSTART> ::= <<[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]+[\t\n\r ]*>;
@@ -14,6 +15,7 @@
   <STRING> ::= <\"[^\"]*\"[\t\n\r ]*>;
   <TEXT> ::= <[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890().,&#_-/:;\\*\t\n\r ]+>;
   <COMMENT> ::= <<!--[^\n]*--\x3E>;
+]
 ]
 
 <xml> {ast::Document} ::= <XMLDesc> <element> <EndOfFile> { return ast::Document{P1}; };

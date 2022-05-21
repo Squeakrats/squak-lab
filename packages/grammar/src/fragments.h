@@ -79,8 +79,13 @@ Token Tokenize{}(std::stringstream& stream) {
 	}
 }
 
+)ESC";
+
+const char* GetTokenizers = R"ESC(
 Tokenizers GetTokenizers() {
-	static Tokenizers tokenizers{ { ParserState::Default, TokenizeDefault } };
+	static Tokenizers tokenizers{
+		{}
+	};
 
 	return tokenizers;
 }

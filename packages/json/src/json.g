@@ -3,6 +3,7 @@
 }
 
 [
+<Default> [
     <LeftBrace> ::= <{>;
     <RightBrace> ::= <}>;
     <LeftBracket> ::= <\\[>;
@@ -14,6 +15,7 @@
     <StringLiteral> ::= <\"[^\"]*\">;
     <NumberLiteral> ::= <[-e.0123456789]+>;
     <> ::= <[\t\n\r ]>;
+]
 ]
 
 <json> {std::shared_ptr<ast::Object>} ::= <Object> <EndOfFile> { return P0; };

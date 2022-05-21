@@ -76,23 +76,31 @@ std::string GenParser(Grammar& grammar) {
   auto terminals = grammar.Terminals();
 
   std::string tokenize{};
-  if (grammar.ast.tokens.size() > 0) {
-    std::stringstream tokens{};
-    for (auto token : grammar.ast.tokens) {
-      if (token.first != "") {
-        tokens << "\t\t TokenType::" << token.first << ",\n";
-      } else {
-        tokens << "\t\t std::nullopt,\n";
-      }
-    }
-
+  for (auto& tokens : grammar.ast.tokens) {
+    std::stringstream types{};
     std::stringstream expressions{};
-    for (auto token : grammar.ast.tokens) {
+    for (auto token : tokens.second) {
+      if (token.first != "") {
+        types << "\t\t TokenType::" << token.first << ",\n";
+      } else {
+        types << "\t\t std::nullopt,\n";
+      }
+
       expressions << "\t\t\"" << token.second << "\",\n";
     }
 
-    tokenize = fragments::format(fragments::Tokenize,
-                                 { "Default", tokens.str(), expressions.str() });
+    tokenize += fragments::format(
+      fragments::Tokenize, { tokens.first, types.str(), expressions.str() });
+  }
+
+  if (grammar.ast.tokens.size()) {
+    std::stringstream entries{};
+    for (auto& token : grammar.ast.tokens) {
+      entries << "{ ParserState::" + token.first + ", Tokenize" + token.first +
+                   " } ,\n";
+    }
+
+    tokenize += fragments::format(fragments::GetTokenizers, { entries.str() });
   }
 
   std::stringstream parsers{};

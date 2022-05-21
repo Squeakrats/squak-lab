@@ -4,23 +4,7 @@
 #include <variant>
 #include <vector>
 #include <functional>
-
-/*
-<grammer> ::= <code> <tokens> <productions>
-
-<productions> ::= <production> <productions>
-                                |
-
-<production> ::= <symbol> <code> <derives> <expression> <semicolon>
-
-<expression> ::= <sequence> <code> <alternateexp>
-
-<alternateexp> ::= <alternate> <expression>
-                          |
-
-<sequence>	::= <symbol> <sequence>
-                         |
-*/
+#include <map>
 
 namespace AST {
 
@@ -41,7 +25,7 @@ struct Production {
 
 struct Grammar {
   std::string code{};
-  std::vector<std::pair<std::string, std::string>> tokens{};
+  std::map<std::string, std::vector<std::pair<std::string, std::string>>> tokens{};
   std::vector<Production> productions{};
 };
 

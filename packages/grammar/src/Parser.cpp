@@ -12,15 +12,25 @@ AST::Grammar Parser::Parse() {
 
   if (this->token.first == TokenType::LeftBracket) {
     this->Use(TokenType::LeftBracket);
+
     while (this->token.first == TokenType::Symbol) {
-      std::string token = this->Use(TokenType::Symbol).second;
-      this->Use(TokenType::Replaces);
-      std::string expression = this->Use(TokenType::Symbol).second;
-      this->Use(TokenType::SemiColon);
+      std::string scope = this->Use(TokenType::Symbol).second;
+      this->Use(TokenType::LeftBracket);
 
-      grammar.tokens.push_back(std::make_pair(token, expression));
+      std::vector<std::pair<std::string, std::string>> tokens{};
+      while (this->token.first == TokenType::Symbol) {
+        std::string token = this->Use(TokenType::Symbol).second;
+        this->Use(TokenType::Replaces);
+        std::string expression = this->Use(TokenType::Symbol).second;
+        this->Use(TokenType::SemiColon);
+
+        tokens.push_back(std::make_pair(token, expression));
+      }
+
+      grammar.tokens.insert(std::make_pair(scope, tokens));
+      this->Use(TokenType::RightBracket);
     }
-
+   
     this->Use(TokenType::RightBracket);
   }
 
