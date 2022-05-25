@@ -8,6 +8,8 @@ const char* Header = R"ESC(// This file was auto-generated
 #include <sstream>
 #include <functional>
 #include <map>
+#include <stack>
+#include <optional>
 {}
 namespace {} {
 
@@ -27,15 +29,36 @@ Tokenizers GetTokenizers();
 
 class ParserContext {
 public:
+	std::stack<ParserState> state{ };
 	std::stringstream stream;
 	Tokenizers tokenizers;
 	Tokenizer tokenize;
-	Token token;
+	std::optional<Token> token{ };
 
 	ParserContext(std::string source, Tokenizers tokenizers)
-		: stream(source), tokenizers(tokenizers), tokenize(tokenizers.at(ParserState::Default)), token(this->tokenize(this->stream)) { }
+		: stream(source), tokenizers(tokenizers), tokenize(tokenizers.at(ParserState::Default)){
+			this->state.push(ParserState::Default);
+		}
 
-	Token Use() { auto old = this->token; this->token = this->tokenize(this->stream); return old; }
+	Token& Current() {
+		if (this->token == std::nullopt) {
+			this->token = this->tokenize(this->stream);
+		}
+
+		return *this->token;
+	}
+
+	void PushState(ParserState state) {
+		this->state.push(state);
+		this->tokenize = this->tokenizers.at(this->state.top());
+	}
+
+	void PopState() {
+		this->state.pop();
+		this->tokenize = this->tokenizers.at(this->state.top());
+	}
+
+	Token Use() { Token old = this->Current(); this->token = std::nullopt; return old; }
 };
 
 {}
@@ -93,7 +116,7 @@ Tokenizers GetTokenizers() {
 
 const char* ParserImplementation = R"ESC(
 {} Parse{}(ParserContext& context) {
-	switch(context.token.first) {
+	switch(context.Current().first) {
 {}
 		default:
 {}

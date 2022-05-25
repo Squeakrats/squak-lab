@@ -64,11 +64,18 @@ std::string GenHeader(Grammar& grammar) {
                  << "(ParserContext& context);\n";
   }
 
+  std::stringstream parserStates{};
+  for (auto token : grammar.ast.tokens) {
+    if (token.first != "Default") {
+      parserStates << "\t" + token.first + ",\n";
+    }
+  }
+
   return fragments::format(fragments::Header,
                            { grammar.ast.code,
                              grammar.ast.productions[0].symbol,
                              tokens.str(),
-                             "",
+                             parserStates.str(),
                              declarations.str() });
 }
 
@@ -123,7 +130,7 @@ std::string GenParser(Grammar& grammar) {
       body << "\t\t{\n";
       for (auto symbol : production.expression.at(rule.first).symbols) {
         if (terminals.find(symbol) != terminals.end()) {
-          body << "\t\t\tassert(context.token.first == TokenType::" << symbol
+          body << "\t\t\tassert(context.Current().first == TokenType::" << symbol
                << ");\n";
           body << "\t\t\tauto P" << paramaters++ << " = context.Use();\n";
         } else {
