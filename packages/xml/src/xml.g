@@ -14,8 +14,8 @@
 ]
 <InsideTag> [
  <EQ> ::= <=>;
- <NAME> ::= <[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]+[\t\n\r ]*>;
- <STRING> ::= <\"[^\"]*\"[\t\n\r ]*>;
+ <NAME> ::= <[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]+>;
+ <STRING> ::= <\"[^\"]*\">;
  <SELFCLOSE> ::= </\x3E>;
  <GT> ::= <\x3E>;
  <> ::= <[\t\n\r ]+>;
