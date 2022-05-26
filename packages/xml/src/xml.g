@@ -6,15 +6,19 @@
 <Default> [
   <> ::= <[\t\n\r ]+>;
   <XMLDesc> ::= <<\\?xml version=\"1.0\" encoding=\"UTF-8\"\\?\x3E>;
-  <OPENTAGSTART> ::= <<[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]+[\t\n\r ]*>;
-  <CLOSETAGSTART> ::= <</[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]+[\t\n\r ]*>;
-  <GT> ::= <\x3E>;
-  <SELFCLOSE> ::= </\x3E>;
-  <EQ> ::= <=>;
-  <NAME> ::= <[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]+[\t\n\r ]*>;
-  <STRING> ::= <\"[^\"]*\"[\t\n\r ]*>;
+  <OPENTAGSTART> ::= <<[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]+>;
+  <CLOSETAGSTART> ::= <</[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]+>;
   <TEXT> ::= <[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890().,&#_-/:;\\*\t\n\r ]+>;
   <COMMENT> ::= <<!--[^\n]*--\x3E>;
+  <GT> ::= <\x3E>;
+]
+<InsideTag> [
+ <EQ> ::= <=>;
+ <NAME> ::= <[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]+[\t\n\r ]*>;
+ <STRING> ::= <\"[^\"]*\"[\t\n\r ]*>;
+ <SELFCLOSE> ::= </\x3E>;
+ <GT> ::= <\x3E>;
+ <> ::= <[\t\n\r ]+>;
 ]
 ]
 
@@ -25,14 +29,15 @@
 
 <attribute> {ast::Attribute} ::= <NAME> <EQ> <STRING> { return ast::Attribute{P0.second, P2.second}; };
 
-<element> {std::shared_ptr<ast::Element>} ::= <OPENTAGSTART> <attributes> <elementPrime> { return std::make_shared<ast::Element>(ast::OpenTag{P0.second, P1}, P2); };
-<elementPrime> {std::list<std::shared_ptr<ast::Node>>} ::= <GT> <elements> <CLOSETAGSTART> <GT> { return P1; }          
-                                                 | <SELFCLOSE> { return std::list<std::shared_ptr<ast::Node>>{}; };
+<tagstart> {std::string} ::= <OPENTAGSTART> { context.PushState(ParserState::InsideTag); return P0.second; };
+<tagend> {void*} ::= <GT> { context.PopState(); return nullptr; };
+<tagselfclose> {void*} ::= <SELFCLOSE> { context.PopState(); return nullptr; };
+
+<element> {std::shared_ptr<ast::Element>} ::= <tagstart> <attributes> <elementPrime> { return std::make_shared<ast::Element>(ast::OpenTag{P0, P1}, P2); };
+<elementPrime> {std::list<std::shared_ptr<ast::Node>>} ::= <tagend> <elements> <CLOSETAGSTART> <GT> { return P1; }          
+                                                 | <tagselfclose> { return std::list<std::shared_ptr<ast::Node>>{}; };
 
 <elements> {std::list<std::shared_ptr<ast::Node>>} ::= <element> <elements> { return ast::CreateNode(P0, P1); }
                    | <COMMENT> <elements> { return std::list<std::shared_ptr<ast::Node>>{}; }
-                   | <text> <elements> { return ast::CreateNode(std::make_shared<ast::TextNode>(P0), P1); }
+                   | <TEXT> <elements> { return ast::CreateNode(std::make_shared<ast::TextNode>(P0.second), P1); }
                    | { return std::list<std::shared_ptr<ast::Node>>{}; };
-
-<text> {std::string} ::= <NAME> { return P0.second; }
-               | <TEXT> { return P0.second; };
