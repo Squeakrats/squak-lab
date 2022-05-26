@@ -9,7 +9,7 @@
   <OPENTAGSTART> ::= <<[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]+>;
   <CLOSETAGSTART> ::= <</[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]+>;
   <TEXT> ::= <[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890().,&#_-/:;\\*\t\n\r ]+>;
-  <COMMENT> ::= <<!--[^\n]*--\x3E>;
+  <COMMENTSTART> ::= <<!-->;
   <GT> ::= <\x3E>;
 ]
 <InsideTag> [
@@ -19,6 +19,11 @@
  <SELFCLOSE> ::= </\x3E>;
  <GT> ::= <\x3E>;
  <> ::= <[\t\n\r ]+>;
+]
+<InsideComment> [
+ <COMMENTTEXT> ::= <[^-]+>;
+ <COMMENTDASH> ::= <->;
+ <COMMENTEND> ::= <--\x3E>;
 ]
 ]
 
@@ -37,7 +42,15 @@
 <elementPrime> {std::list<std::shared_ptr<ast::Node>>} ::= <tagend> <elements> <CLOSETAGSTART> <GT> { return P1; }          
                                                  | <tagselfclose> { return std::list<std::shared_ptr<ast::Node>>{}; };
 
+<commentstart> {void*} ::= <COMMENTSTART> { context.PushState(ParserState::InsideComment); return nullptr; };
+<commentPrime> {void*} ::= <COMMENTTEXT> <commentPrime> { return nullptr; }
+                         | <COMMENTDASH> <commentPrime> { return nullptr; }
+                         | <COMMENTEND> { return nullptr; };
+
+<comment> {void*} ::= <commentstart> <commentPrime> { context.PopState(); return nullptr; }
+                    | { return nullptr;};
+
 <elements> {std::list<std::shared_ptr<ast::Node>>} ::= <element> <elements> { return ast::CreateNode(P0, P1); }
-                   | <COMMENT> <elements> { return std::list<std::shared_ptr<ast::Node>>{}; }
+                   | <comment> <elements> { return std::list<std::shared_ptr<ast::Node>>{}; }
                    | <TEXT> <elements> { return ast::CreateNode(std::make_shared<ast::TextNode>(P0.second), P1); }
                    | { return std::list<std::shared_ptr<ast::Node>>{}; };
