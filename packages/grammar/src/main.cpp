@@ -138,7 +138,7 @@ std::string GenParser(Grammar& grammar) {
                << "(context); \n";
         }
       }
-      body << "\n\t\t\t{" << production.expression.at(rule.first).code << "}\n";
+      body << "\n\t\t\t{" << production.expression.at(rule.first).code << "}\n\t\t\tbreak;\n";
       body << "\t\t}\n";
     }
 
@@ -151,7 +151,7 @@ std::string GenParser(Grammar& grammar) {
 
     parsers << fragments::format(
       fragments::ParserImplementation,
-      { production.type, production.symbol, body.str(), defaultCase });
+      { production.type, production.symbol, production.type, body.str(), defaultCase });
   }
 
   return fragments::format(

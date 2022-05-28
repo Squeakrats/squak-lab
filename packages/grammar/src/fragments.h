@@ -116,11 +116,13 @@ Tokenizers GetTokenizers() {
 
 const char* ParserImplementation = R"ESC(
 {} Parse{}(ParserContext& context) {
+	{} out;
 	switch(context.Current().first) {
 {}
 		default:
 {}
 	}
+	return out;
 }
 
 )ESC";
