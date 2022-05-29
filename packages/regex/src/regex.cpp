@@ -101,7 +101,9 @@ NFA Create(ast::RegularExpressionNode& ast) {
 extern Token Tokenize(std::stringstream& stream);
 
 NFA CreateNFA(std::string expression) {
-  ParserContext context{expression, Tokenizers{ { ParserState::Default, Tokenize } }};
+  ParserContext context{ expression,
+                         Tokenizers{ { ParserState::Default, Tokenize } } };
+
   ast::RegularExpressionNode* ast =
     static_cast<ast::RegularExpressionNode*>(Parseregex(context));
   NFA nfa = Create(*ast);

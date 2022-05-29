@@ -10,13 +10,13 @@ std::shared_ptr<Element> Create(ast::ElementNode& node) {
 
   if (node.attributes != nullptr) {
     for (auto& attribute : node.attributes->value) {
-      element->attributes.insert(
-        std::make_pair(attribute.name, attribute.value.substr(1, attribute.value.size() - 2)));
+      element->attributes.insert(std::make_pair(
+        attribute.name, attribute.value.substr(1, attribute.value.size() - 2)));
     }
   }
 
   if (node.children != nullptr) {
-    for (size_t i = node.children->value.size(); i --> 0;) {
+    for (size_t i = node.children->value.size(); i-- > 0;) {
       auto& child = node.children->value[i];
       switch (child->type) {
         case ast::NodeType::Element:
@@ -44,8 +44,8 @@ Document Create(ast::DocumentNode& node) {
 
 Document Parse(std::string source) {
   ParserContext context{ source, GetTokenizers() };
-  std::unique_ptr<ast::DocumentNode> ast =
-    std::unique_ptr<ast::DocumentNode>(Parsexml(context));
+  std::unique_ptr<ast::DocumentNode> ast = std::unique_ptr<ast::DocumentNode>(
+    static_cast<ast::DocumentNode*>(Parsexml(context)));
 
   return Create(*ast);
 }

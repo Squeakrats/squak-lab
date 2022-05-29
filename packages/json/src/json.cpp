@@ -48,8 +48,8 @@ json::Value Create(ast::Node& node) {
 Object Parse(std::string source) {
   ParserContext context{ source, GetTokenizers() };
 
-  std::unique_ptr<ast::ObjectNode> ast =
-    std::unique_ptr<ast::ObjectNode>(Parsejson(context));
+  std::unique_ptr<ast::ObjectNode> ast = std::unique_ptr<ast::ObjectNode>(
+    static_cast<ast::ObjectNode*>(Parsejson(context)));
 
   return Create(*ast).get<json::Object>();
 }

@@ -6,7 +6,7 @@
 #include <vector>
 
 class Grammar {
-private:
+public:
   std::map<std::string, AST::Production> productions{};
 
 public:

@@ -58,10 +58,9 @@ std::string GenHeader(Grammar& grammar) {
     tokens << '\t' << terminal << ",\n";
   }
 
-  std::stringstream declarations{};
+  std::stringstream productions{};
   for (auto production : grammar.ast.productions) {
-    declarations << production.type << " Parse" << production.symbol
-                 << "(ParserContext& context);\n";
+    productions << '\t' << production.symbol << ",\n";
   }
 
   std::stringstream parserStates{};
@@ -75,8 +74,10 @@ std::string GenHeader(Grammar& grammar) {
                            { grammar.ast.code,
                              grammar.ast.productions[0].symbol,
                              tokens.str(),
+                             productions.str(),
                              parserStates.str(),
-                             declarations.str() });
+                             grammar.ast.productions[0].symbol
+                           });
 }
 
 std::string GenParser(Grammar& grammar) {
@@ -110,56 +111,72 @@ std::string GenParser(Grammar& grammar) {
     tokenize += fragments::format(fragments::GetTokenizers, { entries.str() });
   }
 
-  std::stringstream parsers{};
+  std::stringstream parseTable{};
+  parseTable << "\nstd::vector<Production> GetParseTable()  {\n return {\n";
   for (auto production : grammar.ast.productions) {
-    auto rules = grammar.Rules(production.symbol);
+    const auto& rules = grammar.Rules(production.symbol);
 
-    std::stringstream body{};
-    std::optional<size_t> epsilon{};
+    parseTable << "{"
+               << " /*" << production.symbol << "*/\n";
+
+    parseTable << "\t{\n";
     for (auto rule : rules) {
-      if (rule.second.size() == 0) {
-        epsilon = rule.first;
-        continue;
+      for (auto token : rule.second) {
+        parseTable << "\t\t{ TokenType::" << token << ", " << rule.first
+                   << " },\n";
       }
+    }
+    parseTable << "\t},\n";
 
-      for (auto symbol : rule.second) {
-        body << "\t\tcase TokenType::" << symbol << ":\n";
-      }
-
-      size_t paramaters = 0;
-      body << "\t\t{\n";
-      for (auto symbol : production.expression.at(rule.first).symbols) {
+    parseTable << "\t{\n";
+    for (auto rule : rules) {
+      parseTable << "\t\t{\n";
+      parseTable << "\t\t{ ";
+      for (auto symbol : production.expression[rule.first].symbols) {
         if (terminals.find(symbol) != terminals.end()) {
-          body << "\t\t\tassert(context.Current().first == TokenType::" << symbol
-               << ");\n";
-          body << "\t\t\tauto P" << paramaters++ << " = context.Use();\n";
+          parseTable << "TokenType::" << symbol << ", ";
         } else {
-          body << "\t\t\tauto P" << paramaters++ << " = Parse" << symbol
-               << "(context); \n";
+          parseTable << "ProductionType::" << symbol << ", ";
         }
       }
-      body << "\n\t\t\t{" << production.expression.at(rule.first).code << "}\n\t\t\tbreak;\n";
-      body << "\t\t}\n";
-    }
+      parseTable << " },\n";
+      parseTable << "\t\t[](ParserContext& context, std::vector<std::variant<Token, void*>> arguments) {\n";
+      parseTable << "\t\t\tvoid* out{};\n";
+      size_t n = 0;
+      size_t count =
+        production.expression[rule.first]
+          .symbols.size();
 
-    std::string defaultCase = "\t\t\t";
-    if (epsilon != std::nullopt) {
-      defaultCase += production.expression.at(*epsilon).code;
-    } else {
-      defaultCase += "std::abort();";
+      for (auto symbol : production.expression[rule.first].symbols) {
+        parseTable << "\t\t\tauto P" << n << " = ";
+        if (terminals.find(symbol) != terminals.end()) {
+          parseTable << "std::get<Token>(arguments[" << count - 1 - n << "]);\n";
+        } else {
+          parseTable << "static_cast<" << grammar.productions.at(symbol).type << ">(std::get<void*>(arguments[" << count - 1 - n << "]));\n";
+        }
+        n += 1;
+      }
+      parseTable << "\t\t\t" << production.expression[rule.first].code << ";\n";
+      parseTable << "\t\t\treturn out;\n";
+      parseTable << "\t\t}\n";
+      parseTable << "\t\t},\n";
     }
+   
+    parseTable << "\t},\n";
 
-    parsers << fragments::format(
-      fragments::ParserImplementation,
-      { production.type, production.symbol, production.type, body.str(), defaultCase });
+    parseTable << "},\n";
   }
+  parseTable << "};\n}\n";
 
   return fragments::format(
     fragments::Parser,
     { grammar.ast.tokens.size() > 0 ? fragments::TokenizerIncludes : "",
       grammar.ast.productions[0].symbol,
       tokenize,
-      parsers.str() });
+      parseTable.str(),
+      grammar.ast.productions[0].symbol,
+      grammar.ast.productions[0].symbol
+    });
 }
 
 int main(int argc, char* argv[]) {
