@@ -100,6 +100,10 @@ bool DFA::Match(std::string text) {
 
 std::pair<std::string, uint32_t> DFA::Longest(std::stringstream& stream) {
   uint32_t stateId = this->initialState;
+  std::streampos initialPosition = stream.tellg();
+
+  size_t pending = 0;
+
   std::string text{};
   size_t length = 0;
   uint32_t tag = 0;
@@ -109,21 +113,27 @@ std::pair<std::string, uint32_t> DFA::Longest(std::stringstream& stream) {
     auto state = this->states.at(stateId);
     auto nextStateId = state.edges.find(character);
     if (nextStateId == state.edges.end()) {
-      stream.seekg(length - text.size(), stream.cur);
+      stream.seekg(initialPosition);
+      text.resize(length);
+      stream.read(text.data(), length);
 
-      return std::make_pair(text.substr(0, length), tag);
+      return std::make_pair(text, tag);
     }
 
-    text += stream.get();
+    stream.get();
+    pending++;
+
     stateId = nextStateId->second;
 
     if (this->acceptingStates.find(stateId) != this->acceptingStates.end()) {
       tag = this->states.at(stateId).tag;
-      length = text.size();
+      length = pending;
     }
   }
 
-  stream.seekg(length - text.size(), stream.cur);
+  stream.seekg(initialPosition);
+  text.resize(length);
+  stream.read(text.data(), length);
 
-  return std::make_pair(text.substr(0, length), tag);
+  return std::make_pair(text, tag);
 }
