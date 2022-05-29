@@ -18,26 +18,26 @@
 ]
 ]
 
-<json> {std::shared_ptr<ast::Object>} ::= <Object> <EndOfFile> { out = P0; };
+<json> {ast::ObjectNode*} ::= <Object> <EndOfFile> { out = P0; };
 
-<Object> {std::shared_ptr<ast::Object>} ::= <LeftBrace> <ObjectEntries> <RightBrace> { out = std::make_shared<ast::Object>(ast::Object{ P1 }); };
-<ObjectEntries> {std::list<ast::ObjectEntry>} ::= <ObjectEntry> <ObjectEntriesPrime> { out = ast::Object::Create(P0, P1); }
-                                                        | { out = std::list<ast::ObjectEntry>(); };
+<Object> {ast::ObjectNode*} ::= <LeftBrace> <ObjectEntries> <RightBrace> { out = P1; };
+<ObjectEntries> {ast::ObjectNode*} ::= <ObjectEntry> <ObjectEntriesPrime> { out = ast::ObjectNode::Add(P0, P1); }
+                                     | { out = new ast::ObjectNode(); };
 
-<ObjectEntriesPrime> {std::list<ast::ObjectEntry>} ::= <Comma> <ObjectEntry> <ObjectEntriesPrime> { out = ast::Object::Create(P1, P2); }
-                                                             | { out = std::list<ast::ObjectEntry>(); };
+<ObjectEntriesPrime> {ast::ObjectNode*} ::= <Comma> <ObjectEntry> <ObjectEntriesPrime> { out = ast::ObjectNode::Add(P1, P2); }
+                                          | { out = new ast::ObjectNode{}; };
 
-<ObjectEntry> {ast::ObjectEntry} ::= <StringLiteral> <Colon> <Value> { out = ast::ObjectEntry{P0.second, P2}; };
+<ObjectEntry> {ast::ObjectEntryNode*} ::= <StringLiteral> <Colon> <Value> { out = new ast::ObjectEntryNode{P0.second, P2}; };
 
-<Array> {std::shared_ptr<ast::Array>} ::= <LeftBracket> <ArrayEntries> <RightBracket> { out = std::make_shared<ast::Array>(P1); };
-<ArrayEntries> {ast::Array} ::= <Value> <ArrayEntriesPrime> { out = ast::Array::Create(P0, P1); }
-                                                    | { out = ast::Array{}; };
-<ArrayEntriesPrime> {ast::Array} ::= <Comma> <Value> <ArrayEntriesPrime> { out = ast::Array::Create(P1, P2); }
-                                                         | { out = ast::Array{}; };
+<Array> {ast::ArrayNode*} ::= <LeftBracket> <ArrayEntries> <RightBracket> { out = P1; };
+<ArrayEntries> {ast::ArrayNode*} ::= <Value> <ArrayEntriesPrime> { out = ast::ArrayNode::Add(P0, P1); }
+                                   | { out = new ast::ArrayNode{}; };
+<ArrayEntriesPrime> {ast::ArrayNode*} ::= <Comma> <Value> <ArrayEntriesPrime> { out = ast::ArrayNode::Add(P1, P2); }
+                                        | { out = new ast::ArrayNode{}; };
                                                         
-<Value> {ast::Value} ::= <True> { out = true; }
-                  | <False> { out = false; }
-                  | <StringLiteral> { out = P0.second; }
-                  | <NumberLiteral> { out = std::stod(P0.second); }
-                  | <Object> { out =  P0; }
-                  | <Array> { out = P0; };
+<Value> {ast::Node*} ::= <True> { out = new ast::BoolNode(true); }
+                       | <False> { out = new ast::BoolNode(false); }
+                       | <StringLiteral> { out = new ast::StringNode(P0.second); }
+                       | <NumberLiteral> { out = new ast::DoubleNode(std::stod(P0.second)); }
+                       | <Object> { out = P0; }
+                       | <Array> { out = P0; };

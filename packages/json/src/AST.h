@@ -1,46 +1,75 @@
 #pragma once
+#include <list>
 #include <memory>
 #include <string>
 #include <variant>
-#include <list>
 #include <vector>
 
 namespace json::ast {
 
-struct Object;
-struct Array;
-using Value = std::variant<std::shared_ptr<ast::Object>,
-                           std::shared_ptr<ast::Array>,
-                           double,
-                           bool,
-                           std::string>;
+enum class NodeType { Bool, String, Double, Array, Object, ObjectEntry };
 
-struct ObjectEntry {
-  std::string key{};
-  Value value{};
+struct Node {
+  NodeType type;
+
+  Node(NodeType type) : type(type) {}
+  virtual ~Node() {}
 };
 
-struct Object {
-  std::list<ObjectEntry> entries{};
+struct BoolNode : public Node {
+  bool value;
 
-  static std::list<ast::ObjectEntry> Create(ast::ObjectEntry a,
-                                            std::list<ast::ObjectEntry> b) {
-    std::list<ast::ObjectEntry> value = std::list<ast::ObjectEntry>({ a });
-    value.insert(value.end(), b.begin(), b.end());
+  BoolNode(bool value) : Node(NodeType::Bool), value(value) {}
+};
 
-    return value;
+struct StringNode : public Node {
+  std::string value;
+
+  StringNode(std::string value) : Node(NodeType::String), value(value) {}
+};
+
+struct DoubleNode : public Node {
+  double value;
+
+  DoubleNode(double value) : Node(NodeType::Double), value(value) {}
+};
+
+struct ObjectEntryNode : public Node {
+  std::string key;
+  std::unique_ptr<Node> value;
+
+  ObjectEntryNode(std::string key, Node* value)
+    : Node(NodeType::ObjectEntry)
+    , key(key)
+    , value(std::unique_ptr<Node>(value)) {}
+};
+
+struct ObjectNode : public Node {
+  std::vector<std::unique_ptr<ObjectEntryNode>> value{};
+
+  ObjectNode() : Node(NodeType::Object) {}
+
+  static ObjectNode* Add(Node* a, Node* b) {
+    ObjectEntryNode* objectEntry = static_cast<ObjectEntryNode*>(a);
+    ObjectNode* object = static_cast<ObjectNode*>(b);
+
+    object->value.push_back(std::unique_ptr<ObjectEntryNode>(objectEntry));
+
+    return object;
   }
 };
 
-struct Array {
-  std::list<ast::Value> elements;
+struct ArrayNode : public Node {
+  std::vector<std::unique_ptr<Node>> value{};
 
-  static Array Create(ast::Value a, ast::Array b) {
-    ast::Array value = ast::Array({{ a }});
-    value.elements.insert(
-      value.elements.end(), b.elements.begin(), b.elements.end());
+  ArrayNode() : Node(NodeType::Array) {}
 
-    return value;
+  static ArrayNode* Add(Node* a, Node* b) {
+    ArrayNode* arrayNode = static_cast<ArrayNode*>(b);
+
+    arrayNode->value.push_back(std::unique_ptr<Node>(a));
+
+    return arrayNode;
   }
 };
 
