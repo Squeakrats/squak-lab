@@ -2,68 +2,52 @@
 #include "Parser.generated.h"
 #include "utility.h"
 
-std::string trimAttribute(std::string value) {
-  size_t length = 0;
-  for (size_t i = value.size() - 1; i >= 0; i--) {
-    if (value[i] == '"') {
-      length = i - 1;
-      break;
+namespace xml {
+
+std::shared_ptr<Element> Create(ast::ElementNode& node) {
+  std::shared_ptr<Element> element = std::make_shared<Element>();
+  element->tag = node.name;
+
+  if (node.attributes != nullptr) {
+    for (auto& attribute : node.attributes->value) {
+      element->attributes.insert(
+        std::make_pair(attribute.name, attribute.value.substr(1, attribute.value.size() - 2)));
     }
   }
 
-  return value.substr(1, length);
-}
-
-namespace xml {
-std::shared_ptr<Element> CreateElement(std::shared_ptr<ast::Element>& ast);
-std::shared_ptr<TextNode> CreateTextNode(std::shared_ptr<ast::TextNode>& ast);
-
-std::shared_ptr<Node> Create(std::shared_ptr<ast::Node>& ast) {
-  std::shared_ptr<ast::Element> astElement =
-    std::dynamic_pointer_cast<ast::Element>(ast);
-  if (astElement != nullptr) {
-    return CreateElement(astElement);
+  if (node.children != nullptr) {
+    for (size_t i = node.children->value.size(); i --> 0;) {
+      auto& child = node.children->value[i];
+      switch (child->type) {
+        case ast::NodeType::Element:
+          element->children.push_back(
+            Create(static_cast<ast::ElementNode&>(*child)));
+          break;
+        case ast::NodeType::Text:
+          element->children.push_back(std::make_unique<TextNode>(
+            static_cast<ast::TextNode&>(*child).value));
+          break;
+        default:
+          Panic("Unhandled Child!");
+      }
+    }
   }
 
-  std::shared_ptr<ast::TextNode> textNode =
-    std::dynamic_pointer_cast<ast::TextNode>(ast);
-  if (textNode != nullptr) {
-    return CreateTextNode(textNode);
-  }
-
-  Panic("unhandled node type");
+  return element;
 }
 
-std::shared_ptr<Element> CreateElement(std::shared_ptr<ast::Element>& ast) {
-  Element element{};
-
-  for (auto& attribute : ast->openTag.attributes) {
-    element.attributes.insert(std::make_pair(
-      attribute.name, trimAttribute(attribute.value)));
-  }
-
-  for (auto& child : ast->children) {
-    element.children.push_back(Create(child));
-  }
-
-  return std::make_shared<Element>(std::move(element));
-}
-
-std::shared_ptr<TextNode> CreateTextNode(std::shared_ptr<ast::TextNode>& ast) {
-  return std::make_shared<TextNode>(ast->text);
-}
-
-Document Create(ast::Document& ast) {
-  Document document{ CreateElement(ast.root) };
+Document Create(ast::DocumentNode& node) {
+  Document document{ Create(*node.root) };
 
   return document;
 }
 
 Document Parse(std::string source) {
-  ParserContext context{source, GetTokenizers()};
-  ast::Document ast = Parsexml(context);
+  ParserContext context{ source, GetTokenizers() };
+  std::unique_ptr<ast::DocumentNode> ast =
+    std::unique_ptr<ast::DocumentNode>(Parsexml(context));
 
-  return Create(ast);
+  return Create(*ast);
 }
 
 };

@@ -6,55 +6,88 @@
 
 namespace xml::ast {
 
+enum class NodeType {
+  Text,
+  Attributes,
+  Attribute,
+  Elements,
+  Element,
+  Document
+};
+
+struct Node {
+  NodeType type;
+
+  Node(NodeType type) : type(type) {}
+  virtual ~Node() {}
+};
+
 struct Attribute {
   std::string name;
   std::string value;
 };
 
-inline std::list<Attribute> CreateAttribute(Attribute a,
-                                            std::list<Attribute> b) {
-  std::list<Attribute> attributes{ a };
-  attributes.insert(attributes.end(), b.begin(), b.end());
+struct AttributesNode : public Node {
+  std::vector<Attribute> value{};
 
-  return attributes;
-}
+  AttributesNode() : Node(NodeType::Attributes) {}
 
-struct OpenTag {
-  std::string tagName;
-  std::list<Attribute> attributes;
+  static AttributesNode* Add(Attribute attribute, Node* b) {
+    AttributesNode* attributesNode = static_cast<AttributesNode*>(b);
+    attributesNode->value.push_back(attribute);
+
+    return attributesNode;
+  }
 };
 
-struct Node {
-  virtual ~Node(){};
+struct ElementsNode;
+
+struct ElementNode : public Node {
+  std::string name;
+  std::unique_ptr<AttributesNode> attributes;
+  std::unique_ptr<ElementsNode> children;
+
+  ElementNode(std::string name,
+              AttributesNode* attributes,
+              ElementsNode* children)
+    : Node(NodeType::Element)
+    , name(name)
+    , attributes(std::unique_ptr<AttributesNode>(attributes))
+    , children(std::unique_ptr<ElementsNode>(children)) {}
 };
 
 struct TextNode : public Node {
-  std::string text;
+  std::string value;
 
-  TextNode(std::string text)
-    : text(text) {}
+  TextNode(std::string value) : Node(NodeType::Text), value(value) {}
 };
 
-struct Element : public Node {
-  OpenTag openTag;
-  std::list<std::shared_ptr<Node>> children;
+struct ElementsNode : public Node {
+  std::vector<std::unique_ptr<Node>> value{};
 
-  Element(OpenTag openTag, std::list<std::shared_ptr<Node>> children)
-    : openTag(openTag)
-    , children(children) {}
+  ElementsNode() : Node(NodeType::Elements) {}
+
+  static ElementsNode* Add(Node* a, Node* b) {
+    ElementsNode* elementsNode = static_cast<ElementsNode*>(b);
+
+    elementsNode->value.push_back(std::unique_ptr<Node>(a));
+
+    return elementsNode;
+  }
+
+  static ElementsNode* Add(std::string text, Node* b) {
+    ElementsNode* elementsNode = static_cast<ElementsNode*>(b);
+    elementsNode->value.push_back(std::make_unique<TextNode>(text));
+
+    return elementsNode;
+  }
 };
 
-inline std::list<std::shared_ptr<Node>> CreateNode(
-  std::shared_ptr<Node> a,
-  std::list<std::shared_ptr<Node>> b) {
-  std::list<std::shared_ptr<Node>> nodes{ a };
-  nodes.insert(nodes.end(), b.begin(), b.end());
+struct DocumentNode : public Node {
+  std::unique_ptr<ElementNode> root;
 
-  return nodes;
-}
-
-struct Document {
-  std::shared_ptr<Element> root;
+  DocumentNode(ElementNode* root)
+    : Node(NodeType::Document), root(std::unique_ptr<ElementNode>(root)) {}
 };
 
 };

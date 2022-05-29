@@ -6,10 +6,10 @@
 <Default> [
   <> ::= <[\t\n\r ]+>;
   <XMLDesc> ::= <<\\?xml version=\"1.0\" encoding=\"UTF-8\"\\?\x3E>;
-  <OPENTAGSTART> ::= <<[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]+>;
   <CLOSETAGSTART> ::= <</[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]+>;
   <TEXT> ::= <[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890().,&#_-/:;\\*\t\n\r ]+>;
   <COMMENTSTART> ::= <<!-->;
+  <LT> ::= <<>;
   <GT> ::= <\x3E>;
 ]
 <InsideTag> [
@@ -27,30 +27,28 @@
 ]
 ]
 
-<xml> {ast::Document} ::= <XMLDesc> <element> <EndOfFile> { out = ast::Document{P1}; };
+<xml> {ast::DocumentNode*} ::= <XMLDesc> <element> <EndOfFile> { out = new ast::DocumentNode{P1}; };
 
-<attributes> {std::list<ast::Attribute>} ::= <attribute> <attributes> { out = ast::CreateAttribute(P0, P1); }
-                                           | { out = std::list<ast::Attribute>{}; };
+<attributes> {ast::AttributesNode*} ::= <NAME> <EQ> <STRING> <attributes> { out = ast::AttributesNode::Add({P0.second, P2.second}, P3); }
+                                      | { out = new ast::AttributesNode{}; };
 
-<attribute> {ast::Attribute} ::= <NAME> <EQ> <STRING> { out = ast::Attribute{P0.second, P2.second}; };
+<tagstart> {void*} ::= <LT> { context.PushState(ParserState::InsideTag); };
+<tagend> {void*} ::= <GT> { context.PopState(); };
+<tagselfclose> {void*} ::= <SELFCLOSE> { context.PopState(); };
 
-<tagstart> {std::string} ::= <OPENTAGSTART> { context.PushState(ParserState::InsideTag); out = P0.second; };
-<tagend> {void*} ::= <GT> { context.PopState(); out = nullptr; };
-<tagselfclose> {void*} ::= <SELFCLOSE> { context.PopState(); out = nullptr; };
+<element> {ast::ElementNode*} ::= <tagstart> <NAME> <attributes> <elementPrime> { out = new ast::ElementNode{P1.second, P2, P3}; };
+<elementPrime> {ast::ElementsNode*} ::= <tagend> <elements> <CLOSETAGSTART> <GT> { out = P1; }          
+                                      | <tagselfclose> { };
 
-<element> {std::shared_ptr<ast::Element>} ::= <tagstart> <attributes> <elementPrime> { out = std::make_shared<ast::Element>(ast::OpenTag{P0, P1}, P2); };
-<elementPrime> {std::list<std::shared_ptr<ast::Node>>} ::= <tagend> <elements> <CLOSETAGSTART> <GT> { out = P1; }          
-                                                 | <tagselfclose> { out = std::list<std::shared_ptr<ast::Node>>{}; };
+<commentstart> {void*} ::= <COMMENTSTART> { context.PushState(ParserState::InsideComment); };
+<commentPrime> {void*} ::= <COMMENTTEXT> <commentPrime> { }
+                         | <COMMENTDASH> <commentPrime> { }
+                         | <COMMENTEND> { };
 
-<commentstart> {void*} ::= <COMMENTSTART> { context.PushState(ParserState::InsideComment); out = nullptr; };
-<commentPrime> {void*} ::= <COMMENTTEXT> <commentPrime> { out = nullptr; }
-                         | <COMMENTDASH> <commentPrime> { out = nullptr; }
-                         | <COMMENTEND> { out = nullptr; };
+<comment> {void*} ::= <commentstart> <commentPrime> { context.PopState(); }
+                    | { };
 
-<comment> {void*} ::= <commentstart> <commentPrime> { context.PopState(); out = nullptr; }
-                    | { out = nullptr;};
-
-<elements> {std::list<std::shared_ptr<ast::Node>>} ::= <element> <elements> { out = ast::CreateNode(P0, P1); }
-                   | <comment> <elements> { out = std::list<std::shared_ptr<ast::Node>>{}; }
-                   | <TEXT> <elements> { out = ast::CreateNode(std::make_shared<ast::TextNode>(P0.second), P1); }
-                   | { out = std::list<std::shared_ptr<ast::Node>>{}; };
+<elements> {ast::ElementsNode*} ::= <element> <elements> { out = ast::ElementsNode::Add(P0, P1); }
+                                  | <comment> <elements> { out = P1; }
+                                  | <TEXT> <elements> { out = ast::ElementsNode::Add(P0.second, P1); }
+                                  | { out = new ast::ElementsNode{}; };
