@@ -1,11 +1,10 @@
 #include "DFA.h"
 
-template<typename T>
 class IDGenerator {
 public:
-  std::map<T, uint32_t> table{};
+  std::map<std::set<uint32_t>, uint32_t> table{};
 
-  uint32_t GetId(const T& value) {
+  uint32_t GetId(const std::set<uint32_t> value) {
     auto existingId = this->table.find(value);
     if (existingId != this->table.end()) {
       return existingId->second;
@@ -53,16 +52,11 @@ DFA DFA::FromNFA(NFA nfa) {
   }
 
   DFA dfa{};
-  IDGenerator<std::set<uint32_t>> idGenerator{};
+  IDGenerator idGenerator{};
   dfa.initialState = idGenerator.GetId(initialState);
 
   for (auto state : states) {
     uint32_t id = idGenerator.GetId(state.first);
-    std::map<char, uint32_t> edges;
-
-    for (auto edge : state.second) {
-      edges.insert(std::make_pair(edge.first, idGenerator.GetId(edge.second)));
-    }
 
     uint32_t tag = 0;
     for (uint32_t stateId : state.first) {
@@ -74,7 +68,13 @@ DFA DFA::FromNFA(NFA nfa) {
       }
     }
 
-    dfa.states.insert(std::make_pair(id, DFAState{ edges, tag }));
+    DFAState& dfaState = dfa.AddState(id, tag);
+    
+    for (auto edge : state.second) {
+      dfaState.edges[static_cast<uint8_t>(edge.first)] =
+        std::make_pair(true, idGenerator.GetId(edge.second));
+    }
+
     if (state.first.find(nfa.acceptingState) != state.first.end()) {
       dfa.acceptingStates.insert(id);
     }
@@ -86,13 +86,13 @@ DFA DFA::FromNFA(NFA nfa) {
 bool DFA::Match(std::string text) {
   uint32_t stateId = this->initialState;
   for (char character : text) {
+    uint8_t hash = static_cast<uint8_t>(character);
     auto state = this->states.at(stateId);
-    auto nextStateId = state.edges.find(character);
-    if (nextStateId == state.edges.end()) {
+    if (!state.edges[hash].first) {
       return false;
     }
 
-    stateId = nextStateId->second;
+    stateId = state.edges[hash].second;
   }
 
   return this->acceptingStates.find(stateId) != this->acceptingStates.end();
@@ -110,9 +110,10 @@ std::pair<std::string, uint32_t> DFA::Longest(std::stringstream& stream) {
 
   while (!stream.eof()) {
     char character = stream.peek();
-    auto state = this->states.at(stateId);
-    auto nextStateId = state.edges.find(character);
-    if (nextStateId == state.edges.end()) {
+    uint8_t hash = static_cast<uint8_t>(character);
+
+    auto& state = this->states.at(stateId);
+    if (!state.edges[hash].first) {
       stream.seekg(initialPosition);
       text.resize(length);
       stream.read(text.data(), length);
@@ -123,7 +124,7 @@ std::pair<std::string, uint32_t> DFA::Longest(std::stringstream& stream) {
     stream.get();
     pending++;
 
-    stateId = nextStateId->second;
+    stateId = state.edges[hash].second;
 
     if (this->acceptingStates.find(stateId) != this->acceptingStates.end()) {
       tag = this->states.at(stateId).tag;
