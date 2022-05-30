@@ -72,8 +72,36 @@ void WriteEnums(std::stringstream& out, xml::Element& enums) {
   }
 }
 
-void WriteCommands(std::stringstream& out, xml::Element& enums) {
-  for (auto& child : enums.children) {
+void WriteCommand(std::stringstream& out, xml::Element& command) {
+  std::vector<std::shared_ptr<xml::Element>> params{};
+  for (auto& child : command.children) {
+    if (child->type != xml::NodeType::Element) {
+      continue;
+    }
+
+    std::shared_ptr<xml::Element> element =
+      static_pointer_cast<xml::Element>(child);
+
+    if (element->tag == "proto") {
+      WriteType(out, *element);
+      out << "(";
+    } else if (element->tag == "param") {
+      params.push_back(element);
+    }
+  }
+
+  for (size_t i = 0; i < params.size(); i++) {
+    WriteType(out, *params[i]);
+    if (i != params.size() - 1) {
+      out << ", ";
+    }
+  }
+
+  out << ")" << std::endl;
+}
+
+void WriteCommands(std::stringstream& out, xml::Element& commands) {
+  for (auto& child : commands.children) {
     if (child->type != xml::NodeType::Element) {
       continue;
     }
@@ -85,15 +113,7 @@ void WriteCommands(std::stringstream& out, xml::Element& enums) {
       continue;
     }
 
-    WriteType(out, *static_pointer_cast<xml::Element>(command->children[0]));
-    out << "(";
-    for (size_t i = 1; i < command->children.size(); i++) {
-      WriteType(out, *static_pointer_cast<xml::Element>(command->children[i]));
-      if (i < command->children.size() - 1) {
-        out << ',';
-      }
-    }
-    out << ")";
+    WriteCommand(out, *command);
     out << std::endl;
   }
 }
