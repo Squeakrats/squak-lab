@@ -3,6 +3,19 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <vector>
+
+struct Command {
+  std::string ret{};
+  std::string name{};
+  std::vector<std::string> params{};
+};
+
+struct Registry {
+  std::vector<std::string> types{};
+  std::vector<std::pair<std::string, std::string>> enums{};
+  std::vector<Command> commands{};
+};
 
 std::string SanitizeText(std::string& text) {
   std::stringstream out;
@@ -26,54 +39,54 @@ std::string SanitizeText(std::string& text) {
   return out.str();
 }
 
-void WriteType(std::stringstream& out, xml::Element& type) {
+std::string Stringify(xml::Element& type) {
+  std::string result{};
   for (auto& child : type.children) {
     switch (child->type) {
       case xml::NodeType::Text:
-        out << SanitizeText(static_pointer_cast<xml::TextNode>(child)->text);
+        result += SanitizeText(static_pointer_cast<xml::TextNode>(child)->text);
         break;
       case xml::NodeType::Element:
-        WriteType(out, *static_pointer_cast<xml::Element>(child));
+        result += Stringify(*static_pointer_cast<xml::Element>(child));
         break;
       default:
         Panic("Unhandled node type");
     }
   }
+
+  return result;
 }
 
-void WriteTypes(std::stringstream& out, xml::Element& types) {
+std::vector<std::string> ParseTypes(xml::Element& types) {
+  std::vector<std::string> result{};
   for (auto& child : types.children) {
-    if (child->type != xml::NodeType::Element) {
-      continue;
+    if (child->type == xml::NodeType::Element) {
+      result.push_back(Stringify(*static_pointer_cast<xml::Element>(child)));
     }
-    std::shared_ptr<xml::Element> type =
-      static_pointer_cast<xml::Element>(child);
-
-    WriteType(out, *type);
-    out << std::endl;
   }
+
+  return result;
 }
 
-void WriteEnums(std::stringstream& out, xml::Element& enums) {
+std::vector<std::pair<std::string, std::string>> ParseEnums(
+  xml::Element& enums) {
+  std::vector<std::pair<std::string, std::string>> result{};
   for (auto& child : enums.children) {
-    if (child->type != xml::NodeType::Element) {
-      continue;
+    if (child->type == xml::NodeType::Element) {
+      std::shared_ptr<xml::Element> enumElement =
+        static_pointer_cast<xml::Element>(child);
+      if (enumElement->tag == "enum") {
+        result.push_back(std::make_pair(enumElement->attributes.at("name"),
+                                        enumElement->attributes.at("value")));
+      }
     }
-
-    std::shared_ptr<xml::Element> enumElement =
-      static_pointer_cast<xml::Element>(child);
-
-    if (enumElement->tag != "enum") {
-      continue;
-    }
-
-    out << "#define " << enumElement->attributes.at("name") << " "
-        << enumElement->attributes.at("value") << ";\n";
   }
+
+  return result;
 }
 
-void WriteCommand(std::stringstream& out, xml::Element& command) {
-  std::vector<std::shared_ptr<xml::Element>> params{};
+Command ParseCommand(xml::Element& command) {
+  Command result{};
   for (auto& child : command.children) {
     if (child->type != xml::NodeType::Element) {
       continue;
@@ -83,24 +96,21 @@ void WriteCommand(std::stringstream& out, xml::Element& command) {
       static_pointer_cast<xml::Element>(child);
 
     if (element->tag == "proto") {
-      WriteType(out, *element);
-      out << "(";
+      std::string proto = Stringify(*element);
+      size_t split = proto.find(' ');
+
+      result.ret = proto.substr(0, split);
+      result.name = proto.substr(split + 1);
     } else if (element->tag == "param") {
-      params.push_back(element);
+      result.params.push_back(Stringify(*element));
     }
   }
 
-  for (size_t i = 0; i < params.size(); i++) {
-    WriteType(out, *params[i]);
-    if (i != params.size() - 1) {
-      out << ", ";
-    }
-  }
-
-  out << ")" << std::endl;
+  return result;
 }
 
-void WriteCommands(std::stringstream& out, xml::Element& commands) {
+std::vector<Command> ParseCommands(xml::Element& commands) {
+  std::vector<Command> result{};
   for (auto& child : commands.children) {
     if (child->type != xml::NodeType::Element) {
       continue;
@@ -109,23 +119,28 @@ void WriteCommands(std::stringstream& out, xml::Element& commands) {
     std::shared_ptr<xml::Element> command =
       static_pointer_cast<xml::Element>(child);
 
-    if (command->tag != "command") {
-      continue;
+    if (command->tag == "command") {
+      result.push_back(ParseCommand(*command));
     }
-
-    WriteCommand(out, *command);
-    out << std::endl;
   }
+
+  return result;
 }
 
 int main(int argc, char* argv[]) {
-  std::ifstream file("C:\\Users\\yusef\\dev\\squak-lab\\assets\\gl.xml");
+  if (argc != 3) {
+    std::abort();
+  }
+
+  std::string outPath = argv[1];
+  std::string xmlPath = argv[2];
+
+  std::ifstream file(xmlPath);
   std::stringstream content{};
   content << file.rdbuf();
-
   xml::Document document = xml::Parse(content.str());
 
-  std::stringstream out{};
+  Registry registry{};
   for (auto& child : document.root->children) {
     if (child->type != xml::NodeType::Element) {
       continue;
@@ -135,15 +150,39 @@ int main(int argc, char* argv[]) {
       static_pointer_cast<xml::Element>(child);
 
     if (element->tag == "types") {
-      WriteTypes(out, *element);
+      auto types = ParseTypes(*element);
+      registry.types.insert(registry.types.end(), types.begin(), types.end());
     } else if (element->tag == "enums") {
-      WriteEnums(out, *element);
+      auto enums = ParseEnums(*element);
+      registry.enums.insert(registry.enums.end(), enums.begin(), enums.end());
     } else if (element->tag == "commands") {
-      WriteCommands(out, *element);
+      auto commands = ParseCommands(*element);
+      registry.commands.insert(
+        registry.commands.end(), commands.begin(), commands.end());
     }
   }
 
-  std::string outContent = out.str();
+  std::ofstream header(outPath);
+  for (auto& type : registry.types) {
+    header << type << std::endl;
+  }
+
+  for (auto& enumeration : registry.enums) {
+    header << "#define " << enumeration.first << " " << enumeration.second
+           << std::endl;
+  }
+
+  for (auto& command : registry.commands) {
+    header << "extern " << command.ret << " (*" << command.name << ")(";
+    for (size_t i = 0; i < command.params.size(); i++) {
+      header << command.params[i];
+      if (i != command.params.size() - 1) {
+        header << ", ";
+      }
+    }
+
+    header << ");" << std::endl;
+  }
 
   return 0;
 }
