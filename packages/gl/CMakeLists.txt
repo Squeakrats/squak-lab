@@ -13,4 +13,4 @@ add_library(gl
 	src/RenderingContext.cpp
 )
 target_include_directories(gl PRIVATE src/ PUBLIC include/)
-target_link_libraries(gl graphics utility png)
+target_link_libraries(gl graphics utility png glr)

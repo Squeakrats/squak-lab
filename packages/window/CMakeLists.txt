@@ -21,4 +21,4 @@ add_library(window
 )
 
 target_include_directories(window PUBLIC src/)
-target_link_libraries(window utility)
+target_link_libraries(window utility glr)

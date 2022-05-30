@@ -2,27 +2,11 @@
 #include <windows.h>
 #include <wingdi.h>
 #include <winuser.h>
-#define GLAD_GL_IMPLEMENTATION
 #include "utility.h"
-#include <glad/gl.h>
+#define GLR_IMPLEMENTATION
+#include <glr.h>
 
 namespace window {
-
-HMODULE glModule{};
-
-GLADapiproc FindProcAddress(const char* name) {
-  if (glModule == nullptr) {
-    glModule = GetModuleHandle("opengl32.dll");
-  }
-
-  Assert(glModule != nullptr, "unable to locate opengl32");
-  GLADapiproc address = (GLADapiproc)GetProcAddress(glModule, name);
-  if (address != nullptr) {
-    return address;
-  }
-
-  return (GLADapiproc)wglGetProcAddress(name);
-}
 
 class Window : public IWindow {
 private:
@@ -116,7 +100,7 @@ std::shared_ptr<IWindow> Create(std::string name,
   Assert(wglMakeCurrent(deviceContext, glContext),
          "Failed to activate OpenGL context");
 
-  gladLoadGL(FindProcAddress);
+  glrInit();
 
   glViewport(0, 0, width, height);
 

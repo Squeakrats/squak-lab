@@ -39,6 +39,24 @@ std::string SanitizeText(std::string& text) {
   return out.str();
 }
 
+std::string format(std::string source, std::vector<std::string> replacements) {
+  std::stringstream formatted{};
+  size_t size = 0;
+  size_t replace = 0;
+
+  for (size_t i = 0; i < source.size() - 1; i++) {
+    if (source[i] == '{' && source[i + 1] == '}') {
+      formatted << source.substr(size, i - size);
+      formatted << replacements[replace++];
+      i = size = i + 2;
+    }
+  }
+
+  formatted << source.substr(size, source.size() - size);
+
+  return formatted.str();
+}
+
 std::string Stringify(xml::Element& type) {
   std::string result{};
   for (auto& child : type.children) {
@@ -85,6 +103,17 @@ std::vector<std::pair<std::string, std::string>> ParseEnums(
   return result;
 }
 
+size_t FindCommandName(std::string& proto) {
+  for (size_t i = proto.size(); i-- > 0;) {
+    char c = proto[i];
+    if (c == ' ' || c == '*') {
+      return i + 1;
+    }
+  }
+
+  Panic("unhandled proto");
+}
+
 Command ParseCommand(xml::Element& command) {
   Command result{};
   for (auto& child : command.children) {
@@ -97,10 +126,10 @@ Command ParseCommand(xml::Element& command) {
 
     if (element->tag == "proto") {
       std::string proto = Stringify(*element);
-      size_t split = proto.find(' ');
+      size_t split = FindCommandName(proto);
 
       result.ret = proto.substr(0, split);
-      result.name = proto.substr(split + 1);
+      result.name = proto.substr(split);
     } else if (element->tag == "param") {
       result.params.push_back(Stringify(*element));
     }
@@ -163,6 +192,15 @@ int main(int argc, char* argv[]) {
   }
 
   std::ofstream header(outPath);
+
+  header << "#pragma once" << std::endl;
+  header << R"ESC(#ifndef GLR_IMPLEMENTATION
+#define GLR_API extern
+#else
+#define GLR_API
+#endif
+)ESC";
+
   for (auto& type : registry.types) {
     header << type << std::endl;
   }
@@ -173,7 +211,7 @@ int main(int argc, char* argv[]) {
   }
 
   for (auto& command : registry.commands) {
-    header << "extern " << command.ret << " (*" << command.name << ")(";
+    header << "GLR_API " << command.ret << " (*" << command.name << ")(";
     for (size_t i = 0; i < command.params.size(); i++) {
       header << command.params[i];
       if (i != command.params.size() - 1) {
@@ -183,6 +221,38 @@ int main(int argc, char* argv[]) {
 
     header << ");" << std::endl;
   }
+
+  std::stringstream loaders{};
+  for (auto& command : registry.commands) {
+    loaders << command.name << " = (decltype(" << command.name
+            << "))FindProcAddress(\"" << command.name << "\");" << std::endl;
+  }
+
+  header << format(R"ESC(#ifdef GLR_IMPLEMENTATION
+#include <windows.h>
+
+HMODULE glModule{ };
+
+FARPROC FindProcAddress(const char* name) {
+  if (glModule == nullptr) {
+    glModule = GetModuleHandle("opengl32.dll");
+  }
+
+  FARPROC address = GetProcAddress(glModule, name);
+  if (address != nullptr) {
+    return address;
+  }
+
+  return (FARPROC)wglGetProcAddress(name);
+}
+
+void glrInit() {
+{}
+}
+
+#endif
+)ESC",
+                   { loaders.str() });
 
   return 0;
 }
