@@ -6,8 +6,7 @@
 using namespace xml;
 
 TEST(XML, BasicCommentSucceeds) {
-  Document document = Parse(R"(
-	<?xml version="1.0" encoding="UTF-8"?>
+  Document document = Parse(R"(<?xml version="1.0" encoding="UTF-8"?>
 <registry>
     <comment>
 Copyright 2013-2020 The Khronos Group Inc.
@@ -25,8 +24,7 @@ https://github.com/KhronosGroup/OpenGL-Registry
 }
 
 TEST(XML, InlineTextNode) {
-  Document document = Parse(R"(
-	<?xml version="1.0" encoding="UTF-8"?>
+  Document document = Parse(R"(<?xml version="1.0" encoding="UTF-8"?>
     <type>typedef unsigned int <name>GLenum</name>;</type>
 	)");
 
@@ -45,16 +43,14 @@ TEST(XML, InlineTextNode) {
 }
 
 TEST(XML, Attribute) {
-  Document document = Parse(R"(
-	<?xml version="1.0" encoding="UTF-8"?>
+  Document document = Parse(R"(<?xml version="1.0" encoding="UTF-8"?>
      <type name="khrplatform"></type>
 	)");
 
   ASSERT_EQ(document.root->attributes["name"], "khrplatform");
 }
 TEST(XML, Attributes) {
-  Document document = Parse(R"(
-	<?xml version="1.0" encoding="UTF-8"?>
+  Document document = Parse(R"(<?xml version="1.0" encoding="UTF-8"?>
      <type a="b" c="d" />
 	)");
 
