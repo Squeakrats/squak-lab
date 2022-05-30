@@ -29,6 +29,8 @@ target_include_directories(json
 )
 target_link_libraries(json compiler regex)
 
-add_executable(JsonTests src/tests/JsonTests.cpp)
-target_link_libraries(JsonTests gtest_main json)
-set_target_properties(JsonTests PROPERTIES FOLDER test)
+if (NOT EMSCRIPTEN)
+	add_executable(JsonTests src/tests/JsonTests.cpp)
+	target_link_libraries(JsonTests gtest_main json)
+	set_target_properties(JsonTests PROPERTIES FOLDER test)
+endif()

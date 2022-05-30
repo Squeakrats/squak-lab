@@ -30,6 +30,8 @@ target_include_directories(regex
 )
 target_link_libraries(regex compiler utility)
 
-add_executable(RegularExpressionTests src/tests/RegularExpressionTests.cpp)
-target_link_libraries(RegularExpressionTests gtest_main regex)
-set_target_properties(RegularExpressionTests PROPERTIES FOLDER test)
+if (NOT EMSCRIPTEN)
+	add_executable(RegularExpressionTests src/tests/RegularExpressionTests.cpp)
+	target_link_libraries(RegularExpressionTests gtest_main regex)
+	set_target_properties(RegularExpressionTests PROPERTIES FOLDER test)
+endif()

@@ -8,6 +8,8 @@ add_library(gltf
 target_include_directories(gltf PUBLIC src/)
 target_link_libraries(gltf json graphics utility)
 
-add_executable(GLTFTests src/tests/GLTFTests.cpp)
-target_link_libraries(GLTFTests gtest_main gltf)
-set_target_properties(GLTFTests PROPERTIES FOLDER test)
+if (NOT EMSCRIPTEN)
+    add_executable(GLTFTests src/tests/GLTFTests.cpp)
+    target_link_libraries(GLTFTests gtest_main gltf)
+    set_target_properties(GLTFTests PROPERTIES FOLDER test)
+endif()

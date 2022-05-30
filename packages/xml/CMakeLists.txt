@@ -29,6 +29,8 @@ target_include_directories(xml
 )
 target_link_libraries(xml compiler regex)
 
-add_executable(XmlTests src/tests/XmlTests.cpp)
-target_link_libraries(XmlTests gtest_main xml)
-set_target_properties(XmlTests PROPERTIES FOLDER test)
+if (NOT EMSCRIPTEN)
+	add_executable(XmlTests src/tests/XmlTests.cpp)
+	target_link_libraries(XmlTests gtest_main xml)
+	set_target_properties(XmlTests PROPERTIES FOLDER test)
+endif()
