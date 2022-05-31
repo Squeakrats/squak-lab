@@ -21,7 +21,7 @@ add_custom_command(
 if(NOT EMSCRIPTEN)
   set(SOURCES 
     include/glr.h
-	  ${CMAKE_CURRENT_BINARY_DIR}/include/glr_windows.h
+    ${CMAKE_CURRENT_BINARY_DIR}/include/glr_windows.h
     ${CMAKE_CURRENT_BINARY_DIR}/include/KHR/khrplatform.h
   )
 else()
