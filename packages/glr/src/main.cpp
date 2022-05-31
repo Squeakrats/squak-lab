@@ -2,6 +2,7 @@
 #include "xml.h"
 #include <fstream>
 #include <iostream>
+#include <set>
 #include <sstream>
 #include <vector>
 
@@ -205,9 +206,15 @@ int main(int argc, char* argv[]) {
     header << type << std::endl;
   }
 
+  // only write out the first occurence
+  std::set<std::string> enumsWritten{};
   for (auto& enumeration : registry.enums) {
-    header << "#define " << enumeration.first << " " << enumeration.second
-           << std::endl;
+    if (enumsWritten.find(enumeration.first) == enumsWritten.end()) {
+      header << "#define " << enumeration.first << " " << enumeration.second
+             << std::endl;
+
+      enumsWritten.insert(enumeration.first);
+    }
   }
 
   for (auto& command : registry.commands) {
