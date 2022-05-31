@@ -1,8 +1,7 @@
 #include "window.h"
 #include "utility.h"
 #include <emscripten.h>
-#include <emscripten/html5_webgl.h>
-#include <GLES3/gl3.h>
+#include <glr.h>
 #include <set>
 
 namespace window {

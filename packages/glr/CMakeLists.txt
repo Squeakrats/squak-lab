@@ -13,14 +13,23 @@ file(DOWNLOAD https://www.khronos.org/registry/EGL/api/KHR/khrplatform.h ${CMAKE
 file(DOWNLOAD https://raw.githubusercontent.com/KhronosGroup/OpenGL-Registry/main/xml/gl.xml ${CMAKE_CURRENT_BINARY_DIR}/gl.xml)
 
 add_custom_command(
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/include/glr.h
-    COMMAND glrt ${CMAKE_CURRENT_BINARY_DIR}/include/glr.h ${CMAKE_CURRENT_BINARY_DIR}/gl.xml
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/include/glr_windows.h
+    COMMAND glrt ${CMAKE_CURRENT_BINARY_DIR}/include/glr_windows.h ${CMAKE_CURRENT_BINARY_DIR}/gl.xml
     DEPENDS glrt
 )
 
-add_library(glr INTERFACE
-	${CMAKE_CURRENT_BINARY_DIR}/include/glr.h
-  ${CMAKE_CURRENT_BINARY_DIR}/include/KHR/khrplatform.h
-)
-target_include_directories(glr INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/include)
+if(NOT EMSCRIPTEN)
+  set(SOURCES 
+    include/glr.h
+	  ${CMAKE_CURRENT_BINARY_DIR}/include/glr_windows.h
+    ${CMAKE_CURRENT_BINARY_DIR}/include/KHR/khrplatform.h
+  )
+else()
+  set(SOURCES 
+    include/glr.h
+  )
+endif()
+
+add_library(glr INTERFACE ${SOURCES})
+target_include_directories(glr INTERFACE include/ ${CMAKE_CURRENT_BINARY_DIR}/include)
 set_target_properties(glr PROPERTIES LINKER_LANGUAGE CXX)

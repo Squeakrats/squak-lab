@@ -1,11 +1,6 @@
 #pragma once
 #include <string>
-#ifdef EMSCRIPTEN
-#include <GLES3/gl3.h>
-#include <emscripten/html5_webgl.h>
-#else
 #include <glr.h>
-#endif
 #include "IRenderer.h"
 
 namespace gl {
