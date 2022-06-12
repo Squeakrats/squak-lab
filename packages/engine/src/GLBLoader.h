@@ -1,5 +1,5 @@
 #pragma once
-#include "AssetManager.h"
+#include <squak/core/AssetManager.h>
 
 class GLBLoader : public IAssetLoader {
 public:

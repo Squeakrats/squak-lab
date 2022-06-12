@@ -1,6 +1,6 @@
 #pragma once
 #include "Actor.h"
-#include "AssetManager.h"
+#include <squak/core/AssetManager.h>
 #include "IRenderer.h"
 #include "SceneNode.h"
 #include "window.h"

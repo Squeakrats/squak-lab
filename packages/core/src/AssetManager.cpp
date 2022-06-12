@@ -1,4 +1,4 @@
-#include "AssetManager.h"
+#include <squak/core/AssetManager.h>
 
 std::shared_ptr<IAsset> AssetManager::GetAsset(std::string name) {
   auto find = this->assets.find(name);

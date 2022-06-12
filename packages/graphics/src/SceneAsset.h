@@ -1,5 +1,5 @@
 #pragma once
-#include "AssetManager.h"
+#include <squak/core/AssetManager.h>
 #include "SceneNode.h"
 
 struct SceneAsset : public IAsset {

@@ -1,5 +1,5 @@
 #pragma once
-#include "BufferView.h"
+#include <squak/core/BufferView.h>
 
 namespace png {
 

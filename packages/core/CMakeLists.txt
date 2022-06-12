@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.8)
 project(core)
 
 add_library(core
-	src/AssetManager.h
+	include/squak/core/AssetManager.h
+	include/squak/core/Buffer.h
+	include/squak/core/BufferView.h
 	src/AssetManager.cpp
-	src/Buffer.h
-	src/BufferView.h
 )
-target_include_directories(core PUBLIC src/)
+target_include_directories(core PRIVATE src/ PUBLIC include/)
