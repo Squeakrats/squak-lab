@@ -1,5 +1,5 @@
 #include "RenderingContext.h"
-#include "png.h"
+#include <squak/png.h>
 #include "utility.h"
 
 namespace gl {

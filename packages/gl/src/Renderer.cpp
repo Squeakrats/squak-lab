@@ -2,7 +2,7 @@
 #include <squak/graphics/BufferAccessor.h>
 #include "Matrix4.h"
 #include <squak/gl/glutils.h>
-#include "png.h"
+#include <squak/png.h>
 #include "shaders.h"
 #include "utility.h"
 

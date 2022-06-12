@@ -1,4 +1,4 @@
-#include "png.h"
+#include <squak/png.h>
 #include "ByteStream.h"
 #include <squak/compression/inflate.h>
 #include "utility.h"
