@@ -1,5 +1,4 @@
 #include "../xml.h"
-#include "DFA.h"
 #include "regex.h"
 #include <gtest/gtest.h>
 

@@ -18,6 +18,10 @@ add_library(regex
 	src/regex.h
 	src/regex.cpp
 	src/regex.g
+	src/DFA.h
+	src/DFA.cpp
+	src/NFA.h
+	src/NFA.cpp
 	src/Tokenizer.cpp
 	${CMAKE_CURRENT_BINARY_DIR}/generated/Parser.generated.h
 	${CMAKE_CURRENT_BINARY_DIR}/generated/Parser.generated.cpp
@@ -28,7 +32,7 @@ target_include_directories(regex
 	PRIVATE
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
 )
-target_link_libraries(regex compiler utility)
+target_link_libraries(regex utility)
 
 if (NOT EMSCRIPTEN)
 	add_executable(RegularExpressionTests src/tests/RegularExpressionTests.cpp)

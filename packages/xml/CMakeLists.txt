@@ -27,7 +27,7 @@ target_include_directories(xml
 	PRIVATE 
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
 )
-target_link_libraries(xml compiler regex)
+target_link_libraries(xml regex)
 
 if (NOT EMSCRIPTEN)
 	add_executable(XmlTests src/tests/XmlTests.cpp)

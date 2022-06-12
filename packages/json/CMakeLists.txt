@@ -27,7 +27,7 @@ target_include_directories(json
 	PRIVATE 
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
 )
-target_link_libraries(json compiler regex)
+target_link_libraries(json regex)
 
 if (NOT EMSCRIPTEN)
 	add_executable(JsonTests src/tests/JsonTests.cpp)
