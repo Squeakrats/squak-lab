@@ -1,4 +1,4 @@
-#include "compression.h"
+#include "squak/inflate.h"
 #include "BitStream.h"
 #include "utility.h"
 #include <array>
