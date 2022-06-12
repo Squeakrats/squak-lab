@@ -12,3 +12,4 @@ add_executable(grammar
     src/Tokenizer.h
 )
 target_link_libraries(grammar utility)
+set_target_properties(grammar PROPERTIES FOLDER tool)

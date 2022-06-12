@@ -5,6 +5,7 @@ add_executable(glrt
 	src/main.cpp
 )
 target_link_libraries(glrt xml)
+set_target_properties(glrt PROPERTIES FOLDER tool)
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/KHR)
