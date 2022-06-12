@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 project(compression)
 
 add_library(compression
-	include/squak/inflate.h
+	include/squak/compression/inflate.h
 	src/BitStream.h
 	src/inflate.cpp
 )

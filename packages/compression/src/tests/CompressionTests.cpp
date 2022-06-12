@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "squak/inflate.h"
+#include <squak/compression/inflate.h>
 
 TEST(CompressionTests, BasicTests) {
     // "aaaaabbbbbaaaaa"

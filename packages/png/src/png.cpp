@@ -1,6 +1,6 @@
 #include "png.h"
 #include "ByteStream.h"
-#include <squak/inflate.h>
+#include <squak/compression/inflate.h>
 #include "utility.h"
 #include <array>
 #include <cmath>
