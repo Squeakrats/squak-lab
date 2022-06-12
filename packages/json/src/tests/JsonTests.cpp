@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include  "../json.h"
+#include  <squak/json.h>
 
 using namespace json;
 

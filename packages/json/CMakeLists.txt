@@ -14,8 +14,8 @@ add_custom_command(
 )
 
 add_library(json
+	include/squak/json.h
 	src/AST.h
-	src/json.h
 	src/json.cpp
 	src/json.g
 	${CMAKE_CURRENT_BINARY_DIR}/generated/Parser.generated.h
@@ -23,8 +23,9 @@ add_library(json
 )
 target_include_directories(json
 	PUBLIC
-		src/
+		include/
 	PRIVATE 
+		src/
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
 )
 target_link_libraries(json regex)

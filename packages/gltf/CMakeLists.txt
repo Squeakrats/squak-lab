@@ -2,10 +2,10 @@ cmake_minimum_required(VERSION 3.8)
 project(gltf)
 
 add_library(gltf
-    src/gltf.h
+    include/squak/gltf.h
     src/gltf.cpp
 )
-target_include_directories(gltf PUBLIC src/)
+target_include_directories(gltf PRIVATE src/ PUBLIC include/)
 target_link_libraries(gltf json graphics utility)
 
 if (NOT EMSCRIPTEN)

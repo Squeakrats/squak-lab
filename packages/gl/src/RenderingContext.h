@@ -1,7 +1,7 @@
 #pragma once
-#include "BufferAccessor.h"
-#include "Texture.h"
-#include "gl/glutils.h"
+#include <squak/graphics/BufferAccessor.h>
+#include <squak/graphics/Texture.h>
+#include <squak/gl/glutils.h>
 #include <map>
 #include <memory>
 

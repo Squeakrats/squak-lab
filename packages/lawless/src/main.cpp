@@ -1,9 +1,9 @@
-#include "Engine.h"
-#include "GLBLoader.h"
+#include <squak/engine/Engine.h>
+#include <squak/engine/GLBLoader.h>
 #include "Player.h"
 #include "PlayerCamera.h"
-#include "gl/glutils.h"
-#include "gltf.h"
+#include <squak/gl/glutils.h>
+#include <squak/gltf.h>
 
 #ifdef EMSCRIPTEN
 std::string assetDir = "./";

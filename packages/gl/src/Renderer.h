@@ -1,9 +1,9 @@
 #pragma once
-#include "IRenderer.h"
+#include <squak/graphics/IRenderer.h>
 #include "Program.h"
 #include "RenderingContext.h"
-#include "SceneNode.h"
-#include "gl/glutils.h"
+#include <squak/graphics/SceneNode.h>
+#include <squak/gl/glutils.h>
 #include "shaders.h"
 #include <map>
 #include <stack>

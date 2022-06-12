@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 project(gl)
 
 add_library(gl
-	include/gl/glutils.h
+	include/squak/gl/glutils.h
 	src/shaders.h
 	src/shaders.cpp
 	src/glutils.cpp

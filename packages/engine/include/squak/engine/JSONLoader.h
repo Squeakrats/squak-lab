@@ -1,6 +1,6 @@
 #pragma once
 #include <squak/core/AssetManager.h>
-#include "json.h"
+#include <squak/json.h>
 
 struct JSONAsset : public IAsset {
   json::Object json;

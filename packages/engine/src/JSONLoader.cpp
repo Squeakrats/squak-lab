@@ -1,5 +1,5 @@
-#include "JSONLoader.h"
-#include "json.h"
+#include <squak/engine/JSONLoader.h>
+#include <squak/json.h>
 #include "utility.h"
 #include <fstream>
 #include <sstream>

@@ -1,4 +1,4 @@
-#include "gl/glutils.h"
+#include <squak/gl/glutils.h>
 #include "Renderer.h"
 #include "utility.h"
 

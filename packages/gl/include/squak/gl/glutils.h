@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <glr.h>
-#include "IRenderer.h"
+#include <squak/graphics/IRenderer.h>
 
 namespace gl {
 

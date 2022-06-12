@@ -1,7 +1,7 @@
 #include "Renderer.h"
-#include "BufferAccessor.h"
+#include <squak/graphics/BufferAccessor.h>
 #include "Matrix4.h"
-#include "gl/glutils.h"
+#include <squak/gl/glutils.h>
 #include "png.h"
 #include "shaders.h"
 #include "utility.h"

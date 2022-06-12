@@ -1,5 +1,5 @@
-#include "gltf.h"
-#include "SceneAsset.h"
+#include <squak/gltf.h>
+#include <squak/graphics/SceneAsset.h>
 #include "utility.h"
 #include <fstream>
 

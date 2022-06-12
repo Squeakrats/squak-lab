@@ -1,5 +1,5 @@
-#include "Actor.h"
-#include "Engine.h"
+#include <squak/engine/Actor.h>
+#include <squak/engine/Engine.h>
 
 Actor::Actor(const ActorInitializer& initializer)
   : id(initializer.id)

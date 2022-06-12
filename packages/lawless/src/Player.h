@@ -1,6 +1,6 @@
 #pragma once
-#include "Engine.h"
-#include "SceneAsset.h"
+#include <squak/engine/Engine.h>
+#include <squak/graphics/SceneAsset.h>
 #include <numbers>
 
 class Player : public Actor {

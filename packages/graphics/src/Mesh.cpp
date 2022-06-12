@@ -1,4 +1,4 @@
-#include "Mesh.h"
+#include <squak/graphics/Mesh.h>
 #include <iterator>
 
 Mesh Mesh::CreatePlane(float width, float height) {

@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <fstream>
-#include "gltf.h"
+#include <squak/gltf.h>
 
 TEST(GLTF, GLTFBasic) {
 	// TODO - create an asset loading / path framework

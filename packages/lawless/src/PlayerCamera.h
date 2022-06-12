@@ -1,7 +1,7 @@
 #pragma once
-#include "Engine.h"
+#include <squak/engine/Engine.h>
 #include "Player.h"
-#include "SceneAsset.h"
+#include <squak/graphics/SceneAsset.h>
 #include <iostream>
 #include <numbers>
 

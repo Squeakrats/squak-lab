@@ -1,5 +1,5 @@
 #pragma once
-#include "gl/glutils.h"
+#include <squak/gl/glutils.h>
 #include <vector>
 
 namespace gl {

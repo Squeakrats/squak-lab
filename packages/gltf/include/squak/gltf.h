@@ -1,7 +1,7 @@
 #pragma once
 #include <squak/core/AssetManager.h>
-#include "SceneNode.h"
-#include "json.h"
+#include <squak/graphics/SceneNode.h>
+#include <squak/json.h>
 
 namespace gltf {
 

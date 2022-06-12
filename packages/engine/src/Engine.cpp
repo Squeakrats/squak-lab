@@ -1,5 +1,5 @@
-#include "Engine.h"
-#include "JSONLoader.h"
+#include <squak/engine/Engine.h>
+#include <squak/engine/JSONLoader.h>
 #include "utility.h"
 #include <chrono>
 #ifdef EMSCRIPTEN
