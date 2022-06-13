@@ -5,7 +5,7 @@ namespace fragments {
 
 const char* Header = R"ESC(// This file was auto-generated
 #pragma once
-#include <sstream>
+#include <squak/core/IByteStream.h>
 #include <functional>
 #include <map>
 #include <stack>
@@ -38,7 +38,7 @@ enum class ParserState {
 	Default,
 {}};
 
-using Tokenizer = std::function<Token(std::stringstream& stream)>;
+using Tokenizer = std::function<Token(IByteStream& stream)>;
 using Tokenizers = std::map<ParserState, Tokenizer>;
 
 Tokenizers GetTokenizers();
@@ -48,13 +48,13 @@ std::vector<Production> GetParseTable();
 class ParserContext {
 public:
 	std::stack<ParserState> state{ };
-	std::stringstream stream;
+	IByteStream& stream;
 	Tokenizers tokenizers;
 	Tokenizer tokenize;
 	std::optional<Token> token{ };
 
-	ParserContext(std::string source, Tokenizers tokenizers)
-		: stream(source), tokenizers(tokenizers), tokenize(tokenizers.at(ParserState::Default)){
+	ParserContext(IByteStream& stream, Tokenizers tokenizers)
+		: stream(stream), tokenizers(tokenizers), tokenize(tokenizers.at(ParserState::Default)){
 			this->state.push(ParserState::Default);
 		}
 
@@ -165,7 +165,7 @@ const char* TokenizerIncludes = R"ESC(#include "regex.h"
 #include <optional>)ESC";
 
 const char* Tokenize = R"ESC(
-Token Tokenize{}(std::stringstream& stream) {
+Token Tokenize{}(IByteStream& stream) {
 	static std::vector<std::optional<TokenType>> tokens = {
 {}};
 

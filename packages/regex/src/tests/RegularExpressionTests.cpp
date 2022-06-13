@@ -1,4 +1,5 @@
 #include "../regex.h"
+#include <squak/core/StringStream.h>
 #include <gtest/gtest.h>
 
 TEST(regex, PlusOperator) {
@@ -63,7 +64,7 @@ TEST(regex, Negate) {
 TEST(regex, Merge) {
   DFA dfa = regex::Create(std::vector<std::string>{ "true", "false" });
 
-  std::stringstream source("truefalse");
+  StringStream source("truefalse");
   EXPECT_EQ(dfa.Longest(source).second, 1);
   EXPECT_EQ(dfa.Longest(source).second, 2);
 }
@@ -71,7 +72,7 @@ TEST(regex, Merge) {
 TEST(regex, Longest) {
   DFA dfa = regex::Create(std::vector<std::string>{ "helloWorld", "hello" });
 
-  std::stringstream source("helloWorldhelloWo");
+  StringStream source("helloWorldhelloWo");
 
   auto longest = dfa.Longest(source);
   EXPECT_EQ(longest.second, 1);

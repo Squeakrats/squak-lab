@@ -1,6 +1,6 @@
 #pragma once
 #include "NFA.h"
-#include <sstream>
+#include <squak/core/IByteStream.h>
 #include <array>
 
 class DFA {
@@ -23,7 +23,7 @@ public:
   }
 
   bool Match(std::string);
-  std::pair<std::string, uint32_t> Longest(std::stringstream& stream);
+  std::pair<std::string, uint32_t> Longest(IByteStream& stream);
 
   static DFA FromNFA(NFA nfa);
 };

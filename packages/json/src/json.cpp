@@ -1,6 +1,7 @@
 #include  <squak/json.h>
 #include "Parser.generated.h"
 #include "utility.h"
+#include <squak/core/StringStream.h>
 
 namespace json {
 
@@ -46,7 +47,8 @@ json::Value Create(ast::Node& node) {
 }
 
 Object Parse(std::string source) {
-  ParserContext context{ source, GetTokenizers() };
+  StringStream stream{ std::move(source) };
+  ParserContext context{ stream, GetTokenizers() };
 
   std::unique_ptr<ast::ObjectNode> ast = std::unique_ptr<ast::ObjectNode>(
     static_cast<ast::ObjectNode*>(Parsejson(context)));

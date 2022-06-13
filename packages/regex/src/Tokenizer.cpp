@@ -3,14 +3,14 @@
 
 namespace regex {
 
-Token Tokenize(std::stringstream& source) {
-  if (source.eof()) {
+Token Tokenize(IByteStream& stream) {
+  if (stream.AtEnd()) {
     return Token{ TokenType::EndOfFile, "" };
   }
 
   while (true) {
     char current;
-    switch (current = source.get()) {
+    switch (current = stream.Get()) {
       case '+':
       case '*':
       case '?':
@@ -22,7 +22,7 @@ Token Tokenize(std::stringstream& source) {
       case ']':
         return Token{ TokenType::RightBracket, std::string(1, current) };
       case '\\': {
-        switch (current = source.get()) {
+        switch (current = stream.Get()) {
           case '[':
           case ']':
           case '?':

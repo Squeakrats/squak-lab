@@ -32,7 +32,7 @@ target_include_directories(regex
 	PRIVATE
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
 )
-target_link_libraries(regex utility)
+target_link_libraries(regex utility core)
 
 if (NOT EMSCRIPTEN)
 	add_executable(RegularExpressionTests src/tests/RegularExpressionTests.cpp)

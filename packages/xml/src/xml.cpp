@@ -1,6 +1,7 @@
 #include "xml.h"
 #include "Parser.generated.h"
 #include "utility.h"
+#include <squak/core/StringStream.h>
 
 namespace xml {
 
@@ -43,7 +44,8 @@ Document Create(ast::DocumentNode& node) {
 }
 
 Document Parse(std::string source) {
-  ParserContext context{ source, GetTokenizers() };
+  StringStream stream{ std::move(source) };
+  ParserContext context{ stream, GetTokenizers() };
   std::unique_ptr<ast::DocumentNode> ast = std::unique_ptr<ast::DocumentNode>(
     static_cast<ast::DocumentNode*>(Parsexml(context)));
 

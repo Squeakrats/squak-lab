@@ -98,9 +98,9 @@ bool DFA::Match(std::string text) {
   return this->acceptingStates.find(stateId) != this->acceptingStates.end();
 }
 
-std::pair<std::string, uint32_t> DFA::Longest(std::stringstream& stream) {
+std::pair<std::string, uint32_t> DFA::Longest(IByteStream& stream) {
   uint32_t stateId = this->initialState;
-  std::streampos initialPosition = stream.tellg();
+  size_t initialPosition = stream.GetPosition();
 
   size_t pending = 0;
 
@@ -108,20 +108,20 @@ std::pair<std::string, uint32_t> DFA::Longest(std::stringstream& stream) {
   size_t length = 0;
   uint32_t tag = 0;
 
-  while (!stream.eof()) {
-    char character = stream.peek();
+  while (!stream.AtEnd()) {
+    char character = stream.Peek();
     uint8_t hash = static_cast<uint8_t>(character);
 
     auto& state = this->states.at(stateId);
     if (!state.edges[hash].first) {
-      stream.seekg(initialPosition);
+      stream.SetPosition(initialPosition);
       text.resize(length);
-      stream.read(text.data(), length);
+      stream.Read(text.data(), length);
 
       return std::make_pair(text, tag);
     }
 
-    stream.get();
+    stream.Get();
     pending++;
 
     stateId = state.edges[hash].second;
@@ -132,9 +132,9 @@ std::pair<std::string, uint32_t> DFA::Longest(std::stringstream& stream) {
     }
   }
 
-  stream.seekg(initialPosition);
+  stream.SetPosition(initialPosition);
   text.resize(length);
-  stream.read(text.data(), length);
+  stream.Read(text.data(), length);
 
   return std::make_pair(text, tag);
 }

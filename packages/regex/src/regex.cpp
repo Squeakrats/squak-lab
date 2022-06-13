@@ -1,6 +1,7 @@
 #include "regex.h"
 #include "Parser.generated.h"
 #include "utility.h"
+#include <squak/core/StringStream.h>
 
 namespace regex {
 
@@ -98,10 +99,11 @@ NFA Create(ast::RegularExpressionNode& ast) {
   return nfa;
 }
 
-extern Token Tokenize(std::stringstream& stream);
+extern Token Tokenize(IByteStream& stream);
 
 NFA CreateNFA(std::string expression) {
-  ParserContext context{ expression,
+  StringStream stream{ std::move(expression) };
+  ParserContext context{ stream,
                          Tokenizers{ { ParserState::Default, Tokenize } } };
 
   ast::RegularExpressionNode* ast =
