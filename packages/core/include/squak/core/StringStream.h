@@ -28,7 +28,7 @@ public:
   }
 
   virtual void Read(char* destination, size_t length) override {
-    Assert(this->position + length - 1 < this->buffer.size(), "invalid position");
+    Assert(this->position + length <= this->buffer.size(), "invalid position");
     for (size_t i = 0; i < length; i++) {
       destination[i] = this->buffer[position++];
     }
