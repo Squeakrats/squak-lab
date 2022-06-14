@@ -11,6 +11,7 @@ const char* Header = R"ESC(// This file was auto-generated
 #include <stack>
 #include <optional>
 #include <vector>
+#include <variant>
 {}
 namespace {} {
 
