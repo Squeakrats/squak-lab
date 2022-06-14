@@ -1,17 +1,17 @@
 #include "utility.h"
+#include <array>
 #include <squak/http.h>
 #include <squak/net/TCPSocket.h>
 #include <sstream>
 #include <vector>
-#include <array>
 
 namespace http {
 
-std::string toString(Request&& request) {
+std::string createRequest(std::string method,
+                          std::string uri,
+                          std::string version) {
   std::stringstream stream{};
-  stream << request.method << " " << request.uri << " " << request.version
-         << "\r\n";
-
+  stream << method << " " << uri << " " << version << "\r\n";
   stream << "\r\n";
 
   return stream.str();
@@ -20,24 +20,76 @@ std::string toString(Request&& request) {
 std::string fetch(std::string address, uint16_t port) {
   net::TCPSocket socket{};
   socket.Connect(address, port);
-  socket.Send(
-    toString(Request{ "GET", "/", "HTTP/1.1", { { "Host", "127.0.0.1" } } }));
+  socket.Send(createRequest("GET", "/", "HTTP/1.1"));
 
-  size_t responseLength = 0;
-  std::array<char, 2048> buffer{};
-  size_t read = socket.Read(buffer.data(), buffer.size());
-  for (size_t i = 3; i < read; i++) {
-    if (buffer[i - 3] == '\r' && buffer[i - 2] == '\n' &&
-        buffer[i - 1] == '\r' && buffer[i - 0] == '\n') {
-      responseLength = i;
+  auto readLine = [&socket]() -> std::string& {
+    static std::string buffer{};
+    buffer.resize(1);
+    Assert(socket.Read(&buffer[buffer.size() - 1], 1) == 1, "read failed");
+
+    while (true) {
+      buffer.resize(buffer.size() + 1);
+      Assert(socket.Read(&buffer[buffer.size() - 1], 1) == 1, "read failed");
+
+      size_t tail = buffer.size() - 1;
+      if (buffer[tail] == '\n' && buffer[tail - 1] == '\r') {
+        return buffer;
+      }
+    }
+  };
+
+  bool foundStatusLine = false;
+  std::map<std::string, std::string> responseHeaders{};
+
+  while (true) {
+    std::string& line = readLine();
+
+    if (!foundStatusLine) {
+      foundStatusLine = true;
+      continue;
+    }
+
+    if (line.size() == 2) {
       break;
     }
+
+    size_t split = line.find_first_of(':');
+    size_t valueStart = split + 1;
+    while (line[valueStart] == ' ') {
+      valueStart++;
+    }
+
+    responseHeaders.insert(
+      std::make_pair(line.substr(0, split),
+                     line.substr(valueStart, line.size() - valueStart - 2)));
   }
 
-  Assert(responseLength > 0, "failed to parse http header from first read");
-  std::string response(buffer.begin(), buffer.begin() + responseLength);
+  Assert(responseHeaders["Transfer-Encoding"] == "chunked", "invalid transfer");
 
-  return response;
+  std::vector<char> body{};
+  while (true) {
+    std::string line = readLine();
+    uint64_t chunkDataToRead = std::strtol(line.c_str(), nullptr, 16);
+    if (chunkDataToRead == 0) {
+      break;
+    }
+
+    size_t offset = body.size();
+    body.resize(body.size() + chunkDataToRead);
+
+    while (chunkDataToRead > 0) {
+      size_t read = socket.Read(body.data() + offset, chunkDataToRead);
+      Assert(read > 0, "failed to read data");
+      offset += read;
+      chunkDataToRead -= read;
+    }
+
+    char character;
+    Assert(socket.Read(&character, 1) == 1, "read failed");
+    Assert(socket.Read(&character, 1) == 1, "read failed");
+  }
+
+  return std::string(body.begin(), body.end());
 }
 
 }
