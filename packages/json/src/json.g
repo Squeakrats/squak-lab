@@ -21,18 +21,18 @@
 <json> {ast::ObjectNode*} ::= <Object> <EndOfFile> { out = P0; };
 
 <Object> {ast::ObjectNode*} ::= <LeftBrace> <ObjectEntries> <RightBrace> { out = P1; };
-<ObjectEntries> {ast::ObjectNode*} ::= <ObjectEntry> <ObjectEntriesPrime> { out = ast::ObjectNode::Add(P0, P1); }
+<ObjectEntries> {ast::ObjectNode*} ::= <ObjectEntry> <ObjectEntriesPrime> { out = P1->Add(P0); }
                                      | { out = new ast::ObjectNode(); };
 
-<ObjectEntriesPrime> {ast::ObjectNode*} ::= <Comma> <ObjectEntry> <ObjectEntriesPrime> { out = ast::ObjectNode::Add(P1, P2); }
+<ObjectEntriesPrime> {ast::ObjectNode*} ::= <Comma> <ObjectEntry> <ObjectEntriesPrime> { out = P2->Add(P1); }
                                           | { out = new ast::ObjectNode{}; };
 
 <ObjectEntry> {ast::ObjectEntryNode*} ::= <StringLiteral> <Colon> <Value> { out = new ast::ObjectEntryNode{P0.second, P2}; };
 
 <Array> {ast::ArrayNode*} ::= <LeftBracket> <ArrayEntries> <RightBracket> { out = P1; };
-<ArrayEntries> {ast::ArrayNode*} ::= <Value> <ArrayEntriesPrime> { out = ast::ArrayNode::Add(P0, P1); }
+<ArrayEntries> {ast::ArrayNode*} ::= <Value> <ArrayEntriesPrime> { out = P1->Add(P0); }
                                    | { out = new ast::ArrayNode{}; };
-<ArrayEntriesPrime> {ast::ArrayNode*} ::= <Comma> <Value> <ArrayEntriesPrime> { out = ast::ArrayNode::Add(P1, P2); }
+<ArrayEntriesPrime> {ast::ArrayNode*} ::= <Comma> <Value> <ArrayEntriesPrime> { out = P2->Add(P1); }
                                         | { out = new ast::ArrayNode{}; };
                                                         
 <Value> {ast::Node*} ::= <True> { out = new ast::BoolNode(true); }

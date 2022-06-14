@@ -49,13 +49,10 @@ struct ObjectNode : public Node {
 
   ObjectNode() : Node(NodeType::Object) {}
 
-  static ObjectNode* Add(Node* a, Node* b) {
-    ObjectEntryNode* objectEntry = static_cast<ObjectEntryNode*>(a);
-    ObjectNode* object = static_cast<ObjectNode*>(b);
+  ObjectNode* Add(ObjectEntryNode* a) {
+    this->value.push_back(std::unique_ptr<ObjectEntryNode>(a));
 
-    object->value.push_back(std::unique_ptr<ObjectEntryNode>(objectEntry));
-
-    return object;
+    return this;
   }
 };
 
@@ -64,12 +61,10 @@ struct ArrayNode : public Node {
 
   ArrayNode() : Node(NodeType::Array) {}
 
-  static ArrayNode* Add(Node* a, Node* b) {
-    ArrayNode* arrayNode = static_cast<ArrayNode*>(b);
+  ArrayNode* Add(Node* a) {
+    this->value.push_back(std::unique_ptr<Node>(a));
 
-    arrayNode->value.push_back(std::unique_ptr<Node>(a));
-
-    return arrayNode;
+    return this;
   }
 };
 

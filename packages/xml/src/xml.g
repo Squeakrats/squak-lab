@@ -28,7 +28,7 @@
 
 <xml> {ast::DocumentNode*} ::= <XMLDesc> <element> <EndOfFile> { out = new ast::DocumentNode{P1}; };
 
-<attributes> {ast::AttributesNode*} ::= <NAME> <EQ> <STRING> <attributes> { out = ast::AttributesNode::Add({P0.second, P2.second}, P3); }
+<attributes> {ast::AttributesNode*} ::= <NAME> <EQ> <STRING> <attributes> { out = P3->Add({P0.second, P2.second}); }
                                       | { out = new ast::AttributesNode{}; };
 
 <tagstart> {void*} ::= <LT> { context.PushState(ParserState::InsideTag); };
@@ -47,7 +47,7 @@
 <comment> {void*} ::= <commentstart> <commentPrime> { context.PopState(); }
                     | { };
 
-<elements> {ast::ElementsNode*} ::= <element> <elements> { out = ast::ElementsNode::Add(P0, P1); }
+<elements> {ast::ElementsNode*} ::= <element> <elements> { out = P1->Add(P0); }
                                   | <comment> <elements> { out = P1; }
-                                  | <TEXT> <elements> { out = ast::ElementsNode::Add(P0.second, P1); }
+                                  | <TEXT> <elements> { out = P1->Add(P0.second); }
                                   | { out = new ast::ElementsNode{}; };

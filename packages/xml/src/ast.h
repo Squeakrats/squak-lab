@@ -32,11 +32,10 @@ struct AttributesNode : public Node {
 
   AttributesNode() : Node(NodeType::Attributes) {}
 
-  static AttributesNode* Add(Attribute attribute, Node* b) {
-    AttributesNode* attributesNode = static_cast<AttributesNode*>(b);
-    attributesNode->value.push_back(attribute);
+  AttributesNode* Add(Attribute attribute) {
+    this->value.push_back(attribute);
 
-    return attributesNode;
+    return this;
   }
 };
 
@@ -67,19 +66,16 @@ struct ElementsNode : public Node {
 
   ElementsNode() : Node(NodeType::Elements) {}
 
-  static ElementsNode* Add(Node* a, Node* b) {
-    ElementsNode* elementsNode = static_cast<ElementsNode*>(b);
+  ElementsNode* Add(Node* a) {
+    this->value.push_back(std::unique_ptr<Node>(a));
 
-    elementsNode->value.push_back(std::unique_ptr<Node>(a));
-
-    return elementsNode;
+    return this;
   }
 
-  static ElementsNode* Add(std::string text, Node* b) {
-    ElementsNode* elementsNode = static_cast<ElementsNode*>(b);
-    elementsNode->value.push_back(std::make_unique<TextNode>(text));
+  ElementsNode* Add(std::string text) {
+    this->value.push_back(std::make_unique<TextNode>(text));
 
-    return elementsNode;
+    return this;
   }
 };
 
