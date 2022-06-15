@@ -9,7 +9,7 @@ void Server::Listen(std::string address, uint32_t port) {
   this->socket.Listen();
 
   while (true) {
-    net::TCPSocket accepted = socket.Accept();
+    net::tcp::Socket accepted = socket.Accept();
     Response response = http::Response::Read(accepted);
     Assert(response.headers["Upgrade"] == "websocket", "unexpected upgrade");
   }

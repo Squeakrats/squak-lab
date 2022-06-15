@@ -1,11 +1,11 @@
 #pragma once
-#include <squak/net/TCPSocket.h>
+#include <squak/net/tcp/Socket.h>
 
 namespace http {
 
 class Server {
 private:
-  net::TCPSocket socket{};
+  net::tcp::Socket socket{};
 
 public:
   void Listen(std::string address, uint32_t port);

@@ -1,7 +1,7 @@
 #include "utility.h"
 #include <array>
 #include <squak/http.h>
-#include <squak/net/TCPSocket.h>
+#include <squak/net/tcp/Socket.h>
 #include <sstream>
 #include <vector>
 
@@ -17,7 +17,7 @@ std::string createRequest(std::string method,
   return stream.str();
 }
 
-Response Response::Read(net::TCPSocket& socket) {
+Response Response::Read(net::tcp::Socket& socket) {
   auto readLine = [&socket]() -> std::string& {
     static std::string buffer{};
     buffer.resize(1);
@@ -91,7 +91,7 @@ Response Response::Read(net::TCPSocket& socket) {
 }
 
 std::string fetch(std::string address, uint16_t port) {
-  net::TCPSocket socket{};
+  net::tcp::Socket socket{};
   socket.Connect(address, port);
   socket.Send(createRequest("GET", "/", "HTTP/1.1"));
 
