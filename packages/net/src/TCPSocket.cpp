@@ -16,7 +16,18 @@ void TCPSocket::Connect(std::string address, uint16_t port) {
   sockaddr_in sockaddr = toSocketAddress(address, port);
   Assert(
     connect(this->socket, (struct sockaddr*)&sockaddr, sizeof(sockaddr)) == 0,
-    "unable to connect");
+    "failed to connect");
+}
+
+void TCPSocket::Bind(std::string address, uint16_t port) {
+  sockaddr_in sockaddr = toSocketAddress(address.c_str(), port);
+  Assert(bind(this->socket, (struct sockaddr*)&sockaddr, sizeof(sockaddr)) ==
+           0,
+         "failed to bind");
+}
+
+void TCPSocket::Listen() {
+  Assert(listen(this->socket, 10) == 0, "failed to listen");
 }
 
 void TCPSocket::Send(const char* buffer, size_t length) {
@@ -27,6 +38,13 @@ void TCPSocket::Send(const char* buffer, size_t length) {
     buffer += sent;
     length -= sent;
   }
+}
+
+TCPSocket TCPSocket::Accept() { 
+  SOCKET accepted = accept(this->socket, nullptr, nullptr);
+  Assert(accepted != -1, "failed to accept socket");
+  
+  return TCPSocket(accepted);
 }
 
 size_t TCPSocket::Read(char* buffer, size_t length) {

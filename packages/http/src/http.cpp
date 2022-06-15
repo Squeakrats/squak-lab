@@ -17,11 +17,7 @@ std::string createRequest(std::string method,
   return stream.str();
 }
 
-std::string fetch(std::string address, uint16_t port) {
-  net::TCPSocket socket{};
-  socket.Connect(address, port);
-  socket.Send(createRequest("GET", "/", "HTTP/1.1"));
-
+Response Response::Read(net::TCPSocket& socket) {
   auto readLine = [&socket]() -> std::string& {
     static std::string buffer{};
     buffer.resize(1);
@@ -39,7 +35,7 @@ std::string fetch(std::string address, uint16_t port) {
   };
 
   bool foundStatusLine = false;
-  std::map<std::string, std::string> responseHeaders{};
+  std::map<std::string, std::string> headers{};
 
   while (true) {
     std::string& line = readLine();
@@ -59,14 +55,16 @@ std::string fetch(std::string address, uint16_t port) {
       valueStart++;
     }
 
-    responseHeaders.insert(
+    headers.insert(
       std::make_pair(line.substr(0, split),
                      line.substr(valueStart, line.size() - valueStart - 2)));
   }
 
-  Assert(responseHeaders["Transfer-Encoding"] == "chunked", "invalid transfer");
+  if (headers["Transfer-Encoding"] != "chunked") {
+    return { headers, {} };
+  }
 
-  std::vector<char> body{};
+  std::vector<char> bodyBuffer{};
   while (true) {
     std::string line = readLine();
     uint64_t chunkDataToRead = std::strtol(line.c_str(), nullptr, 16);
@@ -74,11 +72,11 @@ std::string fetch(std::string address, uint16_t port) {
       break;
     }
 
-    size_t offset = body.size();
-    body.resize(body.size() + chunkDataToRead);
+    size_t offset = bodyBuffer.size();
+    bodyBuffer.resize(bodyBuffer.size() + chunkDataToRead);
 
     while (chunkDataToRead > 0) {
-      size_t read = socket.Read(body.data() + offset, chunkDataToRead);
+      size_t read = socket.Read(bodyBuffer.data() + offset, chunkDataToRead);
       Assert(read > 0, "failed to read data");
       offset += read;
       chunkDataToRead -= read;
@@ -89,7 +87,15 @@ std::string fetch(std::string address, uint16_t port) {
     Assert(socket.Read(&character, 1) == 1, "read failed");
   }
 
-  return std::string(body.begin(), body.end());
+  return Response{ headers, std::string(bodyBuffer.begin(), bodyBuffer.end()) };
+}
+
+std::string fetch(std::string address, uint16_t port) {
+  net::TCPSocket socket{};
+  socket.Connect(address, port);
+  socket.Send(createRequest("GET", "/", "HTTP/1.1"));
+
+  return Response::Read(socket).body;
 }
 
 }
