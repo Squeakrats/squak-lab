@@ -1,5 +1,6 @@
 #include <squak/engine/Engine.h>
 #include <squak/engine/JSONLoader.h>
+#include <squak/net.h>
 #include "utility.h"
 #include <chrono>
 #ifdef EMSCRIPTEN
@@ -15,6 +16,8 @@ std::map<std::string, ActorCreator>& Engine::GetCreators() {
 }
 
 Engine& Engine::Init(std::string assetDir) {
+  net::Init();
+
   engine.assetManager.SetBasePath(assetDir);
   engine.assetManager.Register(std::make_shared<JSONLoader>());
 
@@ -40,6 +43,10 @@ Engine& Engine::Init(std::string assetDir) {
   }
 
   return engine;
+}
+
+void Engine::Teardown() {
+  net::Teardown();
 }
 
 #ifndef EMSCRIPTEN

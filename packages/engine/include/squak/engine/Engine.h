@@ -47,6 +47,7 @@ private:
 public:
   static Engine engine;
   static Engine& Init(std::string assetDir);
+  static void Teardown();
 
   static std::map<std::string, ActorCreator>& GetCreators();
   static ActorCreatorEntry RegisterClass(std::string name,
