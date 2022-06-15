@@ -7,14 +7,12 @@
 
 namespace http {
 
-std::string createRequest(std::string method,
-                          std::string uri,
-                          std::string version) {
+void Request::Write(net::tcp::Socket& socket) {
   std::stringstream stream{};
-  stream << method << " " << uri << " " << version << "\r\n";
+  stream << this->method  << " " << this->uri << " " << this->version << "\r\n";
   stream << "\r\n";
 
-  return stream.str();
+  socket.Send(stream.str());
 }
 
 Response Response::Read(net::tcp::Socket& socket) {
@@ -93,7 +91,8 @@ Response Response::Read(net::tcp::Socket& socket) {
 std::string fetch(std::string address, uint16_t port) {
   net::tcp::Socket socket{};
   socket.Connect(address, port);
-  socket.Send(createRequest("GET", "/", "HTTP/1.1"));
+  Request{ "GET", "/", "HTTP/1.1" }
+    .Write(socket);
 
   return Response::Read(socket).body;
 }
