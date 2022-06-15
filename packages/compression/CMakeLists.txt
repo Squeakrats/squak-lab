@@ -3,8 +3,12 @@ project(compression)
 
 add_library(compression
 	include/squak/compression/inflate.h
+	include/squak/compression/base64.h
+	include/squak/compression/sha1.h
 	src/BitStream.h
 	src/inflate.cpp
+	src/base64.cpp
+	src/sha1.cpp
 )
 target_include_directories(compression PRIVATE src/ PUBLIC include/)
 target_link_libraries(compression utility core)
