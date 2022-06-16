@@ -2,12 +2,11 @@
 #include <Windows.h>
 #include <squak/compression/sha1.h>
 #include <sstream>
-#include <vector>
 #include <wincrypt.h>
 
 namespace compression {
 
-std::string sha1(std::string message) {
+std::array<uint8_t, 20> sha1(std::string message) {
   HCRYPTPROV p;
   HCRYPTHASH h;
 
@@ -19,21 +18,14 @@ std::string sha1(std::string message) {
   DWORD length, count;
   Assert(CryptGetHashParam(h, HP_HASHSIZE, (BYTE*)&length, &count, 0), "");
 
-  std::vector<uint8_t> value{};
-  value.resize(length);
+  Assert(length == 20, "invalid length");
+  std::array<uint8_t, 20> value{};
 
   Assert(CryptGetHashParam(h, HP_HASHVAL, (BYTE*)value.data(), &length, 0), "");
 
   CryptDestroyHash(p);
   CryptReleaseContext(h, 0);
 
-  std::stringstream stream{};
-  char hex[3]{};
-  for (size_t i = 0; i < value.size(); i++) {
-    sprintf(hex, "%02x", value[i]);
-    stream << hex;
-  }
-
-  return stream.str();
+  return value;
 }
 };

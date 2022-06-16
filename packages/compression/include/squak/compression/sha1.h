@@ -1,8 +1,9 @@
 #pragma once
 #include <string>
+#include <array>
 
 namespace compression {
 
-std::string sha1(std::string message);
+std::array<uint8_t, 20> sha1(std::string message);
 
 };

@@ -13,15 +13,14 @@ char encoder[64] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
 
 void write_triple(std::stringstream& stream, uint8_t a, uint8_t b, uint8_t c) {}
 
-std::string encode(std::string data) {
-  uint8_t* buffer = (uint8_t*)data.data();
+std::string encode(uint8_t* data, size_t length) {
   size_t offset = 0;
 
   std::stringstream stream{};
-  while (offset + 2 < data.size()) {
-    uint32_t value = (static_cast<uint32_t>(buffer[offset]) << 16) |
-                     (static_cast<uint32_t>(buffer[offset + 1]) << 8) |
-                     static_cast<uint32_t>(buffer[offset + 2]);
+  while (offset + 2 < length) {
+    uint32_t value = (static_cast<uint32_t>(data[offset]) << 16) |
+                     (static_cast<uint32_t>(data[offset + 1]) << 8) |
+                     static_cast<uint32_t>(data[offset + 2]);
 
     uint8_t codes[4] = { static_cast<uint8_t>((value >> 18) & 0x3F),
                          static_cast<uint8_t>((value >> 12) & 0x3F),
@@ -35,9 +34,9 @@ std::string encode(std::string data) {
     offset += 3;
   }
 
-  if (offset + 1 < data.size()) {
-    uint32_t value = (static_cast<uint32_t>(buffer[offset]) << 16) |
-                     (static_cast<uint32_t>(buffer[offset + 1]) << 8);
+  if (offset + 1 < length) {
+    uint32_t value = (static_cast<uint32_t>(data[offset]) << 16) |
+                     (static_cast<uint32_t>(data[offset + 1]) << 8);
 
     uint8_t codes[3] = { static_cast<uint8_t>((value >> 18) & 0x3F),
                          static_cast<uint8_t>((value >> 12) & 0x3F),
@@ -48,8 +47,8 @@ std::string encode(std::string data) {
     }
 
     stream << "=";
-  } else if (offset < data.size()) {
-    uint32_t value = (static_cast<uint32_t>(buffer[offset]) << 16);
+  } else if (offset < length) {
+    uint32_t value = (static_cast<uint32_t>(data[offset]) << 16);
 
     uint8_t codes[2] = { static_cast<uint8_t>((value >> 18) & 0x3F),
                          static_cast<uint8_t>((value >> 12) & 0x3F) };

@@ -7,15 +7,7 @@
 
 namespace http {
 
-void Request::Write(net::tcp::Socket& socket) {
-  std::stringstream stream{};
-  stream << this->method  << " " << this->uri << " " << this->version << "\r\n";
-  stream << "\r\n";
-
-  socket.Send(stream.str());
-}
-
-Response Response::Read(net::tcp::Socket& socket) {
+std::pair<std::map<std::string, std::string>, std::string> readMessage(net::tcp::Socket& socket) {
   auto readLine = [&socket]() -> std::string& {
     static std::string buffer{};
     buffer.resize(1);
@@ -59,7 +51,7 @@ Response Response::Read(net::tcp::Socket& socket) {
   }
 
   if (headers["Transfer-Encoding"] != "chunked") {
-    return { headers, {} };
+    return std::make_pair(headers, std::string{});
   }
 
   std::vector<char> bodyBuffer{};
@@ -85,14 +77,47 @@ Response Response::Read(net::tcp::Socket& socket) {
     Assert(socket.Read(&character, 1) == 1, "read failed");
   }
 
-  return Response{ headers, std::string(bodyBuffer.begin(), bodyBuffer.end()) };
+  return std::make_pair(headers,
+                        std::string(bodyBuffer.begin(), bodyBuffer.end()));
 }
+
+void Request::Write(net::tcp::Socket& socket) {
+  std::stringstream stream{};
+  stream << this->method << " " << this->uri << " " << this->version << "\r\n";
+  stream << "\r\n";
+
+  socket.Send(stream.str());
+}
+
+Request Request::Read(net::tcp::Socket& socket) {
+  auto data = readMessage(socket);
+
+  return Request{ {}, {}, {}, data.first, data.second };
+}
+
+void Response::Write(net::tcp::Socket& socket) {
+  std::stringstream stream{};
+  stream << this->version << " " << this->code << " " << this->phrase << "\r\n";
+  for (auto& header : this->headers) {
+    stream << header.first << ": " << header.second << "\r\n";
+  }
+  stream << "\r\n";
+
+  socket.Send(stream.str());
+}
+
+
+Response Response::Read(net::tcp::Socket& socket) {
+  auto data = readMessage(socket);
+
+  return Response{ {}, {}, {}, data.first, data.second };
+}
+
 
 std::string fetch(std::string address, uint16_t port) {
   net::tcp::Socket socket{};
   socket.Connect(address, port);
-  Request{ "GET", "/", "HTTP/1.1" }
-    .Write(socket);
+  Request{ "GET", "/", "HTTP/1.1" }.Write(socket);
 
   return Response::Read(socket).body;
 }
