@@ -130,7 +130,7 @@ PNG parse(BufferView view) {
 
   Buffer inflated(pixelsSize);
 
-  size_t uncompressedSize = inflate(inflated, compressedData);
+  size_t uncompressedSize = compression::inflate(inflated, compressedData);
 
   Assert(uncompressedSize == pixelsSize, "unexpected number of bytes");
 

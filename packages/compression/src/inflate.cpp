@@ -4,6 +4,8 @@
 #include <array>
 #include <memory>
 
+namespace compression {
+
 uint8_t ZLIB_COMPRESSION_MODE_DEFLATE = 8;
 
 struct HuffmaNode {
@@ -386,3 +388,5 @@ size_t inflate(Buffer& output, Buffer& compressed) {
 
   return position;
 }
+
+};

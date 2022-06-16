@@ -2,6 +2,8 @@
 #include <cmath>
 #include <vector>
 
+namespace compression {
+
 struct BitStream {
   Buffer& buffer;
   uint64_t byteOffset;
@@ -33,4 +35,6 @@ struct BitStream {
 
     return value;
   }
+};
+
 };

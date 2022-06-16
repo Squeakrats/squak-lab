@@ -9,7 +9,7 @@ TEST(CompressionTests, BasicTests) {
     std::memcpy(deflated.data, data, sizeof(data));
 
     Buffer inflated(30);
-    size_t uncompressedSize = inflate(inflated, deflated);
+    size_t uncompressedSize = compression::inflate(inflated, deflated);
     ASSERT_EQ(uncompressedSize, 15);
 
     inflated.data[uncompressedSize] = 0;
