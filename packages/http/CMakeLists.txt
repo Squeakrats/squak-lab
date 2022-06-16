@@ -8,4 +8,4 @@ add_library(http
 	src/Server.cpp
 )
 target_include_directories(http PRIVATE src/ PUBLIC include/)
-target_link_libraries(http utility core net compression)
+target_link_libraries(http utility core net)

@@ -1,5 +1,5 @@
-#include <squak/net/tcp/Socket.h>
 #include "utility.h"
+#include <squak/net/tcp/Socket.h>
 
 namespace net {
 namespace tcp {
@@ -15,15 +15,14 @@ sockaddr_in toSocketAddress(std::string address, uint16_t port) {
 
 void Socket::Connect(std::string address, uint16_t port) {
   sockaddr_in sockaddr = toSocketAddress(address, port);
-  Assert(
-    connect(this->socket, (struct sockaddr*)&sockaddr, sizeof(sockaddr)) == 0,
-    "failed to connect");
+  Assert(connect(this->socket, (struct sockaddr*)&sockaddr, sizeof(sockaddr)) ==
+           0,
+         "failed to connect");
 }
 
 void Socket::Bind(std::string address, uint16_t port) {
   sockaddr_in sockaddr = toSocketAddress(address.c_str(), port);
-  Assert(bind(this->socket, (struct sockaddr*)&sockaddr, sizeof(sockaddr)) ==
-           0,
+  Assert(bind(this->socket, (struct sockaddr*)&sockaddr, sizeof(sockaddr)) == 0,
          "failed to bind");
 }
 
@@ -41,11 +40,13 @@ void Socket::Send(const char* buffer, size_t length) {
   }
 }
 
-Socket Socket::Accept() { 
+std::optional<Socket> Socket::Accept() {
   SOCKET accepted = accept(this->socket, nullptr, nullptr);
-  Assert(accepted != -1, "failed to accept socket");
-  
-  return Socket(accepted);
+  if (accepted != -1) {
+    return Socket(accepted);
+  }
+
+  return std::nullopt;
 }
 
 size_t Socket::Read(char* buffer, size_t length) {

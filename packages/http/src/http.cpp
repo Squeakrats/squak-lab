@@ -81,21 +81,21 @@ std::pair<std::map<std::string, std::string>, std::string> readMessage(net::tcp:
                         std::string(bodyBuffer.begin(), bodyBuffer.end()));
 }
 
-void Request::Write(net::tcp::Socket& socket) {
+void Request::Write() {
   std::stringstream stream{};
   stream << this->method << " " << this->uri << " " << this->version << "\r\n";
   stream << "\r\n";
 
-  socket.Send(stream.str());
+  this->socket.Send(stream.str());
 }
 
 Request Request::Read(net::tcp::Socket& socket) {
   auto data = readMessage(socket);
 
-  return Request{ {}, {}, {}, data.first, data.second };
+  return Request{ socket, {}, {}, {}, data.first, data.second };
 }
 
-void Response::Write(net::tcp::Socket& socket) {
+void Response::Write() {
   std::stringstream stream{};
   stream << this->version << " " << this->code << " " << this->phrase << "\r\n";
   for (auto& header : this->headers) {
@@ -103,21 +103,21 @@ void Response::Write(net::tcp::Socket& socket) {
   }
   stream << "\r\n";
 
-  socket.Send(stream.str());
+  this->socket.Send(stream.str());
 }
 
 
 Response Response::Read(net::tcp::Socket& socket) {
   auto data = readMessage(socket);
 
-  return Response{ {}, {}, {}, data.first, data.second };
+  return Response{ socket, {}, {}, {}, data.first, data.second };
 }
 
 
 std::string fetch(std::string address, uint16_t port) {
   net::tcp::Socket socket{};
   socket.Connect(address, port);
-  Request{ "GET", "/", "HTTP/1.1" }.Write(socket);
+  Request{ socket, "GET", "/", "HTTP/1.1" }.Write();
 
   return Response::Read(socket).body;
 }
