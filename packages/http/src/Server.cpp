@@ -22,7 +22,6 @@ void Server::Listen(std::string address, uint32_t port) {
         Response resposnse{ socket, "HTTP/1.1", "404", "Not Found" };
 
         this->handler(request, resposnse);
-        resposnse.Write();
       });
     }
   });
