@@ -19,4 +19,5 @@ public:
   ~ThreadPool();
   void Run(Executable executable);
   bool AtCapacity() { return this->working = threads.size(); }
+  bool IsTerminated() { return this->terminated; }
 };
