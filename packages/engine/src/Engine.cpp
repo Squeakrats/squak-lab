@@ -17,6 +17,7 @@ std::map<std::string, ActorCreator>& Engine::GetCreators() {
 
 Engine& Engine::Init(std::string assetDir) {
   net::Init();
+  InitLogger(assetDir + "/log.txt");
 
   engine.assetManager.SetBasePath(assetDir);
   engine.assetManager.Register(std::make_shared<JSONLoader>());

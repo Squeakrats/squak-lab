@@ -1,12 +1,21 @@
+#include "utility.h"
 #include "window.h"
 #include <windows.h>
 #include <wingdi.h>
 #include <winuser.h>
-#include "utility.h"
 #define GLR_IMPLEMENTATION
 #include <glr.h>
 
 namespace window {
+
+LRESULT WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
+  switch (Msg) {
+    case WM_NCDESTROY:
+      PostQuitMessage(0);
+    default:
+      return DefWindowProc(hWnd, Msg, wParam, lParam);
+  }
+}
 
 class Window : public IWindow {
 private:
@@ -14,14 +23,13 @@ private:
   bool shouldClose = false;
 
 public:
-  Window(HWND window)
-    : window(window){};
+  Window(HWND window) : window(window){};
 
   virtual void Poll() override {
     MSG message{};
 
-    while (PeekMessage(&message, this->window, 0, 0, PM_REMOVE)) {
-      if (message.message == WM_CLOSE) {
+    while (PeekMessage(&message, nullptr, 0, 0, PM_REMOVE)) {  
+      if (message.message == WM_QUIT) {
         shouldClose = true;
       } else {
         DispatchMessage(&message);
@@ -44,7 +52,7 @@ std::shared_ptr<IWindow> Create(std::string name,
                                 uint32_t width,
                                 uint32_t height) {
   WNDCLASS windowClass{};
-  windowClass.lpfnWndProc = DefWindowProc;
+  windowClass.lpfnWndProc = WindowProc;
   windowClass.hInstance = GetModuleHandle(nullptr);
   windowClass.lpszClassName = defaultWindowClassName;
   windowClass.style = CS_OWNDC;
