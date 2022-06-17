@@ -42,7 +42,11 @@ void Socket::Send(const char* buffer, size_t length) {
 
 std::optional<Socket> Socket::Accept() {
   SOCKET accepted = accept(this->socket, nullptr, nullptr);
+
   if (accepted != -1) {
+    u_long iMode = 0;
+    ioctlsocket(accepted, FIONBIO, &iMode);
+
     return Socket(accepted);
   }
 
@@ -51,7 +55,10 @@ std::optional<Socket> Socket::Accept() {
 
 size_t Socket::Read(char* buffer, size_t length) {
   int read = recv(this->socket, buffer, length, 0);
-  Assert(read >= 0, "read failed");
+  if (read < 0) {
+    int error = WSAGetLastError();
+    Panic(std::string("read failed: ") + std::to_string(error) );
+  }
 
   return read;
 }

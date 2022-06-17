@@ -10,6 +10,7 @@ class Server {
 private:
   http::Server server;
   OnConnectionHandler onConnection{};
+  std::vector<Socket> connections{};
 
   void Handler(http::Request& request, http::Response& response);
 
