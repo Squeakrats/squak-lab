@@ -32,8 +32,8 @@ void Server::Handler(http::Request& request, http::Response& response) {
                        { "Sec-WebSocket-Accept", secAccept } };
   response.Write();
 
-  this->connections.emplace_back(response.socket);
-  this->onConnection(this->connections[this->connections.size() - 1]);
+  this->connections.push_back(std::make_unique<Socket>(response.socket));
+  this->onConnection(*this->connections[this->connections.size() - 1]);
 }
 
 void Server::Listen(std::string address, uint32_t port) {

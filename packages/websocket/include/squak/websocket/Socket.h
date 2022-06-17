@@ -12,9 +12,11 @@ class Socket {
   OnMessage onMessage{};
   std::thread thread{};
 
+  void Poll();
+
 public:
   Socket(net::tcp::Socket socket);
-  Socket(Socket&&) = default;
+  Socket(Socket&&) = delete;
   ~Socket() { this->thread.join(); };
 
   void OnMessage(OnMessage onMessage) { this->onMessage = onMessage; }
