@@ -6,26 +6,26 @@
 namespace http {
 
 struct Response {
-  net::tcp::Socket& socket;
+  std::unique_ptr<net::tcp::Socket>& socket;
   std::string version{};
   std::string code{};
   std::string phrase{};
   std::map<std::string, std::string> headers{};
   std::string body{};
 
-  static Response Read(net::tcp::Socket& socket);
+  static Response Read(std::unique_ptr<net::tcp::Socket> socket);
   void Write();
 };
 
 struct Request {
-  net::tcp::Socket& socket;
+  std::unique_ptr<net::tcp::Socket>& socket;
   std::string method{};
   std::string uri{};
   std::string version{};
   std::map<std::string, std::string> headers{};
   std::string body{};
 
-  static Request Read(net::tcp::Socket& socket);
+  static Request Read(std::unique_ptr<net::tcp::Socket>& socket);
   void Write();
 };
 

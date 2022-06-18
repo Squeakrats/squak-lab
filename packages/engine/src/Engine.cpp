@@ -1,8 +1,9 @@
+#include "utility.h"
+#include <chrono>
 #include <squak/engine/Engine.h>
 #include <squak/engine/JSONLoader.h>
 #include <squak/net.h>
-#include "utility.h"
-#include <chrono>
+#include <squak/net/Poller.h>
 #ifdef EMSCRIPTEN
 #include <emscripten.h>
 #endif
@@ -68,6 +69,7 @@ void Engine::Run() {
 
 void Engine::Tick() {
   window->Poll();
+  net::Poller::Instance().Poll();
 
   static auto lastTick = std::chrono::system_clock::now();
   auto now = std::chrono::system_clock::now();

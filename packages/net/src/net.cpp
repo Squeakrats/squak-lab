@@ -1,4 +1,5 @@
 #include <squak/net.h>
+#include <squak/net/Poller.h>
 #include "utility.h"
 #ifndef EMSCRIPTEN
 #include <winsock.h>

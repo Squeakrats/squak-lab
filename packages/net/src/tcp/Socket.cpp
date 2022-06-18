@@ -40,17 +40,17 @@ void Socket::Send(const char* buffer, size_t length) {
   }
 }
 
-std::optional<Socket> Socket::Accept() {
+std::unique_ptr<Socket> Socket::Accept() {
   SOCKET accepted = accept(this->socket, nullptr, nullptr);
 
   if (accepted != -1) {
     u_long iMode = 0;
     ioctlsocket(accepted, FIONBIO, &iMode);
 
-    return Socket(accepted);
+    return std::make_unique<Socket>(accepted);
   }
 
-  return std::nullopt;
+  return nullptr;
 }
 
 size_t Socket::Read(char* buffer, size_t length) {

@@ -8,14 +8,15 @@ namespace websocket {
 using OnMessage = std::function<void(std::string)>;
 
 class Socket {
-  net::tcp::Socket socket;
+  std::unique_ptr<net::tcp::Socket> socket;
   OnMessage onMessage{};
   std::thread thread{};
 
   void Poll();
 
 public:
-  Socket(net::tcp::Socket socket);
+  Socket(std::unique_ptr<net::tcp::Socket> socket);
+  Socket(const Socket&) = delete;
   Socket(Socket&&) = delete;
   ~Socket() { this->thread.join(); };
 

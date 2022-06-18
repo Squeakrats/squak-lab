@@ -10,14 +10,17 @@ void Server::Listen(std::string address, uint32_t port) {
 
   this->threads.Run([this]() {
     while (!this->threads.IsTerminated()) {
-      std::optional<net::tcp::Socket> accepted = socket.Accept();
-      if (accepted == std::nullopt) {
+      std::unique_ptr<net::tcp::Socket> accepted = socket.Accept();
+      if (accepted == nullptr) {
         _sleep(1000);
         continue;
       }
 
-      net::tcp::Socket socket = *accepted;
-      this->threads.Run([this, socket]() mutable {
+      // todo - investigate move only capture impls as std::function alternative
+      net::tcp::Socket* raw = accepted.release();
+      this->threads.Run([this, raw]() {
+        std::unique_ptr<net::tcp::Socket> socket(raw);
+
         Request request = Request::Read(socket);
         Response resposnse{ socket, "HTTP/1.1", "404", "Not Found" };
 

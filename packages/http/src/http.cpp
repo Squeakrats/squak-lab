@@ -7,7 +7,8 @@
 
 namespace http {
 
-std::pair<std::map<std::string, std::string>, std::string> readMessage(net::tcp::Socket& socket) {
+std::pair<std::map<std::string, std::string>, std::string> readMessage(
+  net::tcp::Socket& socket) {
   auto readLine = [&socket]() -> std::string& {
     static std::string buffer{};
     buffer.resize(1);
@@ -86,11 +87,11 @@ void Request::Write() {
   stream << this->method << " " << this->uri << " " << this->version << "\r\n";
   stream << "\r\n";
 
-  this->socket.Send(stream.str());
+  this->socket->Send(stream.str());
 }
 
-Request Request::Read(net::tcp::Socket& socket) {
-  auto data = readMessage(socket);
+Request Request::Read(std::unique_ptr<net::tcp::Socket>& socket) {
+  auto data = readMessage(*socket);
 
   return Request{ socket, {}, {}, {}, data.first, data.second };
 }
@@ -103,23 +104,23 @@ void Response::Write() {
   }
   stream << "\r\n";
 
-  this->socket.Send(stream.str());
+  this->socket->Send(stream.str());
 }
 
-
-Response Response::Read(net::tcp::Socket& socket) {
-  auto data = readMessage(socket);
+Response Response::Read(std::unique_ptr<net::tcp::Socket> socket) {
+  auto data = readMessage(*socket);
 
   return Response{ socket, {}, {}, {}, data.first, data.second };
 }
 
-
 std::string fetch(std::string address, uint16_t port) {
-  net::tcp::Socket socket{};
-  socket.Connect(address, port);
+  std::unique_ptr<net::tcp::Socket> socket =
+    std::make_unique<net::tcp::Socket>();
+
+  socket->Connect(address, port);
   Request{ socket, "GET", "/", "HTTP/1.1" }.Write();
 
-  return Response::Read(socket).body;
+  return Response::Read(std::move(socket)).body;
 }
 
 }
