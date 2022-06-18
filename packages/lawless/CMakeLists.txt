@@ -6,7 +6,7 @@ add_executable(lawless
     src/PlayerCamera.h
     src/main.cpp
 )
-target_link_libraries(lawless gl gltf core engine)
+target_link_libraries(lawless gl gltf core engine websocket)
 set_target_properties(lawless PROPERTIES FOLDER app)
 
 if (EMSCRIPTEN)
