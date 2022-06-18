@@ -8,9 +8,10 @@ using OnConnectionHandler = std::function<void(Socket&)>;
 
 class Server {
 private:
+  uint64_t nextSocketId = 0;
   http::Server server;
   OnConnectionHandler onConnection{};
-  std::vector<std::unique_ptr<Socket>> connections{};
+  std::map<uint64_t, std::unique_ptr<Socket>> connections{};
 
   void Handler(http::Request& request, http::Response& response);
 

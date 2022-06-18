@@ -22,8 +22,7 @@ void Server::Handler(http::Request& request, http::Response& response) {
   std::array<uint8_t, 20> sha1 =
     compression::sha1(request.headers["Sec-WebSocket-Key"] +
                       "258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
-  std::string secAccept =
-    compression::base64::encode(sha1.data(), sha1.size());
+  std::string secAccept = compression::base64::encode(sha1.data(), sha1.size());
 
   response.code = "101";
   response.phrase = "Switching Protocols";
@@ -32,8 +31,15 @@ void Server::Handler(http::Request& request, http::Response& response) {
                        { "Sec-WebSocket-Accept", secAccept } };
   response.Write();
 
-  this->connections.push_back(std::make_unique<Socket>(std::move(response.socket)));
-  this->onConnection(*this->connections[this->connections.size() - 1]);
+  uint64_t socketId = this->nextSocketId++;
+  this->connections.insert(std::make_pair(
+    socketId, std::make_unique<Socket>(std::move(response.socket))));
+
+  this->connections[socketId]->OnClose([this, socketId]() {
+      this->connections.erase(socketId);
+  });
+
+  this->onConnection(*this->connections[socketId]);
 }
 
 void Server::Listen(std::string address, uint32_t port) {

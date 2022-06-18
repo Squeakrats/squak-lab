@@ -9,7 +9,7 @@ void Socket::Poll() {
                                    this->buffer.size() - this->buffered);
 
   if (read == 0) {
-    // todo - emit socket closed event
+    this->Trigger(this->onClose);
     return;
   }
 
@@ -50,8 +50,10 @@ void Socket::Poll() {
       message[i] = payload[i] ^ mask[i % 4];
     }
 
-    onMessage(message);
+    this->Trigger(this->onMessage, message);
   } else if (opCode == 8) {
+    this->Trigger(this->onClose);
+
     return;
   } else {
     Panic("unhandled op");
