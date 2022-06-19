@@ -13,8 +13,6 @@ std::string assetDir = "./";
 std::string assetDir = "..\\..\\..\\..\\assets\\";
 #endif
 
-std::map<std::string, std::function<void(void)>> methods{};
-
 int main(int argc, char* argv[]) {
   Engine& engine = Engine::Init(assetDir);
   auto size = engine.GetSize();
