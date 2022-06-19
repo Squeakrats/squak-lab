@@ -4,9 +4,9 @@
 #include <functional>
 #include <memory>
 #include <squak/core/AssetManager.h>
+#include <squak/engine/RuntimeTypeInfo.h>
 #include <squak/graphics/IRenderer.h>
 #include <squak/graphics/SceneNode.h>
-#include <squak/engine/RuntimeTypeInfo.h>
 #include <string>
 
 struct Axis {
@@ -85,6 +85,11 @@ public:
     }
 
     return 0.0f;
+  }
+
+  std::shared_ptr<Actor> Find(std::string id) {
+    auto find = this->actors.find(id);
+    return (find != this->actors.end()) ? find->second : nullptr;
   }
 
   static Engine Create(uint32_t width,

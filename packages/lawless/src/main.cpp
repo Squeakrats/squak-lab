@@ -40,10 +40,17 @@ int main(int argc, char* argv[]) {
   camera->target = engine.Spawn<Player>();
 
   websocket::Server server{};
-  server.OnConnection([&camera](websocket::Socket& socket) {
+  server.OnConnection([&engine](websocket::Socket& socket) {
     Log("Socket Connected!");
     socket.OnClose([]() { Log("Socket Closed"); });
-    socket.OnMessage([&camera](std::string message) { camera->GetRuntimeTypeInfo().methods[message](camera.get()); });
+    socket.OnMessage([&engine](std::string message) {
+      json::Object rpc = json::Parse(message);
+      std::string id = rpc["id"].get<std::string>();
+      std::string method = rpc["method"].get<std::string>();
+
+      auto object = engine.Find(id);
+      object->GetRuntimeTypeInfo().methods[method](object.get());
+    });
   });
 
   server.Listen("127.0.0.1", 1338);
