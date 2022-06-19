@@ -4,6 +4,7 @@
 #include <numbers>
 
 class Player : public Actor {
+  using Super = Actor;
 public:
   using Super = Actor;
   float speed = 0.0001f;
@@ -19,10 +20,21 @@ public:
     transform.rotation.y += deltaMs * speed;
   }
 
-  static const ActorCreatorEntry CREATORENTRY;
-};
+  static RuntimeTypeInfo CreateRuntimeTypeInfo() {
+    RuntimeTypeInfo info = Super::GetRuntimeTypeInfoInstance();
+    info.id = "Player";
+    info.create = [](const ActorInitializer& initializer) {
+      return std::make_shared<Player>(initializer);
+    };
 
-const ActorCreatorEntry Player::CREATORENTRY =
-  Engine::RegisterClass("Player", [](const ActorInitializer& initializer) {
-    return std::make_shared<Player>(initializer);
-  });
+    RuntimeTypeInfo::Register(info);
+
+    return info;
+  }
+
+  static RuntimeTypeInfo& GetRuntimeTypeInfoInstance() {
+    static RuntimeTypeInfo info = CreateRuntimeTypeInfo();
+
+    return info;
+  }
+};

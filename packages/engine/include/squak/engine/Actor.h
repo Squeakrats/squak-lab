@@ -1,4 +1,7 @@
 #pragma once
+#include <squak/engine/RuntimeTypeInfo.h>
+#include <functional>
+#include <map>
 #include <memory>
 #include <string>
 
@@ -21,4 +24,20 @@ public:
   Transform& GetTransform();
 
   virtual void Tick(float deltaMs);
+
+  virtual RuntimeTypeInfo& GetRuntimeTypeInfo() {
+    return GetRuntimeTypeInfoInstance();
+  }
+
+  static RuntimeTypeInfo CreateRuntimeTypeInfo() {
+    RuntimeTypeInfo info{};
+
+    return info;
+  }
+
+  static RuntimeTypeInfo& GetRuntimeTypeInfoInstance() {
+    static RuntimeTypeInfo info = CreateRuntimeTypeInfo();
+
+    return info;
+  }
 };

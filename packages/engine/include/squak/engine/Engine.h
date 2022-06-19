@@ -1,25 +1,13 @@
 #pragma once
 #include "Actor.h"
-#include <squak/core/AssetManager.h>
-#include <squak/graphics/IRenderer.h>
-#include <squak/graphics/SceneNode.h>
 #include "window.h"
 #include <functional>
 #include <memory>
+#include <squak/core/AssetManager.h>
+#include <squak/graphics/IRenderer.h>
+#include <squak/graphics/SceneNode.h>
+#include <squak/engine/RuntimeTypeInfo.h>
 #include <string>
-
-class Engine;
-
-class ActorInitializer {
-public:
-  std::string id;
-  Transform transform;
-  Engine& engine;
-};
-
-using ActorCreator =
-  std::function<std::shared_ptr<Actor>(const ActorInitializer& Initializer)>;
-using ActorCreatorEntry = std::pair<std::string, ActorCreator>;
 
 struct Axis {
   std::map<char, float> bindings;
@@ -40,23 +28,13 @@ private:
 
   std::function<void(float deltaMs)> tick = [](float) {};
 
-  Engine()
-    : scene(std::make_shared<SceneNode>()){};
-  std::shared_ptr<Actor> SpawnCore(std::string type, Transform transform);
+  Engine() : scene(std::make_shared<SceneNode>()){};
+  std::shared_ptr<Actor> SpawnCore(RuntimeTypeInfo& info, Transform transform);
 
 public:
   static Engine engine;
   static Engine& Init(std::string assetDir);
   static void Teardown();
-
-  static std::map<std::string, ActorCreator>& GetCreators();
-  static ActorCreatorEntry RegisterClass(std::string name,
-                                         ActorCreator creator) {
-    auto pair = std::make_pair(name, creator);
-    GetCreators().insert(pair);
-
-    return pair;
-  }
 
   AssetManager& GetAssetManager() { return this->assetManager; };
   std::shared_ptr<SceneNode> GetScene() { return this->scene; };
@@ -80,7 +58,7 @@ public:
            std::enable_if<std::is_base_of<Actor, T>::value>* = nullptr>
   std::shared_ptr<T> Spawn(Transform transform = Transform()) {
     return std::dynamic_pointer_cast<T>(
-      SpawnCore(T::CREATORENTRY.first, transform));
+      SpawnCore(T::GetRuntimeTypeInfoInstance(), transform));
   }
 
   template<typename T>

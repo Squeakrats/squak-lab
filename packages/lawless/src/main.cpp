@@ -36,24 +36,14 @@ int main(int argc, char* argv[]) {
   map->transform.position.y = -2;
   engine.GetScene()->AddChild(map);
 
-  auto player = engine.Spawn<Player>();
   auto camera = engine.Spawn<PlayerCamera>();
-  camera->target = player;
-
-  methods.insert(std::make_pair(
-    "MoveLeft", [&camera]() { camera->GetTransform().position.x -= 0.1; }));
-  methods.insert(std::make_pair(
-    "MoveRight", [&camera]() { camera->GetTransform().position.x += 0.1; }));
-  methods.insert(std::make_pair(
-    "MoveForward", [&camera]() { camera->GetTransform().position.z -= 0.1; }));
-  methods.insert(std::make_pair(
-    "MoveBack", [&camera]() { camera->GetTransform().position.z += 0.1; }));
+  camera->target = engine.Spawn<Player>();
 
   websocket::Server server{};
-  server.OnConnection([](websocket::Socket& socket) {
+  server.OnConnection([&camera](websocket::Socket& socket) {
     Log("Socket Connected!");
     socket.OnClose([]() { Log("Socket Closed"); });
-    socket.OnMessage([](std::string message) { methods[message](); });
+    socket.OnMessage([&camera](std::string message) { camera->GetRuntimeTypeInfo().methods[message](camera.get()); });
   });
 
   server.Listen("127.0.0.1", 1338);

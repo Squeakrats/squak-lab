@@ -1,11 +1,13 @@
 #pragma once
-#include <squak/engine/Engine.h>
 #include "Player.h"
-#include <squak/graphics/SceneAsset.h>
 #include <iostream>
 #include <numbers>
+#include <squak/engine/Engine.h>
+#include <squak/graphics/SceneAsset.h>
 
 class PlayerCamera : public Actor {
+  using Super = Actor;
+
 public:
   using Super = Actor;
 
@@ -17,8 +19,7 @@ public:
   float turnSpeed = 0.001f;
   float moveSpeed = 0.01f;
 
-  PlayerCamera(const ActorInitializer& initializer)
-    : Actor(initializer) {
+  PlayerCamera(const ActorInitializer& initializer) : Actor(initializer) {
     this->root = this->camera;
     this->root->transform.position.z = 10;
 
@@ -36,11 +37,42 @@ public:
     transform.rotation.x += deltaMs * this->turnSpeed * engine.GetAxis("Up");
   }
 
-  static const ActorCreatorEntry CREATORENTRY;
-};
+  void MoveRight() { this->GetTransform().position.x += 0.1; }
+  void MoveLeft() { this->GetTransform().position.x -= 0.1; }
+  void MoveForward() { this->GetTransform().position.z -= 0.1; }
+  void MoveBack() { this->GetTransform().position.z += 0.1; }
 
-const ActorCreatorEntry PlayerCamera::CREATORENTRY =
-  Engine::RegisterClass("PlayerCamera",
-                        [](const ActorInitializer& initializer) {
-                          return std::make_shared<PlayerCamera>(initializer);
-                        });
+  virtual RuntimeTypeInfo& GetRuntimeTypeInfo() override {
+    return GetRuntimeTypeInfoInstance();
+  }
+
+  static RuntimeTypeInfo CreateRuntimeTypeInfo() {
+    RuntimeTypeInfo info = Super::GetRuntimeTypeInfoInstance();
+    info.id = "PlayerCamera";
+
+    info.methods.insert(std::make_pair("MoveRight", [](void* t) {
+      static_cast<PlayerCamera*>(t)->MoveRight();
+    }));
+    info.methods.insert(std::make_pair(
+      "MoveLeft", [](void* t) { static_cast<PlayerCamera*>(t)->MoveLeft(); }));
+    info.methods.insert(std::make_pair("MoveForward", [](void* t) {
+      static_cast<PlayerCamera*>(t)->MoveForward();
+    }));
+    info.methods.insert(std::make_pair(
+      "MoveBack", [](void* t) { static_cast<PlayerCamera*>(t)->MoveBack(); }));
+
+    info.create = [](const ActorInitializer& initializer) {
+      return std::make_shared<PlayerCamera>(initializer);
+    };
+
+    RuntimeTypeInfo::Register(info);
+
+    return info;
+  }
+
+  static RuntimeTypeInfo& GetRuntimeTypeInfoInstance() {
+    static RuntimeTypeInfo info = CreateRuntimeTypeInfo();
+
+    return info;
+  }
+};

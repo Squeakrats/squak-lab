@@ -10,12 +10,6 @@
 
 Engine Engine::engine = Engine{};
 
-std::map<std::string, ActorCreator>& Engine::GetCreators() {
-  static std::map<std::string, ActorCreator> creators{};
-
-  return creators;
-}
-
 Engine& Engine::Init(std::string assetDir) {
   net::Init();
   InitLogger(assetDir + "/log.txt");
@@ -96,12 +90,12 @@ void Engine::Tick() {
   this->window->Flush();
 }
 
-std::shared_ptr<Actor> Engine::SpawnCore(std::string type,
+std::shared_ptr<Actor> Engine::SpawnCore(RuntimeTypeInfo& info,
                                          Transform transform) {
   ActorInitializer initializer{ std::to_string(this->nextActorId++),
                                 transform,
                                 *this };
-  std::shared_ptr<Actor> object = GetCreators().at(type)(initializer);
+  std::shared_ptr<Actor> object = info.create(initializer);
   this->actors.insert(std::make_pair(initializer.id, object));
   this->AddChild(object);
 
