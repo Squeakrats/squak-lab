@@ -7,8 +7,6 @@
 #include <squak/graphics/SceneAsset.h>
 
 class PlayerCamera : public Actor {
-  using Super = Actor;
-
 public:
   using Super = Actor;
 
