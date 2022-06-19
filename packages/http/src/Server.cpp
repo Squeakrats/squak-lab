@@ -22,9 +22,9 @@ void Server::Listen(std::string address, uint32_t port) {
         std::unique_ptr<net::tcp::Socket> socket(raw);
 
         Request request = Request::Read(socket);
-        Response resposnse{ socket, "HTTP/1.1", "404", "Not Found" };
+        Response response{ socket, "HTTP/1.1", "404", "Not Found" };
 
-        this->handler(request, resposnse);
+        this->handler(request, response);
       });
     }
   });
