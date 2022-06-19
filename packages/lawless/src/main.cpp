@@ -3,6 +3,7 @@
 #include "utility.h"
 #include <squak/engine/Engine.h>
 #include <squak/engine/GLBLoader.h>
+#include <squak/engine/rpc.h>
 #include <squak/gl/glutils.h>
 #include <squak/gltf.h>
 #include <squak/websocket/Server.h>
@@ -12,6 +13,12 @@ std::string assetDir = "./";
 #else
 std::string assetDir = "..\\..\\..\\..\\assets\\";
 #endif
+
+RPC parseRPC(std::string source) {
+  json::Object rpc = json::Parse(source);
+
+  return { rpc["id"].get<std::string>(), rpc["method"].get<std::string>() };
+}
 
 int main(int argc, char* argv[]) {
   Engine& engine = Engine::Init(assetDir);
@@ -38,15 +45,8 @@ int main(int argc, char* argv[]) {
   websocket::Server server{};
   server.OnConnection([&engine](websocket::Socket& socket) {
     Log("Socket Connected!");
-    socket.OnClose([]() { Log("Socket Closed"); });
-    socket.OnMessage([&engine](std::string message) {
-      json::Object rpc = json::Parse(message);
-      std::string id = rpc["id"].get<std::string>();
-      std::string method = rpc["method"].get<std::string>();
-
-      auto object = engine.Find(id);
-      object->GetRuntimeTypeInfo().methods[method](object.get());
-    });
+    socket.OnClose([] { Log("Socket Closed"); });
+    socket.OnMessage([&engine](std::string m) { engine.Invoke(parseRPC(m)); });
   });
 
   server.Listen("0.0.0.0", 1338);

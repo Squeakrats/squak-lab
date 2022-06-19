@@ -5,6 +5,7 @@
 #include <memory>
 #include <squak/core/AssetManager.h>
 #include <squak/engine/RuntimeTypeInfo.h>
+#include <squak/engine/rpc.h>
 #include <squak/graphics/IRenderer.h>
 #include <squak/graphics/SceneNode.h>
 #include <string>
@@ -91,6 +92,8 @@ public:
     auto find = this->actors.find(id);
     return (find != this->actors.end()) ? find->second : nullptr;
   }
+
+  void Invoke(RPC rpc) { this->Find(rpc.id)->Invoke(rpc); }
 
   static Engine Create(uint32_t width,
                        uint32_t height,

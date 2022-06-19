@@ -1,8 +1,9 @@
 #pragma once
-#include <squak/engine/RuntimeTypeInfo.h>
 #include <functional>
 #include <map>
 #include <memory>
+#include <squak/engine/RuntimeTypeInfo.h>
+#include <squak/engine/rpc.h>
 #include <string>
 
 class SceneNode;
@@ -24,6 +25,8 @@ public:
   Transform& GetTransform();
 
   virtual void Tick(float deltaMs);
+
+  void Invoke(RPC rpc) { this->GetRuntimeTypeInfo().methods[rpc.method](this); }
 
   virtual RuntimeTypeInfo& GetRuntimeTypeInfo() {
     return GetRuntimeTypeInfoInstance();

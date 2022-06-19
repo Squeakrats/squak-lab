@@ -7,6 +7,7 @@ add_library(engine
 	include/squak/engine/GLBLoader.h
 	include/squak/engine/JSONLoader.h
 	include/squak/engine/RuntimeTypeInfo.h
+	include/squak/engine/rpc.h
 	src/Actor.cpp
 	src/Engine.cpp
 	src/GLBLoader.cpp
