@@ -26,7 +26,9 @@ public:
 
   virtual void Tick(float deltaMs);
 
-  void Invoke(RPC rpc) { this->GetRuntimeTypeInfo().methods[rpc.method](this); }
+  void Invoke(RPC rpc) {
+    this->GetRuntimeTypeInfo().methods[rpc.method](this, std::move(rpc.arguments));
+  }
 
   virtual RuntimeTypeInfo& GetRuntimeTypeInfo() {
     return GetRuntimeTypeInfoInstance();

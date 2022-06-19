@@ -1,5 +1,6 @@
 #pragma once
 #include "Player.h"
+#include "utility.h"
 #include <iostream>
 #include <numbers>
 #include <squak/engine/Engine.h>
@@ -41,6 +42,7 @@ public:
   void MoveLeft() { this->GetTransform().position.x -= 0.1; }
   void MoveForward() { this->GetTransform().position.z -= 0.1; }
   void MoveBack() { this->GetTransform().position.z += 0.1; }
+  void LogMessage(std::string message) { Log(message.c_str()); }
 
   virtual RuntimeTypeInfo& GetRuntimeTypeInfo() override {
     return GetRuntimeTypeInfoInstance();
@@ -49,18 +51,11 @@ public:
   static RuntimeTypeInfo CreateRuntimeTypeInfo() {
     RuntimeTypeInfo info = Super::GetRuntimeTypeInfoInstance();
     info.id = "PlayerCamera";
-
-    info.methods.insert(std::make_pair("MoveRight", [](void* t) {
-      static_cast<PlayerCamera*>(t)->MoveRight();
-    }));
-    info.methods.insert(std::make_pair(
-      "MoveLeft", [](void* t) { static_cast<PlayerCamera*>(t)->MoveLeft(); }));
-    info.methods.insert(std::make_pair("MoveForward", [](void* t) {
-      static_cast<PlayerCamera*>(t)->MoveForward();
-    }));
-    info.methods.insert(std::make_pair(
-      "MoveBack", [](void* t) { static_cast<PlayerCamera*>(t)->MoveBack(); }));
-
+    info.RegisterMethod("MoveRight", &PlayerCamera::MoveRight);
+    info.RegisterMethod("MoveLeft", &PlayerCamera::MoveLeft);
+    info.RegisterMethod("MoveForward", &PlayerCamera::MoveForward);
+    info.RegisterMethod("MoveBack", &PlayerCamera::MoveBack);
+    info.RegisterMethod("LogMessage", &PlayerCamera::LogMessage);
     info.create = [](const ActorInitializer& initializer) {
       return std::make_shared<PlayerCamera>(initializer);
     };

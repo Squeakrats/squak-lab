@@ -14,10 +14,28 @@ std::string assetDir = "./";
 std::string assetDir = "..\\..\\..\\..\\assets\\";
 #endif
 
-RPC parseRPC(std::string source) {
-  json::Object rpc = json::Parse(source);
+RPC parseRPC(std::string wire) {
+  json::Object source = json::Parse(wire);
 
-  return { rpc["id"].get<std::string>(), rpc["method"].get<std::string>() };
+  RPC rpc{};
+  rpc.id = source["id"].get<std::string>();
+  rpc.method = source["method"].get<std::string>();
+
+  if (source.has("arguments")) {
+    for (auto& argument : source["arguments"].get<json::Array>()) {
+      if (std::holds_alternative<double>(argument.value)) {
+        rpc.arguments.push_back(std::get<double>(argument.value));
+      } else if (std::holds_alternative<std::string>(argument.value)) {
+        rpc.arguments.push_back(std::get<std::string>(argument.value));
+      } else if (std::holds_alternative<bool>(argument.value)) {
+        rpc.arguments.push_back(std::get<bool>(argument.value));
+      } else {
+        Panic("Unhandled value")
+      }
+    }
+  }
+
+  return rpc;
 }
 
 int main(int argc, char* argv[]) {
