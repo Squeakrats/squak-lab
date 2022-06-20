@@ -11,6 +11,9 @@ class ActorInitializer;
 class Transform;
 class Engine;
 
+#define SCLASS()
+#define SFUNCTION() 
+
 class Actor {
 protected:
   std::string id;

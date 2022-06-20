@@ -1,4 +1,5 @@
 #pragma once
+#include "PlayerCamera.generated.h"
 #include "Player.h"
 #include "utility.h"
 #include <iostream>
@@ -6,7 +7,9 @@
 #include <squak/engine/Engine.h>
 #include <squak/graphics/SceneAsset.h>
 
+SCLASS()
 class PlayerCamera : public Actor {
+  SCLASS_PLAYERCAMERA_GENERATED_HEAD
 public:
   using Super = Actor;
 
@@ -36,36 +39,25 @@ public:
     transform.rotation.x += deltaMs * this->turnSpeed * engine.GetAxis("Up");
   }
 
-  void MoveRight() { this->GetTransform().position.x += 0.1; }
-  void MoveLeft() { this->GetTransform().position.x -= 0.1; }
-  void MoveForward() { this->GetTransform().position.z -= 0.1; }
-  void MoveBack() { this->GetTransform().position.z += 0.1; }
-  void LogMessage(std::string message) { Log(message.c_str()); }
+  SFUNCTION()
+  void MoveRight();
+  void MoveRight_Implementation() { this->GetTransform().position.x += 0.1; }
 
-  virtual RuntimeTypeInfo& GetRuntimeTypeInfo() override {
-    return GetRuntimeTypeInfoInstance();
-  }
+  SFUNCTION()
+  void MoveLeft();
+  void MoveLeft_Implementation() { this->GetTransform().position.x -= 0.1; }
 
-  static RuntimeTypeInfo CreateRuntimeTypeInfo() {
-    RuntimeTypeInfo info = Super::GetRuntimeTypeInfoInstance();
-    info.id = "PlayerCamera";
-    info.RegisterMethod("MoveRight", &PlayerCamera::MoveRight);
-    info.RegisterMethod("MoveLeft", &PlayerCamera::MoveLeft);
-    info.RegisterMethod("MoveForward", &PlayerCamera::MoveForward);
-    info.RegisterMethod("MoveBack", &PlayerCamera::MoveBack);
-    info.RegisterMethod("LogMessage", &PlayerCamera::LogMessage);
-    info.create = [](const ActorInitializer& initializer) {
-      return std::make_shared<PlayerCamera>(initializer);
-    };
+  SFUNCTION()
+  void MoveForward();
+  void MoveForward_Implementation() { this->GetTransform().position.z -= 0.1; }
 
-    RuntimeTypeInfo::Register(info);
+  SFUNCTION()
+  void MoveBack();
+  void MoveBack_Implementation() { this->GetTransform().position.z += 0.1; }
 
-    return info;
-  }
-
-  static RuntimeTypeInfo& GetRuntimeTypeInfoInstance() {
-    static RuntimeTypeInfo info = CreateRuntimeTypeInfo();
-
-    return info;
-  }
+  SFUNCTION()
+  void LogMessage(std::string message);
+  void LogMessage_Implementation(std::string message) { Log(message.c_str()); }
 };
+
+SCLASS_PLAYERCAMERA_GENERATED_BODY

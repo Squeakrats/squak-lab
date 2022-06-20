@@ -1,10 +1,12 @@
 #pragma once
+#include "Player.generated.h"
 #include <squak/engine/Engine.h>
 #include <squak/graphics/SceneAsset.h>
 #include <numbers>
 
+SCLASS()
 class Player : public Actor {
-  using Super = Actor;
+  SCLASS_PLAYER_GENERATED_HEAD
 public:
   using Super = Actor;
   float speed = 0.0001f;
@@ -19,22 +21,6 @@ public:
     auto& transform = this->GetTransform();
     transform.rotation.y += deltaMs * speed;
   }
-
-  static RuntimeTypeInfo CreateRuntimeTypeInfo() {
-    RuntimeTypeInfo info = Super::GetRuntimeTypeInfoInstance();
-    info.id = "Player";
-    info.create = [](const ActorInitializer& initializer) {
-      return std::make_shared<Player>(initializer);
-    };
-
-    RuntimeTypeInfo::Register(info);
-
-    return info;
-  }
-
-  static RuntimeTypeInfo& GetRuntimeTypeInfoInstance() {
-    static RuntimeTypeInfo info = CreateRuntimeTypeInfo();
-
-    return info;
-  }
 };
+
+SCLASS_PLAYER_GENERATED_BODY
