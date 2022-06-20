@@ -1,24 +1,10 @@
 cmake_minimum_required(VERSION 3.8)
 project(lawless)
+include(headertool)
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
-add_custom_command(
-    OUTPUT
-		${CMAKE_CURRENT_BINARY_DIR}/generated/PlayerCamera.generated.h
-    COMMAND headertool
-             ${CMAKE_CURRENT_SOURCE_DIR}/src/PlayerCamera.h
-             ${CMAKE_CURRENT_BINARY_DIR}/generated/PlayerCamera.generated.h
-    DEPENDS headertool src/PlayerCamera.h
-)
-
-add_custom_command(
-    OUTPUT
-		${CMAKE_CURRENT_BINARY_DIR}/generated/Player.generated.h
-    COMMAND headertool
-             ${CMAKE_CURRENT_SOURCE_DIR}/src/Player.h
-             ${CMAKE_CURRENT_BINARY_DIR}/generated/Player.generated.h
-    DEPENDS headertool src/Player.h
-)
+headertool(src/PlayerCamera.h generated/PlayerCamera.generated.h)
+headertool(src/Player.h generated/Player.generated.h)
 
 add_executable(lawless 
     src/Player.h
