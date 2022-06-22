@@ -19,12 +19,9 @@ LRESULT WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 
 class Window : public IWindow {
 private:
-  HWND window;
   bool shouldClose = false;
 
 public:
-  Window(HWND window) : window(window){};
-
   virtual void Poll() override {
     MSG message{};
 
@@ -112,7 +109,7 @@ std::shared_ptr<IWindow> Create(std::string name,
 
   glViewport(0, 0, width, height);
 
-  return std::make_shared<Window>(window);
+  return std::make_shared<Window>();
 }
 
 };
