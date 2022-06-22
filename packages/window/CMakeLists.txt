@@ -1,5 +1,3 @@
-project(window)
-
 set(SOURCES_SHARED
 	src/window.h
 )

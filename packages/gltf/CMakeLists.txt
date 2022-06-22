@@ -1,5 +1,3 @@
-project(gltf)
-
 add_library(gltf
     include/squak/gltf.h
     src/gltf.cpp

@@ -1,5 +1,3 @@
-project(glr)
-
 add_executable(glrt
 	src/main.cpp
 )

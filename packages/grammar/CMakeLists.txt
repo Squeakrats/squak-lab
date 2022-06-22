@@ -1,5 +1,3 @@
-project(grammar)
-
 add_executable(grammar
     src/main.cpp 
     src/fragments.h

@@ -1,5 +1,3 @@
-project(graphics)
-
 add_library(graphics
 	include/squak/graphics/Texture.h
 	include/squak/graphics/Material.h

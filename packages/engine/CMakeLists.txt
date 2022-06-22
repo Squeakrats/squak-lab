@@ -1,5 +1,3 @@
-project(engine)
-
 add_library(engine
 	include/squak/engine/Actor.h
 	include/squak/engine/Engine.h

@@ -1,5 +1,3 @@
-project(compression)
-
 add_library(compression
 	include/squak/compression/inflate.h
 	include/squak/compression/base64.h

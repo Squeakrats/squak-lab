@@ -1,5 +1,3 @@
-project(utility)
-
 add_library(utility
 	src/utility.h
 	src/utility.cpp

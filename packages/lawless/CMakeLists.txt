@@ -1,4 +1,3 @@
-project(lawless)
 include(headertool)
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)

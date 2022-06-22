@@ -1,5 +1,3 @@
-project(png)
-
 add_library(png
 	include/squak/png.h
 	src/png.cpp

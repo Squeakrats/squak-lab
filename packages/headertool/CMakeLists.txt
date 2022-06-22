@@ -1,5 +1,3 @@
-project(headertool)
-
 add_executable(headertool
     src/main.cpp
 )

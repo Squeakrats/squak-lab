@@ -1,5 +1,3 @@
-project(core)
-
 add_library(core
 	include/squak/core/AssetManager.h
 	include/squak/core/Buffer.h

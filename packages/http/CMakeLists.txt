@@ -1,5 +1,3 @@
-project(http)
-
 add_library(http
 	include/squak/http.h
 	include/squak/http/Server.h

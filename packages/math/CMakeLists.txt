@@ -1,5 +1,3 @@
-project(math)
-
 add_library(math
 	src/Vector3.h
 	src/Vector3.cpp

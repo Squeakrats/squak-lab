@@ -1,5 +1,3 @@
-project(gl)
-
 add_library(gl
 	include/squak/gl/glutils.h
 	src/shaders.h

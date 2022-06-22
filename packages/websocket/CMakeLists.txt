@@ -1,5 +1,3 @@
-project(websocket)
-
 add_library(websocket
 	include/squak/websocket/Socket.h
 	include/squak/websocket/Server.h

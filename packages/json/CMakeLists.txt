@@ -1,4 +1,3 @@
-project(json)
 include(grammar)
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
