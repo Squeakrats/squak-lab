@@ -1,13 +1,15 @@
-cmake_minimum_required(VERSION 3.8)
-project(net)
-
-add_library(net
+set(SOURCES
 	include/squak/net.h
-	include/squak/net/Poller.h
 	include/squak/net/tcp/Socket.h
+	src/net.cpp)
+
+if (NOT EMSCRIPTEN)
+list(APPEND SOURCES 
+	include/squak/net/Poller.h
 	src/tcp/Socket.cpp
-	src/net.cpp
-	src/Poller.cpp
-)
+	src/Poller.cpp)
+endif()
+
+add_library(net ${SOURCES})
 target_include_directories(net PRIVATE src/ PUBLIC include/)
 target_link_libraries(net utility core ws2_32)

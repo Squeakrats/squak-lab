@@ -1,8 +1,7 @@
-#include <squak/net.h>
-#include <squak/net/Poller.h>
 #include "utility.h"
+#include <squak/net.h>
 #ifndef EMSCRIPTEN
-#include <winsock.h>
+#include <squak/net/Poller.h>
 #endif
 
 namespace net {

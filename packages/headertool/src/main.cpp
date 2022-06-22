@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
     std::transform(classNameUpper.begin(),
                    classNameUpper.end(),
                    classNameUpper.begin(),
-                   std::toupper);
+                   [](int character) { return std::toupper(character); });
 
     ostream << "#define SCLASS_" << classNameUpper
             << "_GENERATED_HEAD public: \\\n";

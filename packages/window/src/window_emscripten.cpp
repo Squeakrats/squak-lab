@@ -10,10 +10,14 @@ std::set<uint64_t> keys{};
 
 EM_BOOL onKeyDown(int eventType, const EmscriptenKeyboardEvent* keyEvent, void* userData) {
     keys.insert(keyEvent->which);
+
+    return true;
 }
 
 EM_BOOL onKeyUp(int eventType, const EmscriptenKeyboardEvent* keyEvent, void* userData) {
     keys.erase(keyEvent->which);
+
+    return true;
 }
 
 class Window : public IWindow {
