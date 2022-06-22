@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 3.8)
 project(http)
 
 add_library(http
