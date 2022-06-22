@@ -12,4 +12,7 @@ endif()
 
 add_library(net ${SOURCES})
 target_include_directories(net PRIVATE src/ PUBLIC include/)
-target_link_libraries(net utility core ws2_32)
+target_link_libraries(net utility core)
+if (NOT EMSCRIPTEN)
+	target_link_libraries(net ws2_32)
+endif()

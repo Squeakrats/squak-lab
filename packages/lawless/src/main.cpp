@@ -60,6 +60,7 @@ int main(int argc, char* argv[]) {
   auto camera = engine.Spawn<PlayerCamera>();
   camera->target = engine.Spawn<Player>();
 
+#ifndef EMSCRIPTEN
   websocket::Server server{};
   server.OnConnection([&engine](websocket::Socket& socket) {
     Log("Socket Connected!");
@@ -68,6 +69,7 @@ int main(int argc, char* argv[]) {
   });
 
   server.Listen("0.0.0.0", 1338);
+#endif
   engine.Run();
 
   return 0;
