@@ -90,8 +90,6 @@ void Engine::Tick() {
   if (this->renderer != nullptr) {
     this->renderer->Render(*this->camera, *this->scene);
   }
-
-  this->window->Flush();
 }
 
 std::shared_ptr<Actor> Engine::SpawnCore(RuntimeTypeInfo& info,

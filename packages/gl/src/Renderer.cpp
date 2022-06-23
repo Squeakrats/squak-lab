@@ -123,6 +123,8 @@ void Renderer::Render(CameraNode& camera, SceneNode& scene) {
   this->RenderAmbientLight();
   this->RenderNode(RenderPass::Light, camera, scene);
 
+  glFlush();
+
   GLenum error = glGetError();
   Assert(error == 0, "unhandled gl error");
 }

@@ -26,10 +26,6 @@ public:
        // nothing to do
     }
 
-    virtual void Flush() override {
-        // nothing to do
-    }
-
     virtual bool ShouldClose() override {
         return false;
     }

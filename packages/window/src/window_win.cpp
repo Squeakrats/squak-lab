@@ -34,8 +34,6 @@ public:
     }
   }
 
-  virtual void Flush() override { glFlush(); }
-
   virtual bool ShouldClose() override { return this->shouldClose; }
 
   virtual bool GetKey(uint8_t key) override {
