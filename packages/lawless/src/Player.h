@@ -14,6 +14,7 @@ public:
   Player(const ActorInitializer& initializer)
     : Actor(initializer) {
     this->root->AddChild(engine.GetAsset<SceneAsset>("suzanne.glb")->scene);
+    this->GetTransform().position.y = 2;
   }
 
   virtual void Tick(float deltaMs) override {
