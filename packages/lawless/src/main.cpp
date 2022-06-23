@@ -14,30 +14,6 @@ std::string assetDir = "./";
 std::string assetDir = "..\\..\\..\\..\\assets\\";
 #endif
 
-RPC parseRPC(std::string wire) {
-  json::Object source = json::Parse(wire);
-
-  RPC rpc{};
-  rpc.id = source["id"].get<std::string>();
-  rpc.method = source["method"].get<std::string>();
-
-  if (source.has("arguments")) {
-    for (auto& argument : source["arguments"].get<json::Array>()) {
-      if (std::holds_alternative<double>(argument.value)) {
-        rpc.arguments.push_back(std::get<double>(argument.value));
-      } else if (std::holds_alternative<std::string>(argument.value)) {
-        rpc.arguments.push_back(std::get<std::string>(argument.value));
-      } else if (std::holds_alternative<bool>(argument.value)) {
-        rpc.arguments.push_back(std::get<bool>(argument.value));
-      } else {
-        Panic("Unhandled value")
-      }
-    }
-  }
-
-  return rpc;
-}
-
 int main(int argc, char* argv[]) {
   Engine& engine = Engine::Init(assetDir);
   auto size = engine.GetSize();
@@ -65,7 +41,7 @@ int main(int argc, char* argv[]) {
   server.OnConnection([&engine](websocket::Socket& socket) {
     Log("Socket Connected!");
     socket.OnClose([] { Log("Socket Closed"); });
-    socket.OnMessage([&engine](std::string m) { engine.Invoke(parseRPC(m)); });
+    socket.OnMessage([&engine](std::string m) { engine.Invoke(RPC::Parse(json::Parse(m))); });
   });
 
   server.Listen("0.0.0.0", 1338);

@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <variant>
+#include <squak/json.h>
 
 class RPC {
 public:
@@ -10,4 +11,6 @@ public:
   std::string id{};
   std::string method{};
   std::vector<Argument> arguments{};
+
+  static RPC Parse(json::Object&& source);
 };

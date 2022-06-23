@@ -9,6 +9,7 @@ add_library(engine
 	src/Engine.cpp
 	src/GLBLoader.cpp
 	src/JSONLoader.cpp
+	src/rpc.cpp
 )
 target_include_directories(engine PRIVATE src/ PUBLIC include/)
 target_link_libraries(engine graphics core utility json gltf window net)
