@@ -1,7 +1,7 @@
-#include <squak/gltf.h>
-#include <squak/graphics/SceneAsset.h>
 #include "utility.h"
 #include <fstream>
+#include <squak/gltf.h>
+#include <squak/graphics/SceneAsset.h>
 
 namespace gltf {
 
@@ -130,11 +130,14 @@ std::shared_ptr<Mesh> ConvertMesh(
 }
 
 Vector3 ConvertTranslation(json::Array& source) {
-  return Vector3(source[0].as<float>(), source[1].as<float>(), source[2].as<float>());
+  return Vector3(
+    source[0].as<float>(), source[1].as<float>(), source[2].as<float>());
 }
 
 std::shared_ptr<SceneNode> ConvertNode(
   json::Object& source,
+  std::vector<std::shared_ptr<SceneNode>> nodes,
+  std::vector<std::shared_ptr<Light>>& lights,
   std::vector<std::shared_ptr<Mesh>>& meshes) {
   std::shared_ptr<SceneNode> node = std::make_shared<SceneNode>();
 
@@ -147,6 +150,22 @@ std::shared_ptr<SceneNode> ConvertNode(
   if (source.has("translation")) {
     node->transform.position =
       ConvertTranslation(source["translation"].get<json::Array>());
+  }
+
+  if (source.has("extensions")) {
+    json::Object extensions = source["extensions"].get<json::Object>();
+    if (extensions.has("KHR_lights_punctual")) {
+      json::Object punctual = extensions["KHR_lights_punctual"].get<json::Object>();
+      size_t lightIndex = punctual["light"].as<size_t>();
+
+      node->light = lights[lightIndex];
+    }
+  }
+
+  if (source.has("children")) {
+    for (json::Value& childValue : source["children"].get<json::Array>()) {
+      node->children.push_back(nodes[childValue.as<size_t>()]);
+    }
   }
 
   return node;
@@ -233,9 +252,24 @@ std::shared_ptr<SceneNode> Parse(std::ifstream& source) {
       ConvertMesh(mesh.get<json::Object>(), accessors, materials));
   }
 
+  std::vector<std::shared_ptr<Light>> lights{};
+  if (json.has("extensions")) {
+    json::Object& extensions = json["extensions"].get<json::Object>();
+    if (extensions.has("KHR_lights_punctual")) {
+      json::Array& sourceLights = extensions["KHR_lights_punctual"]
+                                    .get<json::Object>()["lights"]
+                                    .get<json::Array>();
+
+      for (json::Value& light : sourceLights) {
+        lights.push_back(std::make_shared<Light>(
+          ConvertTranslation(light["color"].get<json::Array>())));
+      }
+    }
+  }
+
   std::vector<std::shared_ptr<SceneNode>> nodes{};
   for (json::Value& source : json["nodes"].get<json::Array>()) {
-    nodes.push_back(ConvertNode(source.get<json::Object>(), meshes));
+    nodes.push_back(ConvertNode(source.get<json::Object>(), nodes, lights, meshes));
   }
 
   return ConvertScene(json["scenes"][0].get<json::Object>(), nodes);
