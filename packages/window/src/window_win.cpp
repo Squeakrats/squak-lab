@@ -20,14 +20,19 @@ LRESULT WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 class Window : public IWindow {
 private:
   bool shouldClose = false;
+  bool keys[256]{};
 
 public:
   virtual void Poll() override {
     MSG message{};
 
-    while (PeekMessage(&message, nullptr, 0, 0, PM_REMOVE)) {  
+    while (PeekMessage(&message, nullptr, 0, 0, PM_REMOVE)) {
       if (message.message == WM_QUIT) {
         shouldClose = true;
+      } else if (message.message == WM_KEYDOWN && message.wParam < 256) {
+        this->keys[message.wParam] = true;
+      } else if (message.message == WM_KEYUP && message.wParam < 256) {
+        this->keys[message.wParam] = false;
       } else {
         DispatchMessage(&message);
       }
@@ -36,9 +41,7 @@ public:
 
   virtual bool ShouldClose() override { return this->shouldClose; }
 
-  virtual bool GetKey(uint8_t key) override {
-    return 0x80000000 & GetAsyncKeyState(key);
-  }
+  virtual bool GetKey(uint8_t key) override { return this->keys[key]; }
 };
 
 const char defaultWindowClassName[] = "Lawless Window";
