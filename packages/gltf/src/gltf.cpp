@@ -129,6 +129,10 @@ std::shared_ptr<Mesh> ConvertMesh(
   return mesh;
 }
 
+Vector3 ConvertTranslation(json::Array& source) {
+  return Vector3(source[0].as<float>(), source[1].as<float>(), source[2].as<float>());
+}
+
 std::shared_ptr<SceneNode> ConvertNode(
   json::Object& source,
   std::vector<std::shared_ptr<Mesh>>& meshes) {
@@ -138,6 +142,11 @@ std::shared_ptr<SceneNode> ConvertNode(
 
   if (source.has("mesh")) {
     node->mesh = meshes[source["mesh"].as<size_t>()];
+  }
+
+  if (source.has("translation")) {
+    node->transform.position =
+      ConvertTranslation(source["translation"].get<json::Array>());
   }
 
   return node;
