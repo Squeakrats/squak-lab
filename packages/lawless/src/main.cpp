@@ -23,7 +23,6 @@ int main(int argc, char* argv[]) {
     engine.GetAssetManager().Get<SceneAsset>("map.glb")->scene);
 
   auto camera = engine.Spawn<PlayerCamera>();
-  camera->target = engine.Spawn<Player>();
 
 #ifndef EMSCRIPTEN
   websocket::Server server{};

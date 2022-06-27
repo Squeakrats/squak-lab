@@ -17,7 +17,6 @@ public:
     Matrix4::Perspective(static_cast<float>(std::numbers::pi) / 8.0f,
                          .01f,
                          100));
-  std::shared_ptr<Player> target{};
   float turnSpeed = 0.001f;
   float moveSpeed = 0.01f;
 
