@@ -1,6 +1,8 @@
 #include "Player.h"
 #include "PlayerCamera.h"
 #include "utility.h"
+#include <Windows.h>
+#include <processthreadsapi.h>
 #include <squak/engine/Engine.h>
 #include <squak/engine/GLBLoader.h>
 #include <squak/engine/rpc.h>
@@ -8,21 +10,26 @@
 #include <squak/gltf.h>
 #include <squak/websocket/Server.h>
 
-#ifdef EMSCRIPTEN
-std::string assetDir = "./";
-#else
-std::string assetDir = "..\\..\\..\\..\\assets\\";
-#endif
+void spawn(std::string path, std::string arguments) {
+  std::string command = path + " " + arguments;
 
-int main(int argc, char* argv[]) {
-  Engine& engine = Engine::Init(assetDir);
-  engine.GetAssetManager().Register(std::make_shared<GLBLoader>());
-  engine.SetRenderer(
-    gl::CreateRenderer(engine.GetSize().first, engine.GetSize().second));
-  engine.GetScene()->AddChild(
-    engine.GetAssetManager().Get<SceneAsset>("map.glb")->scene);
+  STARTUPINFO startupInfo{};
+  PROCESS_INFORMATION processInfo{};
+  Assert(CreateProcess(const_cast<char*>(path.c_str()),
+                       const_cast<char*>(command.c_str()),
+                       nullptr,
+                       nullptr,
+                       false,
+                       0,
+                       nullptr,
+                       nullptr,
+                       &startupInfo,
+                       &processInfo),
+         "failed to create process");
+}
 
-  auto camera = engine.Spawn<PlayerCamera>();
+void server(std::string path, std::string assetDir) {
+  Engine& engine = Engine::engine;
 
 #ifndef EMSCRIPTEN
   websocket::Server server{};
@@ -34,7 +41,33 @@ int main(int argc, char* argv[]) {
   server.Listen("0.0.0.0", 1338);
 #endif
 
+  spawn(path, assetDir + " client");
   engine.Run();
+}
+
+void client() {
+  Engine& engine = Engine::engine;
+  engine.Run();
+}
+
+int main(int argc, char* argv[]) {
+  std::string path = argv[0];
+  std::string assetDir = argv[1];
+
+  Engine& engine = Engine::Init(assetDir);
+  engine.GetAssetManager().Register(std::make_shared<GLBLoader>());
+  engine.SetRenderer(
+    gl::CreateRenderer(engine.GetSize().first, engine.GetSize().second));
+  engine.GetScene()->AddChild(
+    engine.GetAssetManager().Get<SceneAsset>("map.glb")->scene);
+
+  auto camera = engine.Spawn<PlayerCamera>();
+
+  if (argc == 2) {
+    server(path, assetDir);
+  } else {
+    client();
+  }
 
   return 0;
 }

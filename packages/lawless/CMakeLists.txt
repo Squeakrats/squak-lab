@@ -18,5 +18,6 @@ target_include_directories(lawless PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/generated
 if (EMSCRIPTEN)
     set_target_properties(lawless PROPERTIES LINK_FLAGS "-s MIN_WEBGL_VERSION=2 --embed-file ..\\..\\..\\..\\assets@/ -s TOTAL_MEMORY=51118080")
 else()
+    set_target_properties(lawless PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS "..\\..\\..\\..\\assets\\")
     target_link_libraries(lawless opengl32)
 endif()
