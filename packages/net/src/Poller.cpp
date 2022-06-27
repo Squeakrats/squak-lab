@@ -23,6 +23,10 @@ void Poller::Poll() {
     toPoll.push_back(WSAPOLLFD{ entry.first, POLLRDNORM });
   }
 
+  if (toPoll.size() == 0) {
+    return;
+  }
+
   int count = WSAPoll(toPoll.data(), toPoll.size(), 0);
   Assert(count >= 0, "poll failed");
   if (count == 0) {
