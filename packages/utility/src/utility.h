@@ -7,6 +7,8 @@ void InitLogger(std::string&& logFile);
 void Log(std::string&& message);
 void Log(const char* message);
 
+void spawn(std::string path, std::string arguments);
+
 #define Assert(condition, message)                                             \
   if (!(condition)) {                                                          \
     Log(message);                                                              \

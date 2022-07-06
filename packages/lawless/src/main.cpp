@@ -1,32 +1,12 @@
 #include "Player.h"
 #include "PlayerCamera.h"
 #include "utility.h"
-#include <Windows.h>
-#include <processthreadsapi.h>
 #include <squak/engine/Engine.h>
 #include <squak/engine/GLBLoader.h>
 #include <squak/engine/rpc.h>
 #include <squak/gl/glutils.h>
 #include <squak/gltf.h>
 #include <squak/websocket/Server.h>
-
-void spawn(std::string path, std::string arguments) {
-  std::string command = path + " " + arguments;
-
-  STARTUPINFO startupInfo{};
-  PROCESS_INFORMATION processInfo{};
-  Assert(CreateProcess(const_cast<char*>(path.c_str()),
-                       const_cast<char*>(command.c_str()),
-                       nullptr,
-                       nullptr,
-                       false,
-                       0,
-                       nullptr,
-                       nullptr,
-                       &startupInfo,
-                       &processInfo),
-         "failed to create process");
-}
 
 void server(std::string path, std::string assetDir) {
   Engine& engine = Engine::engine;
