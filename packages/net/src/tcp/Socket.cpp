@@ -65,9 +65,6 @@ public:
     SOCKET accepted = accept(this->socket, nullptr, nullptr);
 
     if (accepted != -1) {
-      u_long iMode = 0;
-      ioctlsocket(accepted, FIONBIO, &iMode);
-
       return std::make_unique<Socket>(std::make_unique<Impl>(accepted));
     }
 
